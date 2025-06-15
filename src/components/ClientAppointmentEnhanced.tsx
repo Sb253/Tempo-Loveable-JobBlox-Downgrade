@@ -5,21 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  User, 
-  Phone, 
-  Mail, 
-  Play, 
-  Pause, 
+  ArrowLeft,
+  Edit,
+  Play,
   Square,
+  Truck,
+  User,
+  Phone,
+  MessageCircle,
+  MapPin,
+  Calendar,
+  Clock,
+  Plus,
+  ChevronRight,
+  Paperclip,
+  Tag,
+  FileText,
   CheckCircle,
   AlertCircle,
   XCircle,
-  Edit,
-  MessageCircle,
-  FileText
+  MoreHorizontal
 } from "lucide-react";
 
 interface Appointment {
@@ -147,210 +152,408 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
     return `${mins}m`;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return 'bg-blue-100 text-blue-800';
-      case 'in-progress':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-gray-100 text-gray-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      case 'no-show':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-4 w-4" />;
-      case 'in-progress':
-        return <Play className="h-4 w-4" />;
-      case 'cancelled':
-        return <XCircle className="h-4 w-4" />;
-      case 'no-show':
-        return <AlertCircle className="h-4 w-4" />;
-      default:
-        return <Clock className="h-4 w-4" />;
-    }
-  };
-
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
+    <div className="bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold">{appointment.title}</h1>
-          <p className="text-muted-foreground">{appointment.appointmentType}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {getStatusIcon(appointment.status)}
-          <Badge className={getStatusColor(appointment.status)}>
-            {appointment.status.replace('-', ' ').toUpperCase()}
-          </Badge>
+      <div className="bg-white border-b">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-lg font-semibold text-center flex-1">Estimate #5709</h1>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div className="flex flex-col items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                <Edit className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-xs text-blue-600">Approve</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                <FileText className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-xs text-blue-600">Estimate</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                <CheckCircle className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-xs text-blue-600">Copy to Job</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                <MoreHorizontal className="h-5 w-5 text-blue-600" />
+              </div>
+              <span className="text-xs text-blue-600">More</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Time Tracking Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Time Tracking
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={appointment.status === 'scheduled' ? startTimeTracking : 
-                         appointment.timeTracking?.isActive ? pauseTimeTracking : startTimeTracking}
-                variant={appointment.timeTracking?.isActive ? "destructive" : "default"}
-              >
-                {appointment.timeTracking?.isActive ? (
-                  <>
-                    <Pause className="h-4 w-4 mr-2" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-2" />
-                    Start
-                  </>
-                )}
-              </Button>
-
-              <Button
-                onClick={completeAppointment}
-                variant="outline"
-                disabled={appointment.status === 'completed'}
-              >
-                <Square className="h-4 w-4 mr-2" />
-                Complete
-              </Button>
-            </div>
-
-            <div className="text-right">
-              {getActiveTime() > 0 && (
-                <div className="text-2xl font-bold">
-                  {formatDuration(getActiveTime())}
-                </div>
-              )}
-              {appointment.timeTracking?.isActive && (
-                <div className="text-sm text-green-600 font-medium">● Recording</div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Customer Information */}
+      <div className="space-y-3 p-4">
+        {/* Status Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-gray-400 rounded-full"></div>
+                <span className="font-medium">Status</span>
+              </div>
+              <Badge variant="destructive">EXPIRED</Badge>
+            </div>
+            
+            {/* Time Tracking Controls */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Truck className="h-6 w-6 text-gray-400" />
+                </div>
+                <span className="text-sm text-gray-500">ON MY WAY</span>
+              </div>
+              
+              <div className="text-center">
+                <Button
+                  onClick={appointment.status === 'scheduled' ? startTimeTracking : 
+                           appointment.timeTracking?.isActive ? pauseTimeTracking : startTimeTracking}
+                  className="w-12 h-12 rounded-full p-0"
+                  variant={appointment.timeTracking?.isActive ? "destructive" : "default"}
+                >
+                  <Play className="h-6 w-6" />
+                </Button>
+                <span className="text-sm text-blue-600 font-medium block mt-2">START</span>
+              </div>
+              
+              <div className="text-center">
+                <Button
+                  onClick={completeAppointment}
+                  className="w-12 h-12 rounded-full p-0"
+                  disabled={appointment.status === 'completed'}
+                >
+                  <Square className="h-6 w-6" />
+                </Button>
+                <span className="text-sm text-blue-600 font-medium block mt-2">FINISH</span>
+              </div>
+            </div>
+            
+            {/* Active Timer Display */}
+            {getActiveTime() > 0 && (
+              <div className="mt-4 text-center">
+                <div className="text-2xl font-bold">{formatDuration(getActiveTime())}</div>
+                {appointment.timeTracking?.isActive && (
+                  <div className="text-sm text-green-600 font-medium">● Recording</div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Customer Card */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <User className="h-5 w-5" />
-              Customer Information
+              Customer
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">{appointment.customer}</h3>
+          <CardContent>
+            {/* Property Image */}
+            <div className="relative mb-4 rounded-lg overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=200&fit=crop" 
+                alt="Property" 
+                className="w-full h-40 object-cover"
+              />
+              <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
+                $1,755,773
+              </div>
+              <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs mt-6">
+                Built in 1926
+              </div>
+              <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
+                4 Beds | 2.0 Baths | 2710 Sq. ft.
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>{appointment.email}</span>
+            
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">{appointment.customer}</h3>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
+                    <MessageCircle className="h-4 w-4 text-blue-600" />
+                  </Button>
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
-                <span>{appointment.phone}</span>
+              
+              <div className="flex items-start gap-2">
+                <MapPin className="h-4 w-4 text-gray-500 mt-1" />
+                <div>
+                  <p className="text-sm">1950 25th Ave E</p>
+                  <p className="text-sm text-gray-500">Seattle, WA, 98112</p>
+                </div>
+                <Button size="sm" variant="outline" className="w-10 h-10 p-0 ml-auto">
+                  <MapPin className="h-4 w-4 text-blue-600" />
+                </Button>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{appointment.address}</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button size="sm" variant="outline">
-                <Phone className="h-4 w-4 mr-2" />
-                Call
-              </Button>
-              <Button size="sm" variant="outline">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Message
-              </Button>
-              <Button size="sm" variant="outline">
-                <Mail className="h-4 w-4 mr-2" />
-                Email
-              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Schedule Information */}
+        {/* Schedule Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center justify-between text-base">
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
                 Schedule
               </div>
-              <Button size="sm" variant="ghost">
-                <Edit className="h-4 w-4" />
+              <Button size="sm" variant="ghost" className="p-1">
+                <Edit className="h-4 w-4 text-blue-600" />
               </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Date</label>
-                <p className="text-lg">{appointment.scheduledDate}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Time</label>
-                <p className="text-lg">{appointment.scheduledTime}</p>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-sm">From:</span>
+              <div className="text-right">
+                <div className="font-medium">Thu Mar 14</div>
+                <div className="text-sm text-gray-500">10:30a</div>
               </div>
             </div>
-
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Duration</label>
-              <p className="text-lg">{appointment.duration}</p>
-            </div>
-
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Technician</label>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                  <User className="h-4 w-4" />
-                </div>
-                <span className="font-medium">{appointment.technician}</span>
+            
+            <div className="flex justify-between">
+              <span className="text-sm">To:</span>
+              <div className="text-right">
+                <div className="font-medium">Thu Mar 14</div>
+                <div className="text-sm text-gray-500">11:30a</div>
               </div>
+            </div>
+            
+            <div className="flex items-center gap-2 pt-2">
+              <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                  alt="Technician" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="font-medium">{appointment.technician}</span>
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Notes */}
-      {appointment.notes && (
+        {/* Expiration Date Card */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Notes
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center justify-between text-base">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Expiration date
+              </div>
+              <Button size="sm" variant="ghost" className="p-1">
+                <Edit className="h-4 w-4 text-blue-600" />
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700">{appointment.notes}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+              <div className="flex items-center gap-2 text-red-700">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">This estimate has expired.</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-sm">Expires on</span>
+              <span className="font-medium">Apr 30, 2024</span>
+            </div>
           </CardContent>
         </Card>
-      )}
+
+        {/* Line Items Card */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center justify-between text-base">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Line Items
+              </div>
+              <div className="flex gap-1">
+                <Button size="sm" variant="ghost" className="p-1">
+                  <ChevronRight className="h-4 w-4 text-blue-600" />
+                </Button>
+                <Button size="sm" variant="ghost" className="p-1">
+                  <Edit className="h-4 w-4 text-blue-600" />
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-gray-500 mb-2">Services</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <div>
+                    <div className="font-medium">Standard Install Package: #2</div>
+                    <div className="text-sm text-gray-500">Qty 1 @ $6,200.00/Each</div>
+                    <div className="text-sm text-gray-600">Tear out and removal of existing standard tub or shower system without...</div>
+                  </div>
+                  <div className="font-medium">$6,200.00</div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium text-gray-500 mb-2">Materials</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <div>
+                    <div className="font-medium">MileStone Bath Systems - Bella Stone™ Smooth Marble Full Bath...</div>
+                    <div className="text-sm text-gray-500">Qty 1 @ $2,450.25/Each</div>
+                    <div className="text-sm text-gray-600">High quality acrylic walls are high-gloss and UV protected against yellowing. ...</div>
+                  </div>
+                  <div className="font-medium">$2,450.25</div>
+                </div>
+                
+                <div className="flex justify-between">
+                  <div>
+                    <div className="font-medium">60x30 21" Tub</div>
+                    <div className="text-sm text-gray-500">Qty 1 @ $2,509.99/Each</div>
+                    <div className="text-sm text-gray-600">White L</div>
+                  </div>
+                  <div className="font-medium">$2,509.99</div>
+                </div>
+                
+                <div className="flex justify-between">
+                  <div>
+                    <div className="font-medium">Tru-Temp Pressure Balance 1/2" Rough-In Valve - Tru-Temp Pressure...</div>
+                    <div className="text-sm text-gray-500">Qty 1 @ $291.38/Each</div>
+                    <div className="text-sm text-gray-600">PULSE ShowerSpas Tru-Temp Pressure Balance Rough-In Valve with Trim Kit utili...</div>
+                  </div>
+                  <div className="font-medium">$291.38</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Pricing Summary */}
+            <div className="border-t pt-4 space-y-2">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-medium">$12,899.62</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <div>
+                  <div>Discount</div>
+                  <div className="text-sm text-gray-500">Seattle Home Show ($2,000.00)</div>
+                </div>
+                <span className="font-medium">-$2,000.00</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <div>
+                  <div>Tax</div>
+                  <div className="text-sm text-gray-500">King County (10.5%)</div>
+                </div>
+                <span className="font-medium">$1,144.46</span>
+              </div>
+              
+              <div className="flex justify-between text-lg font-bold border-t pt-2">
+                <span>Total</span>
+                <span>$12,044.08</span>
+              </div>
+              
+              <div className="flex justify-between border-t pt-2">
+                <div>
+                  <div>Deposit</div>
+                  <div className="text-sm text-gray-500">Due on 3/13</div>
+                </div>
+                <span className="font-medium">$6,298.29</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Notes Card */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center justify-between text-base">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Notes
+              </div>
+              <div className="flex gap-1">
+                <Button size="sm" variant="ghost" className="p-1">
+                  <ChevronRight className="h-4 w-4 text-blue-600" />
+                </Button>
+                <Button size="sm" variant="ghost" className="p-1">
+                  <Plus className="h-4 w-4 text-blue-600" />
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-gray-500 mb-2">02/23/2024, 4:59PM</div>
+            <div className="font-medium mb-3">REMODEL OF SMALL BATHROOM ON THE UPPER FLOOR</div>
+            
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
+                  alt="Scott Bondy" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="font-medium">Scott Bondy</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Expandable Sections */}
+        <div className="space-y-2">
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-gray-500" />
+                  <span className="font-medium">Estimate Fields</span>
+                </div>
+                <Plus className="h-5 w-5 text-gray-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-5 w-5 text-gray-500" />
+                  <span className="font-medium">Job Tags</span>
+                </div>
+                <Plus className="h-5 w-5 text-gray-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-2 border-dashed border-gray-300">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Paperclip className="h-5 w-5 text-gray-500" />
+                  <span className="font-medium">Attachments</span>
+                </div>
+                <Plus className="h-5 w-5 text-gray-500" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 };
