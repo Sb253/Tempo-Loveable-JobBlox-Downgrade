@@ -34,6 +34,10 @@ import { DocumentManagement } from "@/components/DocumentManagement";
 import { ResourceAllocation } from "@/components/ResourceAllocation";
 import { GanttChart } from "@/components/GanttChart";
 import { MapView } from "@/components/MapView";
+import { CustomerPortal } from "@/components/CustomerPortal";
+import { OnlineBooking } from "@/components/OnlineBooking";
+import { AutomatedFollowUp } from "@/components/AutomatedFollowUp";
+import { MobileJobDocumentation } from "@/components/MobileJobDocumentation";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -98,6 +102,10 @@ const Index = () => {
     { label: 'Documents', value: 'documents' },
     { label: 'Resources', value: 'resources' },
     { label: 'Project Timeline', value: 'timeline' },
+    { label: 'Customer Portal', value: 'customer-portal' },
+    { label: 'Online Booking', value: 'online-booking' },
+    { label: 'Follow-up Automation', value: 'follow-up' },
+    { label: 'Mobile Documentation', value: 'mobile-docs' },
   ];
 
   const getCurrentLabel = () => {
@@ -149,6 +157,14 @@ const Index = () => {
         return <ResourceAllocation />;
       case 'timeline':
         return <GanttChart />;
+      case 'customer-portal':
+        return <CustomerPortal />;
+      case 'online-booking':
+        return <OnlineBooking />;
+      case 'follow-up':
+        return <AutomatedFollowUp />;
+      case 'mobile-docs':
+        return <MobileJobDocumentation />;
       default:
         return (
           <div className="space-y-6">
@@ -280,7 +296,7 @@ const Index = () => {
                       >
                         {item.label}
                       </DropdownMenuItem>
-                      {(index === 0 || index === 7 || index === 12) && <DropdownMenuSeparator />}
+                      {(index === 0 || index === 7 || index === 12 || index === 21) && <DropdownMenuSeparator />}
                     </div>
                   ))}
                 </DropdownMenuContent>
