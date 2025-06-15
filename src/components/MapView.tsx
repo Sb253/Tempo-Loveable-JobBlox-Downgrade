@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
 
 interface Job {
@@ -22,8 +21,6 @@ interface MapViewProps {
 export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [mapboxToken, setMapboxToken] = useState('');
-  const [tokenInput, setTokenInput] = useState('');
 
   const getMarkerColor = (status: string) => {
     switch (status) {
@@ -38,10 +35,10 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
     }
   };
 
-  const initializeMap = (token: string) => {
+  const initializeMap = () => {
     if (!mapContainer.current || map.current) return;
 
-    mapboxgl.accessToken = token;
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic2NvdHRiOTcxIiwiYSI6ImNtYng0M2d2cTB2dXkybW9zOTJmdzg1MWQifQ.3rpXH4NfcWycCt58VAyGzg';
 
     // Default center (NYC) if no jobs
     const center: [number, number] = jobs.length > 0 
@@ -100,16 +97,8 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
     });
   };
 
-  const handleTokenSubmit = () => {
-    if (tokenInput.trim()) {
-      setMapboxToken(tokenInput.trim());
-    }
-  };
-
   useEffect(() => {
-    if (mapboxToken) {
-      initializeMap(mapboxToken);
-    }
+    initializeMap();
 
     return () => {
       if (map.current) {
@@ -117,7 +106,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         map.current = null;
       }
     };
-  }, [mapboxToken, jobs]);
+  }, [jobs]);
 
   return (
     <Card>
@@ -128,43 +117,9 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {!mapboxToken ? (
-          <div className="space-y-4">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">Mapbox Token Required</h3>
-              <p className="text-sm text-blue-700 mb-3">
-                To display the map, please enter your Mapbox public token. You can get one from{' '}
-                <a 
-                  href="https://mapbox.com/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="underline hover:text-blue-900"
-                >
-                  mapbox.com
-                </a>
-              </p>
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder="Enter your Mapbox public token"
-                  value={tokenInput}
-                  onChange={(e) => setTokenInput(e.target.value)}
-                  className="flex-1"
-                />
-                <button
-                  onClick={handleTokenSubmit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Load Map
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full h-96 rounded-lg border overflow-hidden">
-            <div ref={mapContainer} className="w-full h-full" />
-          </div>
-        )}
+        <div className="w-full h-96 rounded-lg border overflow-hidden">
+          <div ref={mapContainer} className="w-full h-full" />
+        </div>
       </CardContent>
     </Card>
   );
