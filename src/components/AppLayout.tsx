@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { TopMenuNavigation } from "./TopMenuNavigation";
 import { Dashboard } from "./Dashboard";
 import { CustomerList } from "./CustomerList";
 import { JobList } from "./JobList";
@@ -44,7 +43,6 @@ export const AppLayout = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar activeView={activeView} setActiveView={setActiveView} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <TopMenuNavigation />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           {renderContent()}
         </main>
