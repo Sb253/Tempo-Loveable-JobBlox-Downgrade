@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -170,33 +169,33 @@ export const MegaMenuSidebar = ({
       collapsed ? "w-20" : "w-80"
     )}>
       {/* Header */}
-      <div className="p-6 border-b border-border flex items-center justify-between">
+      <div className="p-4 md:p-6 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           {companyData.logo ? (
             <img 
               src={companyData.logo} 
               alt="Company Logo" 
-              className="h-8 w-8 object-contain"
+              className="h-6 w-6 md:h-8 md:w-8 object-contain"
             />
           ) : (
-            <Building2 className="h-8 w-8 text-primary" />
+            <Building2 className="h-6 w-6 md:h-8 md:w-8 text-primary" />
           )}
           {!collapsed && (
-            <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
+            <h1 className="text-lg md:text-xl font-bold text-primary truncate">{companyData.name}</h1>
           )}
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={handleToggleCollapse}
-          className="h-8 w-8"
+          className="h-6 w-6 md:h-8 md:w-8"
         >
-          {collapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+          {collapsed ? <Menu className="h-3 w-3 md:h-4 md:w-4" /> : <X className="h-3 w-3 md:h-4 md:w-4" />}
         </Button>
       </div>
       
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-4 py-2">
+      <ScrollArea className="flex-1 px-2 md:px-4 py-2">
         <div className="space-y-2">
           {/* Dashboard Home Link */}
           {dashboardSection && (
@@ -206,24 +205,24 @@ export const MegaMenuSidebar = ({
                   <Button
                     variant={activeSection === 'dashboard' ? "default" : "ghost"}
                     size="icon"
-                    className="h-10 w-10"
+                    className="h-8 w-8 md:h-10 md:w-10"
                     title={dashboardSection.label}
                     onClick={() => handleSectionClick(dashboardSection.id)}
                   >
-                    <dashboardSection.icon className="h-5 w-5" />
+                    <dashboardSection.icon className="h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </div>
               ) : (
                 <Button
                   variant={activeSection === 'dashboard' ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start gap-3 text-sm h-10",
+                    "w-full justify-start gap-3 text-xs md:text-sm h-8 md:h-10",
                     activeSection === 'dashboard' && "bg-primary text-primary-foreground"
                   )}
                   onClick={() => handleSectionClick(dashboardSection.id)}
                 >
-                  <dashboardSection.icon className="h-5 w-5" />
-                  {dashboardSection.label}
+                  <dashboardSection.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
+                  <span className="truncate">{dashboardSection.label}</span>
                 </Button>
               )}
             </div>
@@ -250,10 +249,10 @@ export const MegaMenuSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 bg-primary text-primary-foreground"
+                    className="h-8 w-8 md:h-10 md:w-10 bg-primary text-primary-foreground"
                     title={activeItem.label}
                   >
-                    <ActiveIcon className="h-5 w-5" />
+                    <ActiveIcon className="h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </div>
               );
@@ -264,21 +263,21 @@ export const MegaMenuSidebar = ({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-3 h-auto font-medium text-left hover:bg-accent"
+                    className="w-full justify-between p-2 md:p-3 h-auto font-medium text-left hover:bg-accent text-xs md:text-sm"
                   >
-                    <div className="flex items-center gap-3">
-                      <GroupIcon className="h-4 w-4" />
-                      <span>{group.label}</span>
+                    <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                      <GroupIcon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                      <span className="truncate">{group.label}</span>
                     </div>
                     {isOpen ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
                     )}
                   </Button>
                 </CollapsibleTrigger>
                 
-                <CollapsibleContent className="ml-4 mt-1 space-y-1">
+                <CollapsibleContent className="ml-2 md:ml-4 mt-1 space-y-1">
                   {group.items.map((section) => {
                     const Icon = section.icon;
                     const isActive = activeSection === section.id;
@@ -288,13 +287,13 @@ export const MegaMenuSidebar = ({
                         key={section.id}
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
-                          "w-full justify-start gap-3 text-sm h-9",
+                          "w-full justify-start gap-2 md:gap-3 text-xs md:text-sm h-7 md:h-9",
                           isActive && "bg-primary text-primary-foreground"
                         )}
                         onClick={() => handleSectionClick(section.id)}
                       >
-                        <Icon className="h-4 w-4" />
-                        {section.label}
+                        <Icon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                        <span className="truncate">{section.label}</span>
                       </Button>
                     );
                   })}
