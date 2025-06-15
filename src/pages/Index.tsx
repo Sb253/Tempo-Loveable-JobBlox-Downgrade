@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
@@ -24,7 +25,10 @@ import { BusinessIntegrations } from "@/components/BusinessIntegrations";
 import { JobChecklists } from "@/components/JobChecklists";
 import { DocumentManagement } from "@/components/DocumentManagement";
 import { JobList } from "@/components/JobList";
-import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug } from "lucide-react";
+import { Pipeline } from "@/components/Pipeline";
+import { AccessControl } from "@/components/AccessControl";
+import { SubcontractorManagement } from "@/components/SubcontractorManagement";
+import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug, GitBranch, Shield, UserCheck } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -33,6 +37,8 @@ const Index = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard />;
+      case 'pipeline':
+        return <Pipeline />;
       case 'scheduling':
         return <SchedulingDashboard />;
       case 'map':
@@ -65,6 +71,10 @@ const Index = () => {
         return <QuickBooksIntegration />;
       case 'business-integrations':
         return <BusinessIntegrations />;
+      case 'access-control':
+        return <AccessControl />;
+      case 'subcontractor-management':
+        return <SubcontractorManagement />;
       case 'settings':
         return <SettingsDashboard />;
       case 'gps-tracking':
@@ -91,6 +101,7 @@ const Index = () => {
         onSectionChange={setActiveSection}
         sections={[
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { id: 'pipeline', label: 'Pipeline', icon: GitBranch },
           { id: 'scheduling', label: 'Scheduling', icon: Calendar },
           { id: 'job-list', label: 'Job Management', icon: CheckSquare },
           { id: 'job-checklists', label: 'Job Checklists', icon: CheckSquare },
@@ -106,6 +117,8 @@ const Index = () => {
           { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
           { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
           { id: 'documents', label: 'Document Management', icon: FileText },
+          { id: 'subcontractor-management', label: 'Subcontractors', icon: UserCheck },
+          { id: 'access-control', label: 'Access Control', icon: Shield },
           { id: 'api-integrations', label: 'API Integrations', icon: Cloud },
           { id: 'business-integrations', label: 'Business Tools', icon: Plug },
           { id: 'quickbooks', label: 'QuickBooks', icon: Cloud },
