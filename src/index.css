@@ -70,7 +70,7 @@
   }
 }
 
-/* Enhanced colorful UI styles - yellow removed */
+/* Enhanced colorful UI styles without yellow */
 .colorful-text {
   background: linear-gradient(135deg, #8B5CF6, #EC4899, #3B82F6, #10B981);
   -webkit-background-clip: text;

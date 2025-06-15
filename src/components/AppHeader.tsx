@@ -38,8 +38,8 @@ export const AppHeader = ({ onCompanySettingsClick }: AppHeaderProps) => {
   };
 
   return (
-    <header className="bg-white dark:bg-slate-900 border-b border-border shadow-sm z-30">
-      <div className="flex items-center justify-between px-6 py-3">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-sm">
+      <div className="w-full px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {companyData.logo ? (
             <img 
