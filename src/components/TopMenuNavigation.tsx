@@ -1,0 +1,131 @@
+
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Building2, Settings, ChevronDown } from "lucide-react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { LucideIcon } from "lucide-react";
+
+interface SidebarSection {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+interface TopMenuNavigationProps {
+  activeSection: string;
+  onSectionChange: (section: string) => void;
+  sections: SidebarSection[];
+  onNavigationSettings: () => void;
+}
+
+interface CompanyData {
+  name: string;
+  logo: string | null;
+}
+
+export const TopMenuNavigation = ({ activeSection, onSectionChange, sections, onNavigationSettings }: TopMenuNavigationProps) => {
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Construction CRM',
+    logo: null
+  });
+
+  useEffect(() => {
+    const savedCompanyData = localStorage.getItem('companySettings');
+    if (savedCompanyData) {
+      const data = JSON.parse(savedCompanyData);
+      setCompanyData({
+        name: data.name || 'Construction CRM',
+        logo: data.logo || null
+      });
+    }
+  }, []);
+
+  // Group sections into logical categories
+  const menuGroups = {
+    'Core': sections.slice(0, 4),
+    'Customer Management': sections.slice(4, 9),
+    'Financial': sections.slice(9, 16),
+    'Operations': sections.slice(16, -1),
+    'Settings': [sections[sections.length - 1]]
+  };
+
+  return (
+    <div className="w-full border-b bg-background">
+      <div className="flex items-center justify-between px-6 py-3">
+        {/* Company Logo/Name */}
+        <div className="flex items-center gap-3">
+          {companyData.logo ? (
+            <img 
+              src={companyData.logo} 
+              alt="Company Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          ) : (
+            <Building2 className="h-8 w-8 text-primary" />
+          )}
+          <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
+        </div>
+
+        {/* Navigation Menu */}
+        <NavigationMenu>
+          <NavigationMenuList>
+            {Object.entries(menuGroups).map(([groupName, groupSections]) => (
+              <NavigationMenuItem key={groupName}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-1">
+                      {groupName}
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {groupSections.map((section) => {
+                      const Icon = section.icon;
+                      return (
+                        <DropdownMenuItem
+                          key={section.id}
+                          onClick={() => onSectionChange(section.id)}
+                          className={`flex items-center gap-3 cursor-pointer ${
+                            activeSection === section.id ? 'bg-accent' : ''
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" />
+                          {section.label}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                    {groupName === 'Settings' && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={onNavigationSettings}
+                          className="flex items-center gap-3 cursor-pointer"
+                        >
+                          <Settings className="h-4 w-4" />
+                          Navigation Settings
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+    </div>
+  );
+};

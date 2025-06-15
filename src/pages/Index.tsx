@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from "@/components/Sidebar";
+import { TopMenuNavigation } from "@/components/TopMenuNavigation";
+import { NavigationSettings } from "@/components/NavigationSettings";
 import { Dashboard } from "@/components/Dashboard";
 import { MapView } from "@/components/MapView";
 import { SettingsDashboard } from "@/components/SettingsDashboard";
@@ -32,6 +34,46 @@ import { WageManagement } from "@/components/WageManagement";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [navigationLayout, setNavigationLayout] = useState<'sidebar' | 'menu'>('sidebar');
+  const [showNavigationSettings, setShowNavigationSettings] = useState(false);
+
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('navigationLayout') as 'sidebar' | 'menu';
+    if (savedLayout) {
+      setNavigationLayout(savedLayout);
+    }
+  }, []);
+
+  const sections = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'pipeline', label: 'Pipeline', icon: GitBranch },
+    { id: 'scheduling', label: 'Scheduling', icon: Calendar },
+    { id: 'job-list', label: 'Job Management', icon: CheckSquare },
+    { id: 'job-checklists', label: 'Job Checklists', icon: CheckSquare },
+    { id: 'customers', label: 'Customer Management', icon: Users },
+    { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
+    { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
+    { id: 'reviews', label: 'Review Management', icon: Star },
+    { id: 'payments', label: 'Payment Processing', icon: CreditCard },
+    { id: 'expenses', label: 'Expense Tracking', icon: Receipt },
+    { id: 'job-costing', label: 'Job Costing', icon: TrendingDown },
+    { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
+    { id: 'profit-analysis', label: 'Profit Analysis', icon: TrendingDown },
+    { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
+    { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
+    { id: 'documents', label: 'Document Management', icon: FileText },
+    { id: 'subcontractor-management', label: 'Subcontractors', icon: UserCheck },
+    { id: 'access-control', label: 'Access Control', icon: Shield },
+    { id: 'api-integrations', label: 'API Integrations', icon: Cloud },
+    { id: 'business-integrations', label: 'Business Tools', icon: Plug },
+    { id: 'quickbooks', label: 'QuickBooks', icon: Cloud },
+    { id: 'map', label: 'Map View', icon: MapPin },
+    { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
+    { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
+    { id: 'notifications', label: 'Customer Notifications', icon: MessageSquare },
+    { id: 'wage-management', label: 'Wage Management', icon: DollarSign },
+    { id: 'settings', label: 'Settings', icon: Settings }
+  ];
 
   const renderContent = () => {
     switch (activeSection) {
@@ -98,44 +140,37 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar 
-        activeSection={activeSection} 
-        onSectionChange={setActiveSection}
-        sections={[
-          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-          { id: 'pipeline', label: 'Pipeline', icon: GitBranch },
-          { id: 'scheduling', label: 'Scheduling', icon: Calendar },
-          { id: 'job-list', label: 'Job Management', icon: CheckSquare },
-          { id: 'job-checklists', label: 'Job Checklists', icon: CheckSquare },
-          { id: 'customers', label: 'Customer Management', icon: Users },
-          { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
-          { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
-          { id: 'reviews', label: 'Review Management', icon: Star },
-          { id: 'payments', label: 'Payment Processing', icon: CreditCard },
-          { id: 'expenses', label: 'Expense Tracking', icon: Receipt },
-          { id: 'job-costing', label: 'Job Costing', icon: TrendingDown },
-          { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
-          { id: 'profit-analysis', label: 'Profit Analysis', icon: TrendingDown },
-          { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
-          { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
-          { id: 'documents', label: 'Document Management', icon: FileText },
-          { id: 'subcontractor-management', label: 'Subcontractors', icon: UserCheck },
-          { id: 'access-control', label: 'Access Control', icon: Shield },
-          { id: 'api-integrations', label: 'API Integrations', icon: Cloud },
-          { id: 'business-integrations', label: 'Business Tools', icon: Plug },
-          { id: 'quickbooks', label: 'QuickBooks', icon: Cloud },
-          { id: 'map', label: 'Map View', icon: MapPin },
-          { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
-          { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
-          { id: 'notifications', label: 'Customer Notifications', icon: MessageSquare },
-          { id: 'wage-management', label: 'Wage Management', icon: DollarSign },
-          { id: 'settings', label: 'Settings', icon: Settings }
-        ]}
+      {navigationLayout === 'sidebar' ? (
+        <>
+          <Sidebar 
+            activeSection={activeSection} 
+            onSectionChange={setActiveSection}
+            sections={sections}
+          />
+          <main className="ml-64 p-8">
+            {renderContent()}
+          </main>
+        </>
+      ) : (
+        <>
+          <TopMenuNavigation
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+            sections={sections}
+            onNavigationSettings={() => setShowNavigationSettings(true)}
+          />
+          <main className="p-8">
+            {renderContent()}
+          </main>
+        </>
+      )}
+
+      <NavigationSettings
+        open={showNavigationSettings}
+        onOpenChange={setShowNavigationSettings}
+        currentLayout={navigationLayout}
+        onLayoutChange={setNavigationLayout}
       />
-      
-      <main className="ml-64 p-8">
-        {renderContent()}
-      </main>
     </div>
   );
 };
