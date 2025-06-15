@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, DollarSign, AlertCircle, CheckCircle, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreditCard, DollarSign, AlertCircle, CheckCircle, Plus, Smartphone, Banknote, Receipt, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Payment {
@@ -14,10 +15,11 @@ interface Payment {
   invoiceNumber: string;
   customer: string;
   amount: number;
-  method: 'credit_card' | 'bank_transfer' | 'check' | 'cash';
+  method: 'credit_card' | 'debit_card' | 'bank_transfer' | 'check' | 'cash' | 'mobile_payment' | 'financing';
   status: 'pending' | 'processing' | 'completed' | 'failed';
   date: string;
   transactionId?: string;
+  financingTerm?: string;
 }
 
 const mockPayments: Payment[] = [
@@ -36,7 +38,7 @@ const mockPayments: Payment[] = [
     invoiceNumber: 'INV-002',
     customer: 'ABC Construction Inc.',
     amount: 8500,
-    method: 'bank_transfer',
+    method: 'mobile_payment',
     status: 'processing',
     date: '2024-12-14'
   },
@@ -45,9 +47,19 @@ const mockPayments: Payment[] = [
     invoiceNumber: 'INV-003',
     customer: 'Sarah Johnson',
     amount: 12000,
-    method: 'check',
-    status: 'pending',
-    date: '2024-12-13'
+    method: 'financing',
+    status: 'completed',
+    date: '2024-12-13',
+    financingTerm: '12 months'
+  },
+  {
+    id: '4',
+    invoiceNumber: 'INV-004',
+    customer: 'Mike Wilson',
+    amount: 2500,
+    method: 'cash',
+    status: 'completed',
+    date: '2024-12-12'
   }
 ];
 
@@ -59,7 +71,8 @@ export const PaymentProcessing = () => {
     invoiceNumber: '',
     amount: '',
     method: 'credit_card',
-    customerEmail: ''
+    customerEmail: '',
+    financingTerm: ''
   });
 
   const getStatusColor = (status: string) => {
@@ -74,28 +87,41 @@ export const PaymentProcessing = () => {
 
   const getMethodIcon = (method: string) => {
     switch (method) {
-      case 'credit_card': return <CreditCard className="h-4 w-4" />;
-      case 'bank_transfer': return <DollarSign className="h-4 w-4" />;
-      default: return <DollarSign className="h-4 w-4" />;
+      case 'credit_card':
+      case 'debit_card':
+        return <CreditCard className="h-4 w-4" />;
+      case 'mobile_payment':
+        return <Smartphone className="h-4 w-4" />;
+      case 'cash':
+        return <Banknote className="h-4 w-4" />;
+      case 'check':
+        return <Receipt className="h-4 w-4" />;
+      case 'financing':
+        return <Calculator className="h-4 w-4" />;
+      default:
+        return <DollarSign className="h-4 w-4" />;
     }
   };
 
   const handleProcessPayment = () => {
     console.log('Processing payment:', formData);
     
+    const methodDescription = formData.method === 'financing' 
+      ? `financing (${formData.financingTerm})` 
+      : formData.method.replace('_', ' ');
+    
     toast({
       title: "Payment Processing",
-      description: "Payment has been initiated. You will be redirected to the payment gateway.",
+      description: `Processing ${methodDescription} payment of $${formData.amount}`,
     });
 
-    // Simulate payment processing
     setTimeout(() => {
       toast({
         title: "Payment Successful",
-        description: `Payment of $${formData.amount} has been processed successfully.`,
+        description: `Payment of $${formData.amount} via ${methodDescription} has been processed.`,
       });
       setShowProcessForm(false);
-      setFormData({ invoiceNumber: '', amount: '', method: 'credit_card', customerEmail: '' });
+      setFormData({ invoiceNumber: '', amount: '', method: 'credit_card', customerEmail: '', financingTerm: '' });
     }, 2000);
   };
 
@@ -117,6 +143,7 @@ export const PaymentProcessing = () => {
         </Button>
       </div>
 
+      {/* Payment Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -151,58 +178,180 @@ export const PaymentProcessing = () => {
         </Card>
       </div>
 
+      {/* Payment Processing Form */}
       {showProcessForm && (
         <Card>
           <CardHeader>
             <CardTitle>Process New Payment</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="invoiceNumber">Invoice Number</Label>
-                <Input
-                  id="invoiceNumber"
-                  value={formData.invoiceNumber}
-                  onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
-                  placeholder="INV-001"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={formData.amount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  placeholder="0.00"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="customerEmail">Customer Email</Label>
-                <Input
-                  id="customerEmail"
-                  type="email"
-                  value={formData.customerEmail}
-                  onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
-                  placeholder="customer@email.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="method">Payment Method</Label>
-                <select 
-                  id="method"
-                  value={formData.method}
-                  onChange={(e) => setFormData(prev => ({ ...prev, method: e.target.value }))}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="credit_card">Credit Card</option>
-                  <option value="bank_transfer">Bank Transfer</option>
-                  <option value="check">Check</option>
-                  <option value="cash">Cash</option>
-                </select>
-              </div>
-            </div>
+            <Tabs defaultValue="standard" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="standard">Standard Payment</TabsTrigger>
+                <TabsTrigger value="mobile">Mobile Payment</TabsTrigger>
+                <TabsTrigger value="financing">Financing</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="standard" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceNumber">Invoice Number</Label>
+                    <Input
+                      id="invoiceNumber"
+                      value={formData.invoiceNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                      placeholder="INV-001"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customerEmail">Customer Email</Label>
+                    <Input
+                      id="customerEmail"
+                      type="email"
+                      value={formData.customerEmail}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
+                      placeholder="customer@email.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="method">Payment Method</Label>
+                    <select 
+                      id="method"
+                      value={formData.method}
+                      onChange={(e) => setFormData(prev => ({ ...prev, method: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="credit_card">Credit Card</option>
+                      <option value="debit_card">Debit Card</option>
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="check">Check</option>
+                      <option value="cash">Cash</option>
+                    </select>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="mobile" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceNumber">Invoice Number</Label>
+                    <Input
+                      id="invoiceNumber"
+                      value={formData.invoiceNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                      placeholder="INV-001"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-semibold mb-2">Mobile Payment Options</h4>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Smartphone className="h-4 w-4 mr-2" />
+                      Card Reader (Tap/Chip/Swipe)
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Manual Card Entry
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Banknote className="h-4 w-4 mr-2" />
+                      Cash Payment
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="financing" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceNumber">Invoice Number</Label>
+                    <Input
+                      id="invoiceNumber"
+                      value={formData.invoiceNumber}
+                      onChange={(e) => setFormData(prev => ({ ...prev, invoiceNumber: e.target.value }))}
+                      placeholder="INV-001"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customerEmail">Customer Email</Label>
+                    <Input
+                      id="customerEmail"
+                      type="email"
+                      value={formData.customerEmail}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
+                      placeholder="customer@email.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="financingTerm">Financing Term</Label>
+                    <select 
+                      id="financingTerm"
+                      value={formData.financingTerm}
+                      onChange={(e) => setFormData(prev => ({ ...prev, financingTerm: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="">Select Term</option>
+                      <option value="6 months">6 months (0% APR)</option>
+                      <option value="12 months">12 months (5.9% APR)</option>
+                      <option value="24 months">24 months (8.9% APR)</option>
+                      <option value="36 months">36 months (12.9% APR)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-semibold mb-2">Financing Partners</h4>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Calculator className="h-4 w-4 mr-2" />
+                      Synchrony Financial
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Calculator className="h-4 w-4 mr-2" />
+                      GreenSky Financing
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Calculator className="h-4 w-4 mr-2" />
+                      Affirm
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+
             <div className="flex gap-2 mt-4">
               <Button onClick={handleProcessPayment} className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -216,6 +365,7 @@ export const PaymentProcessing = () => {
         </Card>
       )}
 
+      {/* Recent Payments Table */}
       <Card>
         <CardHeader>
           <CardTitle>Recent Payments ({payments.length})</CardTitle>
@@ -230,7 +380,7 @@ export const PaymentProcessing = () => {
                 <TableHead>Method</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Transaction ID</TableHead>
+                <TableHead>Details</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -257,8 +407,13 @@ export const PaymentProcessing = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>{new Date(payment.date).toLocaleDateString()}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {payment.transactionId || '-'}
+                  <TableCell className="text-sm">
+                    {payment.transactionId && (
+                      <div>ID: {payment.transactionId}</div>
+                    )}
+                    {payment.financingTerm && (
+                      <div>Term: {payment.financingTerm}</div>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">

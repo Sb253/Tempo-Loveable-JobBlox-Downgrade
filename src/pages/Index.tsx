@@ -61,6 +61,7 @@ import { TimeTracking } from "@/components/TimeTracking";
 import { EmployeeChat } from "@/components/EmployeeChat";
 import { JobChecklists } from "@/components/JobChecklists";
 import { useCompanyData } from "@/hooks/useCompanyData";
+import { FinancingOptions } from "@/components/FinancingOptions";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -130,6 +131,7 @@ const Index = () => {
         { label: 'Invoices', value: 'invoices', icon: Receipt },
         { label: 'Advanced Invoicing', value: 'advanced-invoicing', icon: CreditCard },
         { label: 'Payments', value: 'payments', icon: DollarSign },
+        { label: 'Financing Options', value: 'financing', icon: Calculator },
         { label: 'Profit Analysis', value: 'profit-analysis', icon: TrendingUp },
       ]
     },
@@ -254,6 +256,8 @@ const Index = () => {
         return <AutomatedInsights />;
       case 'settings':
         return <CompanySettings />;
+      case 'financing':
+        return <FinancingOptions />;
       default:
         return (
           <div className="space-y-6">
