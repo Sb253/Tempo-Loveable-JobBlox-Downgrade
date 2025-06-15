@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,14 +55,14 @@ export const CompanyInfoSettings: React.FC = () => {
     phone: '(555) 123-4567',
     email: 'info@yourcompany.com',
     website: 'www.yourcompany.com',
-    businessLicense: 'BL-123456',
-    contractorLicense: 'CL-789012',
-    stateLicense: 'SL-345678',
-    insurancePolicy: 'INS-901234',
-    bonded: true,
-    showLicense: true,
-    showInsurance: true,
-    showBonded: true,
+    businessLicense: '',
+    contractorLicense: '',
+    stateLicense: '',
+    insurancePolicy: '',
+    bonded: false,
+    showLicense: false,
+    showInsurance: false,
+    showBonded: false,
     showWebsite: true,
     showEmail: true,
     showAddress: true,
@@ -237,44 +238,50 @@ export const CompanyInfoSettings: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> All license and legal fields are optional. Only fill in the information you have and want to display to customers.
+                </p>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="businessLicense">Business License</Label>
+                  <Label htmlFor="businessLicense">Business License (Optional)</Label>
                   <Input
                     id="businessLicense"
                     value={settings.businessLicense}
                     onChange={(e) => handleInputChange('businessLicense', e.target.value)}
-                    placeholder="BL-123456"
+                    placeholder="e.g., BL-123456 (leave blank if not applicable)"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="contractorLicense">Contractor License</Label>
+                  <Label htmlFor="contractorLicense">Contractor License (Optional)</Label>
                   <Input
                     id="contractorLicense"
                     value={settings.contractorLicense}
                     onChange={(e) => handleInputChange('contractorLicense', e.target.value)}
-                    placeholder="CL-789012"
+                    placeholder="e.g., CL-789012 (leave blank if not applicable)"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="stateLicense">State License</Label>
+                  <Label htmlFor="stateLicense">State License (Optional)</Label>
                   <Input
                     id="stateLicense"
                     value={settings.stateLicense}
                     onChange={(e) => handleInputChange('stateLicense', e.target.value)}
-                    placeholder="SL-345678"
+                    placeholder="e.g., SL-345678 (leave blank if not applicable)"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="insurancePolicy">Insurance Policy</Label>
+                  <Label htmlFor="insurancePolicy">Insurance Policy (Optional)</Label>
                   <Input
                     id="insurancePolicy"
                     value={settings.insurancePolicy}
                     onChange={(e) => handleInputChange('insurancePolicy', e.target.value)}
-                    placeholder="INS-901234"
+                    placeholder="e.g., INS-901234 (leave blank if not applicable)"
                   />
                 </div>
               </div>
@@ -285,7 +292,13 @@ export const CompanyInfoSettings: React.FC = () => {
                   checked={settings.bonded}
                   onCheckedChange={(checked) => handleInputChange('bonded', checked)}
                 />
-                <Label htmlFor="bonded">Company is Bonded</Label>
+                <Label htmlFor="bonded">Company is Bonded (Optional)</Label>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                <p className="text-sm text-gray-600">
+                  <strong>Tip:</strong> You can control which license information appears on your estimates and invoices in the Visibility tab, even if you've filled in the fields above.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -301,7 +314,7 @@ export const CompanyInfoSettings: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                Control what information is displayed to customers on estimates and invoices.
+                Control what information is displayed to customers on estimates and invoices. Only information that you've filled in will be shown.
               </p>
               
               <div className="space-y-4">
@@ -344,7 +357,7 @@ export const CompanyInfoSettings: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="showLicense">Show License Information</Label>
-                    <p className="text-sm text-muted-foreground">Display business and contractor licenses</p>
+                    <p className="text-sm text-muted-foreground">Display business and contractor licenses (only if filled in)</p>
                   </div>
                   <Switch
                     id="showLicense"
@@ -356,7 +369,7 @@ export const CompanyInfoSettings: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="showInsurance">Show Insurance Information</Label>
-                    <p className="text-sm text-muted-foreground">Display insurance policy details</p>
+                    <p className="text-sm text-muted-foreground">Display insurance policy details (only if filled in)</p>
                   </div>
                   <Switch
                     id="showInsurance"
@@ -368,7 +381,7 @@ export const CompanyInfoSettings: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="showBonded">Show Bonded Status</Label>
-                    <p className="text-sm text-muted-foreground">Display bonded certification</p>
+                    <p className="text-sm text-muted-foreground">Display bonded certification (only if marked as bonded)</p>
                   </div>
                   <Switch
                     id="showBonded"
