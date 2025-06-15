@@ -61,6 +61,7 @@ const sections: SidebarSection[] = [
   { id: 'map-view', label: 'Map View', icon: Map },
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
+  { id: 'resource-allocation', label: 'Resource Allocation', icon: Package },
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
   { id: 'branch-management', label: 'Branch Management', icon: Building },

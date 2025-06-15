@@ -1,4 +1,4 @@
-
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -17,6 +17,7 @@ import {
   Camera,
   FileCheck
 } from "lucide-react";
+import { AppointmentScheduler } from "./AppointmentScheduler";
 
 interface QuickAction {
   id: string;
@@ -56,6 +57,13 @@ export const QuickActions = ({
   onClientInformation,
   onProjectProposal
 }: QuickActionsProps) => {
+  const [showAppointmentScheduler, setShowAppointmentScheduler] = useState(false);
+
+  const handleAppointmentScheduled = (appointment: any) => {
+    console.log('Appointment scheduled:', appointment);
+    setShowAppointmentScheduler(false);
+  };
+
   const clientIntakeActions: QuickAction[] = [
     {
       id: 'consultation',
@@ -63,7 +71,7 @@ export const QuickActions = ({
       description: 'Schedule first meeting',
       icon: Calendar,
       color: 'from-blue-500 to-blue-600',
-      onClick: onInitialConsultation || (() => {})
+      onClick: () => setShowAppointmentScheduler(true)
     },
     {
       id: 'site-assessment',
@@ -71,7 +79,7 @@ export const QuickActions = ({
       description: 'Property evaluation',
       icon: Home,
       color: 'from-green-500 to-green-600',
-      onClick: onSiteAssessment || (() => {})
+      onClick: () => setShowAppointmentScheduler(true)
     },
     {
       id: 'client-info',
@@ -190,6 +198,27 @@ export const QuickActions = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Appointment Scheduler Modal */}
+      {showAppointmentScheduler && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Schedule Appointment</h2>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowAppointmentScheduler(false)}
+              >
+                ×
+              </Button>
+            </div>
+            <div className="p-4">
+              <AppointmentScheduler onScheduled={handleAppointmentScheduled} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* General Quick Actions */}
       <Card className="bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg">
