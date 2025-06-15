@@ -92,7 +92,9 @@ const jobsAndAppointments = [
     coordinates: [-74.006, 40.7128] as [number, number],
     status: 'scheduled' as const,
     type: 'job' as const,
-    time: 'Today 2:00 PM'
+    time: 'Today 2:00 PM',
+    scheduledDate: '2024-01-15',
+    assignedTo: 'Mike Johnson'
   },
   {
     id: '2',
@@ -102,7 +104,9 @@ const jobsAndAppointments = [
     coordinates: [-74.0, 40.72] as [number, number],
     status: 'in-progress' as const,
     type: 'job' as const,
-    time: 'Tomorrow 9:00 AM'
+    time: 'Tomorrow 9:00 AM',
+    scheduledDate: '2024-01-16',
+    assignedTo: 'Sarah Davis'
   },
   {
     id: '3',
@@ -112,7 +116,9 @@ const jobsAndAppointments = [
     coordinates: [-74.01, 40.715] as [number, number],
     status: 'scheduled' as const,
     type: 'appointment' as const,
-    time: 'Friday 3:00 PM'
+    time: 'Friday 3:00 PM',
+    scheduledDate: '2024-01-19',
+    assignedTo: 'Tom Wilson'
   },
   {
     id: '4',
@@ -122,7 +128,9 @@ const jobsAndAppointments = [
     coordinates: [-73.99, 40.725] as [number, number],
     status: 'completed' as const,
     type: 'appointment' as const,
-    time: 'Yesterday 11:00 AM'
+    time: 'Yesterday 11:00 AM',
+    scheduledDate: '2024-01-14',
+    assignedTo: 'Lisa Chen'
   }
 ];
 
