@@ -42,6 +42,11 @@ import { AdvancedInvoiceForm } from "@/components/AdvancedInvoiceForm";
 import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
 import { TaxReporting } from "@/components/TaxReporting";
 import { AccountingIntegration } from "@/components/AccountingIntegration";
+import { GPSTracking } from "@/components/GPSTracking";
+import { PhotoDocumentation } from "@/components/PhotoDocumentation";
+import { WeatherAlerts } from "@/components/WeatherAlerts";
+import { EquipmentTracking } from "@/components/EquipmentTracking";
+import { MaterialInventory } from "@/components/MaterialInventory";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -115,6 +120,11 @@ const Index = () => {
     { label: 'Online Booking', value: 'online-booking' },
     { label: 'Follow-up Automation', value: 'follow-up' },
     { label: 'Mobile Documentation', value: 'mobile-docs' },
+    { label: 'GPS Tracking', value: 'gps-tracking' },
+    { label: 'Photo Documentation', value: 'photo-docs' },
+    { label: 'Weather Alerts', value: 'weather-alerts' },
+    { label: 'Equipment Tracking', value: 'equipment-tracking' },
+    { label: 'Material Inventory', value: 'material-inventory' },
   ];
 
   const getCurrentLabel = () => {
@@ -192,6 +202,16 @@ const Index = () => {
         return <AutomatedFollowUp />;
       case 'mobile-docs':
         return <MobileJobDocumentation />;
+      case 'gps-tracking':
+        return <GPSTracking />;
+      case 'photo-docs':
+        return <PhotoDocumentation />;
+      case 'weather-alerts':
+        return <WeatherAlerts />;
+      case 'equipment-tracking':
+        return <EquipmentTracking />;
+      case 'material-inventory':
+        return <MaterialInventory />;
       default:
         return (
           <div className="space-y-6">
