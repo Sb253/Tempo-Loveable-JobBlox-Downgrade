@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, LocateFixed } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,6 +28,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
   const [mapboxToken] = useState('pk.eyJ1Ijoic2NvdHRiOTcxIiwiYSI6ImNtYng0M2d2cTB2dXkybW9zOTJmdzg1MWQifQ.3rpXH4NfcWycCt58VAyGzg');
 
   const getMarkerColor = (status: string, type: string) => {
@@ -58,18 +59,25 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
   };
 
   const getCurrentLocation = () => {
+    setIsLocating(true);
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setUserLocation([longitude, latitude]);
+          const newLocation: [number, number] = [longitude, latitude];
+          setUserLocation(newLocation);
+          
           if (map.current) {
             map.current.flyTo({
-              center: [longitude, latitude],
-              zoom: 12,
-              essential: true
+              center: newLocation,
+              zoom: 14,
+              essential: true,
+              duration: 2000
             });
           }
+          
+          setIsLocating(false);
           toast({
             title: "Location Found",
             description: "Map centered on your current location.",
@@ -77,20 +85,50 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         },
         (error) => {
           console.error('Error getting location:', error);
+          setIsLocating(false);
+          
+          let errorMessage = "Could not get your current location.";
+          if (error.code === error.PERMISSION_DENIED) {
+            errorMessage = "Location access denied. Please enable location permissions.";
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            errorMessage = "Location information unavailable.";
+          } else if (error.code === error.TIMEOUT) {
+            errorMessage = "Location request timed out.";
+          }
+          
           toast({
             title: "Location Error",
-            description: "Could not get your current location. Using default location.",
+            description: errorMessage,
+            variant: "destructive"
           });
+          
           // Default to NYC if location fails
-          setUserLocation([-74.006, 40.7128]);
+          const defaultLocation: [number, number] = [-74.006, 40.7128];
+          setUserLocation(defaultLocation);
+          if (map.current) {
+            map.current.flyTo({
+              center: defaultLocation,
+              zoom: 12,
+              essential: true
+            });
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 600000 // 10 minutes
         }
       );
     } else {
+      setIsLocating(false);
       toast({
         title: "Geolocation Not Supported",
-        description: "Your browser doesn't support geolocation. Using default location.",
+        description: "Your browser doesn't support geolocation.",
+        variant: "destructive"
       });
-      setUserLocation([-74.006, 40.7128]);
+      // Default to NYC
+      const defaultLocation: [number, number] = [-74.006, 40.7128];
+      setUserLocation(defaultLocation);
     }
   };
 
@@ -199,7 +237,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
   }, []);
 
   useEffect(() => {
-    if (userLocation) {
+    if (userLocation || jobs.length > 0) {
       initializeMap();
     }
 
@@ -234,10 +272,20 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
               variant="outline"
               size="sm"
               onClick={getCurrentLocation}
+              disabled={isLocating}
               className="flex items-center gap-2"
             >
-              <Navigation className="h-4 w-4" />
-              My Location
+              {isLocating ? (
+                <>
+                  <LocateFixed className="h-4 w-4 animate-spin" />
+                  Locating...
+                </>
+              ) : (
+                <>
+                  <Navigation className="h-4 w-4" />
+                  My Location
+                </>
+              )}
             </Button>
           </div>
         </div>

@@ -54,14 +54,17 @@ const Index = () => {
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
 
-  // Mock data for components that need it
+  // Mock data for components that need it - fixed to match Job interface
   const mockJobs = [
     {
       id: '1',
       title: 'Kitchen Renovation',
       customer: 'John Smith',
-      address: '123 Main St, City, State',
-      status: 'in-progress',
+      address: '123 Main St, New York, NY',
+      coordinates: [-74.006, 40.7128] as [number, number],
+      status: 'in-progress' as const,
+      type: 'job' as const,
+      time: '9:00 AM',
       scheduledDate: '2024-01-15',
       assignedTo: 'Mike Johnson'
     },
@@ -69,10 +72,25 @@ const Index = () => {
       id: '2',
       title: 'Bathroom Remodel',
       customer: 'Sarah Wilson',
-      address: '456 Oak Ave, City, State',
-      status: 'scheduled',
+      address: '456 Oak Ave, Brooklyn, NY',
+      coordinates: [-73.9442, 40.6782] as [number, number],
+      status: 'scheduled' as const,
+      type: 'job' as const,
+      time: '2:00 PM',
       scheduledDate: '2024-01-20',
       assignedTo: 'Tom Brown'
+    },
+    {
+      id: '3',
+      title: 'Design Consultation',
+      customer: 'Mike Davis',
+      address: '789 Broadway, Manhattan, NY',
+      coordinates: [-73.9904, 40.7505] as [number, number],
+      status: 'scheduled' as const,
+      type: 'appointment' as const,
+      time: '11:00 AM',
+      scheduledDate: '2024-01-18',
+      assignedTo: 'Lisa Chen'
     }
   ];
 
