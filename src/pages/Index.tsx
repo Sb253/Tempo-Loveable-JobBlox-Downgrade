@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,6 +68,14 @@ const Index = () => {
     { title: "Active Jobs", value: "23", icon: Briefcase, color: "text-green-600" },
     { title: "Scheduled Today", value: "8", icon: Calendar, color: "text-orange-600" },
     { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
+  ];
+
+  // Financial data for the chart
+  const financialData = [
+    { name: 'Won Jobs', value: 45, color: '#10b981' },
+    { name: 'Lost Jobs', value: 12, color: '#ef4444' },
+    { name: 'Pending', value: 18, color: '#f59e0b' },
+    { name: 'In Progress', value: 23, color: '#3b82f6' }
   ];
 
   // Mock job locations for the dashboard map
@@ -304,7 +313,7 @@ const Index = () => {
             {/* Schedule Map */}
             <MapView jobs={dashboardJobLocations} />
 
-            {/* Recent Activity */}
+            {/* Recent Activity and Financial Chart */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -330,30 +339,39 @@ const Index = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Financial Summary</CardTitle>
+                  <CardTitle>Jobs Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={financialData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" fill={(entry: any) => entry.color} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="mt-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 text-green-600" />
-                        Revenue This Month
+                        Won Jobs This Month
                       </span>
-                      <span className="font-semibold text-green-600">$67,230</span>
+                      <span className="font-semibold text-green-600">45</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <Receipt className="h-4 w-4 text-blue-600" />
-                        Pending Invoices
+                        <Receipt className="h-4 w-4 text-red-600" />
+                        Lost Jobs
                       </span>
-                      <span className="font-semibold">$15,450</span>
+                      <span className="font-semibold text-red-600">12</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-purple-600" />
-                        Monthly Expenses
+                        Conversion Rate
                       </span>
-                      <span className="font-semibold">$38,120</span>
+                      <span className="font-semibold">78.9%</span>
                     </div>
                   </div>
                 </CardContent>
