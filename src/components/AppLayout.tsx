@@ -401,12 +401,7 @@ const VehicleManagement = () => (
 
 const SaftyManagement = () => (
   <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Safety protocols and incident management system.</p>
-      </CardContent>
-    </Card>
+    <SafetyManagement />
   </div>
 );
 
