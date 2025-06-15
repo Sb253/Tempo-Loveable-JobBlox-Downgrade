@@ -25,6 +25,7 @@ import { BranchManagement } from "./BranchManagement";
 import { RadiusAssignment } from "./RadiusAssignment";
 import { EmployeeLocationManager } from "./EmployeeLocationManager";
 import { Pipeline } from "./Pipeline";
+import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
 
 interface SidebarSection {
   id: string;
@@ -152,7 +153,7 @@ export const AppLayout = () => {
       case 'jobs':
         return <JobList />;
       case 'customer-form':
-        return <CustomerForm />;
+        return <CustomerRegistrationForm />;
       case 'job-form':
         return <JobForm />;
       case 'estimates':
@@ -267,17 +268,6 @@ export const AppLayout = () => {
 };
 
 // Placeholder components for missing sections
-const CustomerForm = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Add New Customer</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Customer registration form will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const JobForm = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Create New Job</h2>
