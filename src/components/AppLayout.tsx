@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,7 @@ import { SubcontractorManagement } from "./SubcontractorManagement";
 import { MapView } from "./MapView";
 import { ClientAppointment } from "./ClientAppointment";
 import { Sidebar } from "./Sidebar";
+import { MegaMenuSidebar } from "./MegaMenuSidebar";
 import { MobileSettings } from "./MobileSettings";
 import { CustomerList } from "./CustomerList";
 import { JobList } from "./JobList";
@@ -24,6 +26,7 @@ import { RealTimeChat } from "./RealTimeChat";
 import { AdvancedInventorySystem } from "./AdvancedInventorySystem";
 import { FinancialAnalyticsDashboard } from "./FinancialAnalyticsDashboard";
 import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
+import { BranchManagement } from "./BranchManagement";
 
 interface SidebarSection {
   id: string;
@@ -63,6 +66,7 @@ const sections: SidebarSection[] = [
   { id: 'widgets', label: 'Dashboard Widgets', icon: Palette },
   { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
+  { id: 'branch-management', label: 'Branch Management', icon: Building },
   { id: 'settings', label: 'Settings', icon: Settings },
   { id: 'team-chat', label: 'Team Chat', icon: MessageSquare },
   { id: 'advanced-inventory', label: 'Advanced Inventory', icon: Package },
@@ -122,6 +126,14 @@ const jobsAndAppointments = [
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('client-appointment');
   const [showNavigationSettings, setShowNavigationSettings] = useState(false);
+  const [useMegaMenu, setUseMegaMenu] = useState(false);
+
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('sidebarLayout');
+    if (savedLayout === 'mega-menu') {
+      setUseMegaMenu(true);
+    }
+  }, []);
 
   const handleNavigationSettings = () => {
     setShowNavigationSettings(true);
@@ -187,6 +199,8 @@ export const AppLayout = () => {
         return <CustomCardList />;
       case 'company-settings':
         return <CompanySettings />;
+      case 'branch-management':
+        return <BranchManagement />;
       case 'team-management':
         return <TeamManagement />;
       case 'subcontractor-management':
@@ -234,16 +248,27 @@ export const AppLayout = () => {
     }
   };
 
+  const sidebarWidth = useMegaMenu ? 320 : 256;
+
   return (
     <div className="min-h-screen bg-background flex">
-      <Sidebar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        sections={sections}
-        isVisible={true}
-      />
+      {useMegaMenu ? (
+        <MegaMenuSidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          isVisible={true}
+        />
+      ) : (
+        <Sidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          isVisible={true}
+        />
+      )}
 
-      <main className="flex-1 ml-64">
+      <main className="flex-1" style={{ marginLeft: `${sidebarWidth}px` }}>
         {renderSection()}
       </main>
 
