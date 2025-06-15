@@ -27,7 +27,7 @@ export const Dashboard = () => {
   const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
-  const [currentLayout, setCurrentLayout] = useState<'sidebar' | 'menu>(() => {
+  const [currentLayout, setCurrentLayout] = useState<'sidebar' | 'menu'>(() => {
     return (localStorage.getItem('navigationLayout') as 'sidebar' | 'menu') || 'sidebar';
   });
 
