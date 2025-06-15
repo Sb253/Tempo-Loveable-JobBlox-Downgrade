@@ -33,6 +33,7 @@ import { WorkflowAutomation } from "@/components/WorkflowAutomation";
 import { DocumentManagement } from "@/components/DocumentManagement";
 import { ResourceAllocation } from "@/components/ResourceAllocation";
 import { GanttChart } from "@/components/GanttChart";
+import { MapView } from "@/components/MapView";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -44,6 +45,34 @@ const Index = () => {
     { title: "Active Jobs", value: "23", icon: Briefcase, color: "text-green-600" },
     { title: "Scheduled Today", value: "8", icon: Calendar, color: "text-orange-600" },
     { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
+  ];
+
+  // Mock job locations for the dashboard map
+  const dashboardJobLocations = [
+    {
+      id: '1',
+      title: 'Kitchen Renovation',
+      customer: 'John Smith',
+      address: '123 Main St, Anytown',
+      coordinates: [-74.006, 40.7128] as [number, number],
+      status: 'scheduled' as const
+    },
+    {
+      id: '2',
+      title: 'Bathroom Repair',
+      customer: 'ABC Construction Inc.',
+      address: '456 Business Ave, City',
+      coordinates: [-74.0, 40.72] as [number, number],
+      status: 'in-progress' as const
+    },
+    {
+      id: '3',
+      title: 'Deck Installation',
+      customer: 'Sarah Johnson',
+      address: '789 Oak Drive, Hometown',
+      coordinates: [-73.99, 40.71] as [number, number],
+      status: 'scheduled' as const
+    }
   ];
 
   const menuItems = [
@@ -163,6 +192,9 @@ const Index = () => {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Schedule Map */}
+            <MapView jobs={dashboardJobLocations} />
 
             {/* Recent Activity */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
