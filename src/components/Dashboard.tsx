@@ -118,13 +118,22 @@ export const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
+              const gradientColors = [
+                'from-purple-500 to-pink-500',
+                'from-blue-500 to-cyan-500', 
+                'from-green-500 to-emerald-500',
+                'from-orange-500 to-red-500'
+              ];
               return (
-                <Card key={index}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card key={index} className="relative overflow-hidden border-0 shadow-lg">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors[index]} opacity-10`}></div>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                     <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                    <Icon className="h-4 w-4 text-muted-foreground" />
+                    <div className={`p-2 rounded-lg bg-gradient-to-br ${gradientColors[index]}`}>
+                      <Icon className="h-4 w-4 text-white" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="relative z-10">
                     <div className="text-2xl font-bold">{stat.value}</div>
                     <p className="text-xs text-muted-foreground">{stat.trend}</p>
                   </CardContent>
@@ -137,27 +146,29 @@ export const Dashboard = () => {
       case 'recent-jobs':
         return (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
+            <Card className="colorful-card shadow-lg">
               <CardHeader>
-                <CardTitle>Recent Jobs</CardTitle>
+                <CardTitle className="colorful-text">Recent Jobs</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recentJobs.map((job) => (
-                    <div key={job.id} className="flex justify-between items-center p-3 border rounded">
-                      <div>
-                        <p className="font-medium">{job.title}</p>
-                        <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                  {recentJobs.map((job, index) => {
+                    const statusColors = {
+                      'scheduled': 'from-blue-500 to-indigo-500',
+                      'in-progress': 'from-yellow-500 to-orange-500'
+                    };
+                    return (
+                      <div key={job.id} className="flex justify-between items-center p-3 border rounded-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+                        <div>
+                          <p className="font-medium">{job.title}</p>
+                          <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                        </div>
+                        <span className={`text-xs px-3 py-1 rounded-full bg-gradient-to-r ${statusColors[job.status]} text-white font-medium`}>
+                          {job.status === 'scheduled' ? 'Scheduled' : 'In Progress'}
+                        </span>
                       </div>
-                      <span className={`text-sm px-2 py-1 rounded ${
-                        job.status === 'scheduled' 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {job.status === 'scheduled' ? 'Scheduled' : 'In Progress'}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -170,20 +181,23 @@ export const Dashboard = () => {
       
       case 'quick-actions':
         return (
-          <Card>
+          <Card className="colorful-card shadow-lg">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
+              <CardTitle className="colorful-text">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <button className="w-full p-3 text-left border rounded hover:bg-muted">
-                Schedule New Job
-              </button>
-              <button className="w-full p-3 text-left border rounded hover:bg-muted">
-                Add New Customer
-              </button>
-              <button className="w-full p-3 text-left border rounded hover:bg-muted">
-                Create Estimate
-              </button>
+              {[
+                { text: 'Schedule New Job', gradient: 'from-purple-500 to-pink-500' },
+                { text: 'Add New Customer', gradient: 'from-blue-500 to-cyan-500' },
+                { text: 'Create Estimate', gradient: 'from-green-500 to-emerald-500' }
+              ].map((action, index) => (
+                <button 
+                  key={index}
+                  className={`w-full p-3 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105`}
+                >
+                  {action.text}
+                </button>
+              ))}
             </CardContent>
           </Card>
         );

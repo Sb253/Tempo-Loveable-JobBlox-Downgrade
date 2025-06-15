@@ -43,28 +43,61 @@ export const CustomThemeList = () => {
     if (savedThemes) {
       setThemes(JSON.parse(savedThemes));
     } else {
-      // Default themes
+      // Enhanced colorful default themes
       const defaultThemes: CustomTheme[] = [
         {
           id: '1',
-          name: 'Ocean Blue',
-          primary: '#0ea5e9',
-          secondary: '#64748b',
-          accent: '#06b6d4',
-          background: '#f8fafc',
-          foreground: '#0f172a',
-          card: '#ffffff',
+          name: 'Electric Purple',
+          primary: '#8B5CF6',
+          secondary: '#A78BFA',
+          accent: '#C084FC',
+          background: '#F3F4F6',
+          foreground: '#111827',
+          card: '#FFFFFF',
           isActive: false
         },
         {
           id: '2',
-          name: 'Forest Green',
-          primary: '#10b981',
-          secondary: '#6b7280',
-          accent: '#059669',
-          background: '#f0fdf4',
-          foreground: '#064e3b',
-          card: '#ffffff',
+          name: 'Ocean Breeze',
+          primary: '#06B6D4',
+          secondary: '#0891B2',
+          accent: '#22D3EE',
+          background: '#F0F9FF',
+          foreground: '#0F172A',
+          card: '#FFFFFF',
+          isActive: false
+        },
+        {
+          id: '3',
+          name: 'Sunset Orange',
+          primary: '#F97316',
+          secondary: '#EA580C',
+          accent: '#FB923C',
+          background: '#FFF7ED',
+          foreground: '#1F2937',
+          card: '#FFFFFF',
+          isActive: false
+        },
+        {
+          id: '4',
+          name: 'Forest Emerald',
+          primary: '#059669',
+          secondary: '#047857',
+          accent: '#10B981',
+          background: '#F0FDF4',
+          foreground: '#064E3B',
+          card: '#FFFFFF',
+          isActive: false
+        },
+        {
+          id: '5',
+          name: 'Cherry Blossom',
+          primary: '#EC4899',
+          secondary: '#DB2777',
+          accent: '#F472B6',
+          background: '#FDF2F8',
+          foreground: '#831843',
+          card: '#FFFFFF',
           isActive: false
         }
       ];
@@ -170,14 +203,14 @@ export const CustomThemeList = () => {
     const updatedThemes = themes.map(t => ({ ...t, isActive: t.id === theme.id }));
     saveThemes(updatedThemes);
 
-    // Apply CSS custom properties
+    // Apply CSS custom properties with enhanced colorful styling
     const root = document.documentElement;
-    root.style.setProperty('--primary', theme.primary);
-    root.style.setProperty('--secondary', theme.secondary);
-    root.style.setProperty('--accent', theme.accent);
-    root.style.setProperty('--background', theme.background);
-    root.style.setProperty('--foreground', theme.foreground);
-    root.style.setProperty('--card', theme.card);
+    root.style.setProperty('--primary', `${theme.primary.replace('#', '')}`);
+    root.style.setProperty('--secondary', `${theme.secondary.replace('#', '')}`);
+    root.style.setProperty('--accent', `${theme.accent.replace('#', '')}`);
+    root.style.setProperty('--background', `${theme.background.replace('#', '')}`);
+    root.style.setProperty('--foreground', `${theme.foreground.replace('#', '')}`);
+    root.style.setProperty('--card', `${theme.card.replace('#', '')}`);
 
     toast({
       title: "Theme Applied",
@@ -189,10 +222,10 @@ export const CustomThemeList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold">Custom Themes</h3>
-          <p className="text-sm text-muted-foreground">Create and manage custom color themes for your dashboard</p>
+          <h3 className="text-lg font-semibold colorful-text">Custom Themes</h3>
+          <p className="text-sm text-muted-foreground">Create and manage vibrant color themes for your dashboard</p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2">
+        <Button className="colorful-button flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Add Theme
         </Button>
@@ -200,18 +233,19 @@ export const CustomThemeList = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {themes.map((theme) => (
-          <Card key={theme.id} className={`relative ${theme.isActive ? 'ring-2 ring-primary' : ''}`}>
+          <Card key={theme.id} className={`relative overflow-hidden ${theme.isActive ? 'ring-2 ring-purple-500 shadow-lg' : 'shadow-md'} bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900`}>
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <CardTitle className="text-base flex items-center gap-2">
                   {theme.name}
-                  {theme.isActive && <Check className="h-4 w-4 text-green-600" />}
+                  {theme.isActive && <div className="p-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500"><Check className="h-3 w-3 text-white" /></div>}
                 </CardTitle>
                 <div className="flex gap-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleEditTheme(theme)}
+                    className="hover:bg-purple-100 dark:hover:bg-purple-900"
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
@@ -219,7 +253,7 @@ export const CustomThemeList = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteTheme(theme.id)}
-                    className="text-destructive hover:text-destructive"
+                    className="text-destructive hover:text-destructive hover:bg-red-100 dark:hover:bg-red-900"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -229,22 +263,22 @@ export const CustomThemeList = () => {
             <CardContent className="space-y-3">
               <div className="flex gap-2">
                 <div 
-                  className="w-6 h-6 rounded border" 
+                  className="w-8 h-8 rounded-lg border shadow-sm" 
                   style={{ backgroundColor: theme.primary }}
                   title="Primary"
                 />
                 <div 
-                  className="w-6 h-6 rounded border" 
+                  className="w-8 h-8 rounded-lg border shadow-sm" 
                   style={{ backgroundColor: theme.secondary }}
                   title="Secondary"
                 />
                 <div 
-                  className="w-6 h-6 rounded border" 
+                  className="w-8 h-8 rounded-lg border shadow-sm" 
                   style={{ backgroundColor: theme.accent }}
                   title="Accent"
                 />
                 <div 
-                  className="w-6 h-6 rounded border" 
+                  className="w-8 h-8 rounded-lg border shadow-sm" 
                   style={{ backgroundColor: theme.background }}
                   title="Background"
                 />
@@ -253,7 +287,7 @@ export const CustomThemeList = () => {
               <Button
                 variant={theme.isActive ? "default" : "outline"}
                 size="sm"
-                className="w-full"
+                className={`w-full ${theme.isActive ? 'colorful-button' : 'hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 dark:hover:from-purple-950 dark:hover:to-pink-950'}`}
                 onClick={() => applyTheme(theme)}
                 disabled={theme.isActive}
               >

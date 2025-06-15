@@ -22,48 +22,56 @@ export const JobLocationsList = ({ jobs }: JobLocationsListProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+        return 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white';
       case 'in-progress':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+        return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
       case 'completed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+        return 'bg-gradient-to-r from-green-500 to-emerald-500 text-white';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return 'bg-gradient-to-r from-gray-500 to-slate-500 text-white';
     }
   };
 
   return (
-    <Card>
+    <Card className="colorful-card shadow-lg">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 colorful-text">
+          <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
+            <MapPin className="h-5 w-5 text-white" />
+          </div>
           Job Locations
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4 max-h-96 overflow-y-auto">
           {jobs.map((job) => (
-            <div key={job.id} className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+            <div key={job.id} className="flex items-start justify-between p-4 border rounded-lg bg-gradient-to-r from-white to-blue-50 dark:from-gray-800 dark:to-blue-950 hover:shadow-md transition-all duration-200 transform hover:scale-102">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-medium">{job.title}</h4>
-                  <Badge className={getStatusColor(job.status)}>
+                <div className="flex items-center gap-2 mb-2">
+                  <h4 className="font-medium text-gray-900 dark:text-white">{job.title}</h4>
+                  <Badge className={`${getStatusColor(job.status)} border-0`}>
                     {job.status.replace('-', ' ')}
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground mb-1">{job.customer}</p>
+                <p className="text-sm text-muted-foreground mb-2">{job.customer}</p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
+                    <div className="p-1 rounded bg-gradient-to-r from-pink-500 to-rose-500">
+                      <MapPin className="h-3 w-3 text-white" />
+                    </div>
                     {job.address}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
+                    <div className="p-1 rounded bg-gradient-to-r from-cyan-500 to-blue-500">
+                      <Clock className="h-3 w-3 text-white" />
+                    </div>
                     {job.time}
                   </div>
                   {job.technician && (
                     <div className="flex items-center gap-1">
-                      <User className="h-3 w-3" />
+                      <div className="p-1 rounded bg-gradient-to-r from-emerald-500 to-green-500">
+                        <User className="h-3 w-3 text-white" />
+                      </div>
                       {job.technician}
                     </div>
                   )}

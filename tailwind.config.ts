@@ -61,10 +61,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Vibrant colors for light mode
+        // Enhanced vibrant colors for both modes
         vibrant: {
           purple: "#8B5CF6",
-          blue: "#3B82F6",
+          blue: "#3B82F6", 
           green: "#10B981",
           yellow: "#F59E0B",
           red: "#EF4444",
@@ -73,12 +73,18 @@ export default {
           cyan: "#06B6D4",
           orange: "#F97316",
           lime: "#84CC16",
+          emerald: "#059669",
+          teal: "#0D9488",
+          violet: "#7C3AED",
+          fuchsia: "#C026D3",
+          rose: "#F43F5E",
+          amber: "#D97706",
         },
         // Dark mode vibrant colors
         "vibrant-dark": {
           purple: "#A78BFA",
           blue: "#60A5FA",
-          green: "#34D399",
+          green: "#34D399", 
           yellow: "#FBBF24",
           red: "#F87171",
           pink: "#F472B6",
@@ -86,6 +92,12 @@ export default {
           cyan: "#22D3EE",
           orange: "#FB923C",
           lime: "#A3E635",
+          emerald: "#6EE7B7",
+          teal: "#5EEAD4",
+          violet: "#8B5CF6",
+          fuchsia: "#E879F9",
+          rose: "#FB7185",
+          amber: "#FCD34D",
         },
       },
       borderRadius: {
