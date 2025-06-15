@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,9 @@ import {
   Camera,
   Home,
   Bed,
-  Bath
+  Bath,
+  Mail,
+  Send
 } from "lucide-react";
 
 interface ClientAppointmentProps {
@@ -65,7 +66,9 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
       endTime: '11:30a',
       technician: 'Scott Bondy',
       technicianAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
-      technicianPhone: '(206) 555-0199'
+      technicianPhone: '(206) 555-0199',
+      technicianEmail: 'scott.bondy@company.com',
+      estimatedTravelTime: '15 minutes'
     },
     financial: {
       subtotal: 12839.62,
@@ -106,17 +109,85 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
     }
   ];
 
-  const handleStatusChange = (newStatus: 'on-way' | 'started' | 'finished') => {
-    setStatus(newStatus);
-    const statusMessages = {
-      'on-way': 'Status updated to "On My Way"',
-      'started': 'Job started',
-      'finished': 'Job completed'
-    };
-    toast({
-      title: "Status Updated",
-      description: statusMessages[newStatus]
+  const sendOnMyWayNotification = async () => {
+    const currentTime = new Date();
+    const estimatedArrival = new Date(currentTime.getTime() + 15 * 60000); // Add 15 minutes
+    const arrivalTime = estimatedArrival.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
     });
+
+    const message = `Hi ${appointment.customer.name}, this is ${appointment.schedule.technician} from Construction CRM. I'm on my way to your property at ${appointment.customer.address.replace('\n', ', ')} for your ${appointment.schedule.startTime} ${appointment.projectDetails.type} appointment. I should arrive around ${arrivalTime}. You can reach me at ${appointment.schedule.technicianPhone} if you have any questions!`;
+
+    const emailSubject = `${appointment.schedule.technician} is on the way - ${appointment.projectDetails.type}`;
+    const emailBody = `Dear ${appointment.customer.name},
+
+This is to inform you that ${appointment.schedule.technician} is currently on the way to your property for your scheduled ${appointment.projectDetails.type} appointment.
+
+Appointment Details:
+- Date: ${appointment.schedule.date}
+- Scheduled Time: ${appointment.schedule.startTime} - ${appointment.schedule.endTime}
+- Estimated Arrival: ${arrivalTime}
+- Project: ${appointment.projectDetails.type}
+- Property Address: ${appointment.customer.address.replace('\n', ', ')}
+
+Technician Information:
+- Name: ${appointment.schedule.technician}
+- Phone: ${appointment.schedule.technicianPhone}
+- Email: ${appointment.schedule.technicianEmail}
+
+If you need to contact your technician, please call ${appointment.schedule.technicianPhone}.
+
+Thank you for choosing Construction CRM!
+
+Best regards,
+Construction CRM Team`;
+
+    try {
+      // Simulate sending SMS
+      console.log('Sending SMS to:', appointment.customer.phone);
+      console.log('SMS Message:', message);
+      
+      // Simulate sending email
+      console.log('Sending email to:', appointment.customer.email);
+      console.log('Email Subject:', emailSubject);
+      console.log('Email Body:', emailBody);
+
+      toast({
+        title: "Notifications Sent!",
+        description: `Text message and email sent to ${appointment.customer.name} with ETA and technician information.`
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send notifications. Please try again.",
+        variant: "destructive"
+      });
+      return false;
+    }
+  };
+
+  const handleStatusChange = async (newStatus: 'on-way' | 'started' | 'finished') => {
+    if (newStatus === 'on-way') {
+      const notificationSent = await sendOnMyWayNotification();
+      if (notificationSent) {
+        setStatus(newStatus);
+      }
+    } else {
+      setStatus(newStatus);
+      const statusMessages = {
+        'started': 'Job started',
+        'finished': 'Job completed'
+      };
+      toast({
+        title: "Status Updated",
+        description: statusMessages[newStatus]
+      });
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -176,15 +247,21 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
           <div className="grid grid-cols-3 gap-4">
             <Button
               variant={status === 'on-way' ? 'default' : 'outline'}
-              className="flex flex-col items-center gap-2 h-16"
+              className="flex flex-col items-center gap-2 h-20"
               onClick={() => handleStatusChange('on-way')}
             >
-              <Truck className="h-5 w-5" />
-              <span className="text-xs">ON MY WAY</span>
+              <div className="flex items-center gap-1">
+                <Truck className="h-5 w-5" />
+                <Send className="h-3 w-3" />
+              </div>
+              <div className="text-center">
+                <div className="text-xs font-medium">ON MY WAY</div>
+                <div className="text-xs text-muted-foreground">Send SMS & Email</div>
+              </div>
             </Button>
             <Button
               variant={status === 'started' ? 'default' : 'outline'}
-              className="flex flex-col items-center gap-2 h-16"
+              className="flex flex-col items-center gap-2 h-20"
               onClick={() => handleStatusChange('started')}
             >
               <Play className="h-5 w-5" />
@@ -192,7 +269,7 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
             </Button>
             <Button
               variant={status === 'finished' ? 'default' : 'outline'}
-              className="flex flex-col items-center gap-2 h-16"
+              className="flex flex-col items-center gap-2 h-20"
               onClick={() => handleStatusChange('finished')}
             >
               <Square className="h-5 w-5" />
@@ -214,8 +291,12 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
             <div className="relative">
               <img 
                 src={appointment.customer.propertyImage} 
-                alt="Property" 
+                alt="Property at 1950 25th Ave E, Seattle"
                 className="w-full h-48 object-cover rounded-lg"
+                onError={(e) => {
+                  console.log('Image failed to load, using fallback');
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80';
+                }}
               />
               <div className="absolute top-4 right-4 bg-black/75 text-white px-3 py-1 rounded text-sm">
                 {appointment.customer.propertyValue}
@@ -235,10 +316,14 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
                 <p className="text-muted-foreground text-sm whitespace-pre-line mb-2">
                   {appointment.customer.address}
                 </p>
-                <div className="flex gap-2 mb-2">
+                <div className="flex gap-2 mb-2 flex-wrap">
                   <Button size="sm" variant="outline">
                     <Phone className="h-4 w-4 mr-1" />
                     {appointment.customer.phone}
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <Mail className="h-4 w-4 mr-1" />
+                    Email
                   </Button>
                   <Button size="sm" variant="outline">
                     <MessageCircle className="h-4 w-4" />
@@ -309,6 +394,10 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
                 <span className="text-muted-foreground">Duration:</span>
                 <span className="font-medium">{appointment.projectDetails.estimatedDuration}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Travel Time:</span>
+                <span className="font-medium">{appointment.schedule.estimatedTravelTime}</span>
+              </div>
             </div>
             
             <div className="space-y-3">
@@ -321,6 +410,7 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
                 <div>
                   <div className="font-medium">{appointment.schedule.technician}</div>
                   <div className="text-sm text-muted-foreground">{appointment.schedule.technicianPhone}</div>
+                  <div className="text-sm text-muted-foreground">{appointment.schedule.technicianEmail}</div>
                 </div>
               </div>
             </div>
