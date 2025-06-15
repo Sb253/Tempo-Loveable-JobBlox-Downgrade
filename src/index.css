@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,7 +46,7 @@
     --sidebar-border: 262 50% 90%;
     --sidebar-ring: 262 83% 58%;
 
-    /* Enhanced colorful accents (replaced yellow with coral) */
+    /* Enhanced colorful accents (no yellow) */
     --success: 142 76% 36%;
     --success-foreground: 355.7 100% 97.3%;
     --warning: 16 90% 48%;
@@ -53,7 +54,7 @@
     --info: 221 83% 53%;
     --info-foreground: 355.7 100% 97.3%;
     
-    /* Vibrant gradient backgrounds (removed yellow, added coral) */
+    /* Vibrant gradient backgrounds (no yellow) */
     --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(340 82% 52%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(142 76% 36%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(16 90% 48%) 0%, hsl(340 82% 52%) 100%);
@@ -98,7 +99,7 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 263 70% 50.4%;
 
-    /* Enhanced colorful accents for dark mode (replaced yellow with coral) */
+    /* Enhanced colorful accents for dark mode (no yellow) */
     --success: 142 69% 58%;
     --success-foreground: 355.7 100% 97.3%;
     --warning: 16 84% 60%;
@@ -106,7 +107,7 @@
     --info: 221 70% 58%;
     --info-foreground: 355.7 100% 97.3%;
     
-    /* Vibrant gradient backgrounds for dark mode (removed yellow, added coral) */
+    /* Vibrant gradient backgrounds for dark mode (no yellow) */
     --gradient-primary: linear-gradient(135deg, hsl(263 70% 50.4%) 0%, hsl(340 75% 55%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(221 70% 58%) 0%, hsl(142 69% 58%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(16 84% 60%) 0%, hsl(340 75% 55%) 100%);
