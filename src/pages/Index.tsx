@@ -17,6 +17,10 @@ import { TeamManagement } from "@/components/TeamManagement";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { ReviewManagement } from "@/components/ReviewManagement";
 import { MarketingTools } from "@/components/MarketingTools";
+import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
+import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
+import { MobileOptimizations } from "@/components/MobileOptimizations";
+import { APIIntegrations } from "@/components/APIIntegrations";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -56,6 +60,14 @@ const Index = () => {
         return <ReviewManagement />;
       case 'marketing':
         return <MarketingTools />;
+      case 'quickbooks':
+        return <QuickBooksIntegration />;
+      case 'analytics':
+        return <AdvancedAnalytics />;
+      case 'mobile':
+        return <MobileOptimizations />;
+      case 'integrations':
+        return <APIIntegrations />;
       default:
         return (
           <div className="space-y-6">
@@ -168,7 +180,7 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <h1 className="text-xl font-semibold text-gray-900">Construction CRM</h1>
-              <nav className="flex space-x-4">
+              <nav className="flex space-x-4 overflow-x-auto">
                 <Button
                   variant={activeView === 'dashboard' ? 'default' : 'ghost'}
                   onClick={() => setActiveView('dashboard')}
@@ -246,6 +258,30 @@ const Index = () => {
                   onClick={() => setActiveView('reports')}
                 >
                   Reports
+                </Button>
+                <Button
+                  variant={activeView === 'quickbooks' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('quickbooks')}
+                >
+                  QuickBooks
+                </Button>
+                <Button
+                  variant={activeView === 'analytics' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('analytics')}
+                >
+                  Analytics
+                </Button>
+                <Button
+                  variant={activeView === 'mobile' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('mobile')}
+                >
+                  Mobile
+                </Button>
+                <Button
+                  variant={activeView === 'integrations' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('integrations')}
+                >
+                  Integrations
                 </Button>
               </nav>
             </div>
