@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { useCompanyData } from "@/hooks/useCompanyData";
@@ -18,6 +19,10 @@ interface EstimateData {
   notes?: string;
   terms?: string;
   lineItems: LineItem[];
+  subtotal: number;
+  discount?: number;
+  discountType?: 'flat' | 'percentage';
+  discountValue?: number;
   total: number;
 }
 
@@ -103,9 +108,21 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         </table>
       </div>
 
-      {/* Total */}
+      {/* Totals */}
       <div className="flex justify-end mb-8">
         <div className="w-64">
+          <div className="flex justify-between py-2 border-b border-gray-300">
+            <span className="text-gray-700">Subtotal:</span>
+            <span className="text-gray-700">${data.subtotal.toFixed(2)}</span>
+          </div>
+          {data.discount && data.discount > 0 && (
+            <div className="flex justify-between py-2 border-b border-gray-300">
+              <span className="text-gray-700">
+                Discount ({data.discountType === 'percentage' ? `${data.discountValue}%` : 'Flat Rate'}):
+              </span>
+              <span className="text-red-600">-${data.discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between py-3 border-t-2 border-gray-300 font-bold text-lg">
             <span className="text-gray-900">Total Estimate:</span>
             <span className="text-green-600">${data.total.toFixed(2)}</span>
@@ -201,7 +218,17 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div className="w-64 border-2 border-gray-800">
           <div className="bg-gray-800 text-white py-2 px-4 font-bold text-center">ESTIMATE TOTAL</div>
           <div className="p-4">
-            <div className="flex justify-between py-2 font-bold text-lg">
+            <div className="flex justify-between py-1">
+              <span>SUBTOTAL:</span>
+              <span>${data.subtotal.toFixed(2)}</span>
+            </div>
+            {data.discount && data.discount > 0 && (
+              <div className="flex justify-between py-1 text-red-600">
+                <span>DISCOUNT:</span>
+                <span>-${data.discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between py-2 border-t font-bold text-lg">
               <span>TOTAL:</span>
               <span>${data.total.toFixed(2)}</span>
             </div>
@@ -301,6 +328,16 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
       {/* Total */}
       <div className="flex justify-end mb-12">
         <div className="w-64">
+          <div className="flex justify-between py-2">
+            <span className="text-gray-600">Subtotal</span>
+            <span className="text-gray-900">${data.subtotal.toFixed(2)}</span>
+          </div>
+          {data.discount && data.discount > 0 && (
+            <div className="flex justify-between py-2">
+              <span className="text-gray-600">Discount</span>
+              <span className="text-red-600">-${data.discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between py-4 border-t border-gray-200 text-xl">
             <span className="text-gray-900">Total Estimate</span>
             <span className="text-gray-900 font-medium">${data.total.toFixed(2)}</span>
