@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
@@ -7,7 +8,9 @@ import { SchedulingDashboard } from "@/components/SchedulingDashboard";
 import { GPSTracking } from "@/components/GPSTracking";
 import { RealTimeDispatch } from "@/components/RealTimeDispatch";
 import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
-import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings } from "lucide-react";
+import { CustomerList } from "@/components/CustomerList";
+import { CustomerPortal } from "@/components/CustomerPortal";
+import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -20,6 +23,10 @@ const Index = () => {
         return <SchedulingDashboard />;
       case 'map':
         return <MapView jobs={[]} />;
+      case 'customers':
+        return <CustomerList />;
+      case 'customer-portal':
+        return <CustomerPortal />;
       case 'settings':
         return <SettingsDashboard />;
       case 'gps-tracking':
@@ -41,6 +48,8 @@ const Index = () => {
         sections={[
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
           { id: 'scheduling', label: 'Scheduling', icon: Calendar },
+          { id: 'customers', label: 'Customer Management', icon: Users },
+          { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
           { id: 'map', label: 'Map View', icon: MapPin },
           { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
           { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
