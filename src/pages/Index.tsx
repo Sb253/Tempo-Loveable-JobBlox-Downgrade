@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,10 @@ import { EnhancedScheduleView } from "@/components/EnhancedScheduleView";
 import { ExpenseList } from "@/components/ExpenseList";
 import { PaymentProcessing } from "@/components/PaymentProcessing";
 import { ReportsView } from "@/components/ReportsView";
+import { TeamManagement } from "@/components/TeamManagement";
+import { NotificationCenter } from "@/components/NotificationCenter";
+import { ReviewManagement } from "@/components/ReviewManagement";
+import { MarketingTools } from "@/components/MarketingTools";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -45,6 +48,14 @@ const Index = () => {
         return <PaymentProcessing />;
       case 'reports':
         return <ReportsView />;
+      case 'team':
+        return <TeamManagement />;
+      case 'notifications':
+        return <NotificationCenter />;
+      case 'reviews':
+        return <ReviewManagement />;
+      case 'marketing':
+        return <MarketingTools />;
       default:
         return (
           <div className="space-y-6">
@@ -205,6 +216,30 @@ const Index = () => {
                   onClick={() => setActiveView('payments')}
                 >
                   Payments
+                </Button>
+                <Button
+                  variant={activeView === 'team' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('team')}
+                >
+                  Team
+                </Button>
+                <Button
+                  variant={activeView === 'notifications' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('notifications')}
+                >
+                  Notifications
+                </Button>
+                <Button
+                  variant={activeView === 'reviews' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('reviews')}
+                >
+                  Reviews
+                </Button>
+                <Button
+                  variant={activeView === 'marketing' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('marketing')}
+                >
+                  Marketing
                 </Button>
                 <Button
                   variant={activeView === 'reports' ? 'default' : 'ghost'}
