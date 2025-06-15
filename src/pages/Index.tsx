@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,12 +70,12 @@ const Index = () => {
     { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
   ];
 
-  // Financial data for the chart
+  // Enhanced financial data with more vibrant colors
   const financialData = [
-    { name: 'Won Jobs', value: 45, color: '#10b981' },
-    { name: 'Lost Jobs', value: 12, color: '#ef4444' },
-    { name: 'Pending', value: 18, color: '#f59e0b' },
-    { name: 'In Progress', value: 23, color: '#3b82f6' }
+    { name: 'Won Jobs', value: 45, color: '#10b981', darkColor: '#34d399' },
+    { name: 'Lost Jobs', value: 12, color: '#ef4444', darkColor: '#f87171' },
+    { name: 'Pending', value: 18, color: '#f59e0b', darkColor: '#fbbf24' },
+    { name: 'In Progress', value: 23, color: '#3b82f6', darkColor: '#60a5fa' }
   ];
 
   // Mock job locations for the dashboard map
@@ -344,39 +344,91 @@ const Index = () => {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={financialData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="value" fill={(entry: any) => entry.color} />
+                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ fontSize: 12 }}
+                        className="text-muted-foreground"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        className="text-muted-foreground"
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          color: 'hsl(var(--card-foreground))'
+                        }}
+                      />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        {financialData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={`var(--color-${entry.name.toLowerCase().replace(' ', '-')})`}
+                            className="hover:opacity-80 transition-opacity"
+                          />
+                        ))}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                   <div className="mt-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-green-600" />
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500"></div>
                         Won Jobs This Month
                       </span>
-                      <span className="font-semibold text-green-600">45</span>
+                      <span className="font-semibold text-green-600 dark:text-green-400">45</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <Receipt className="h-4 w-4 text-red-600" />
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-500 to-rose-500"></div>
                         Lost Jobs
                       </span>
-                      <span className="font-semibold text-red-600">12</span>
+                      <span className="font-semibold text-red-600 dark:text-red-400">12</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-purple-600" />
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500"></div>
+                        Pending Jobs
+                      </span>
+                      <span className="font-semibold text-yellow-600 dark:text-yellow-400">18</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                        In Progress
+                      </span>
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">23</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t">
+                      <span className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                         Conversion Rate
                       </span>
-                      <span className="font-semibold">78.9%</span>
+                      <span className="font-semibold text-purple-600 dark:text-purple-400">78.9%</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* CSS Variables for Chart Colors */}
+            <style jsx>{`
+              :root {
+                --color-won-jobs: #10b981;
+                --color-lost-jobs: #ef4444;
+                --color-pending: #f59e0b;
+                --color-in-progress: #3b82f6;
+              }
+              .dark {
+                --color-won-jobs: #34d399;
+                --color-lost-jobs: #f87171;
+                --color-pending: #fbbf24;
+                --color-in-progress: #60a5fa;
+              }
+            `}</style>
           </div>
         );
     }
