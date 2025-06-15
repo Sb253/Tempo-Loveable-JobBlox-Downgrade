@@ -17,6 +17,7 @@ import { CustomerList } from "./CustomerList";
 import { JobList } from "./JobList";
 import { InvoiceList } from "./InvoiceList";
 import { SchedulingDashboard } from "./SchedulingDashboard";
+import { EstimateList } from "./EstimateList";
 
 interface SidebarSection {
   id: string;
@@ -235,28 +236,6 @@ const Pipeline = () => (
   </div>
 );
 
-const CustomerList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Customer Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Customer list and management interface will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const JobList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Job Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Job list and tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const CustomerForm = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Add New Customer</h2>
@@ -274,39 +253,6 @@ const JobForm = () => (
     <Card>
       <CardContent className="p-6">
         <p>Job creation form will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const EstimateList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Estimates</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Estimate management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const InvoiceList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Invoices</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Invoice management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const ScheduleView = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Schedule</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Calendar and scheduling system will be implemented here.</p>
       </CardContent>
     </Card>
   </div>
@@ -545,14 +491,3 @@ const SettingsView = () => {
     </div>
   );
 };
-
-const SchedulingDashboard = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Scheduling Dashboard</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Scheduling dashboard will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
