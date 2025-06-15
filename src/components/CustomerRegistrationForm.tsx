@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,7 +126,7 @@ export const CustomerRegistrationForm = () => {
         return (
           <Input
             type={field.type}
-            value={value as string}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => handleInputChange(field.id, e.target.value)}
             placeholder={field.placeholder}
             required={field.required}
@@ -135,7 +136,7 @@ export const CustomerRegistrationForm = () => {
       case 'textarea':
         return (
           <Textarea
-            value={value as string}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => handleInputChange(field.id, e.target.value)}
             placeholder={field.placeholder}
             required={field.required}
@@ -146,7 +147,7 @@ export const CustomerRegistrationForm = () => {
       case 'select':
         return (
           <Select 
-            value={value as string} 
+            value={typeof value === 'string' ? value : ''} 
             onValueChange={(val) => handleInputChange(field.id, val)}
           >
             <SelectTrigger>
@@ -166,7 +167,7 @@ export const CustomerRegistrationForm = () => {
         return (
           <div className="flex items-center space-x-2">
             <Checkbox
-              checked={value as boolean}
+              checked={typeof value === 'boolean' ? value : false}
               onCheckedChange={(checked) => handleInputChange(field.id, checked as boolean)}
             />
             <Label>{field.placeholder || 'Check if applicable'}</Label>
@@ -177,7 +178,7 @@ export const CustomerRegistrationForm = () => {
         return (
           <Input
             type="date"
-            value={value as string}
+            value={typeof value === 'string' ? value : ''}
             onChange={(e) => handleInputChange(field.id, e.target.value)}
             required={field.required}
           />
@@ -225,7 +226,7 @@ export const CustomerRegistrationForm = () => {
                 </Label>
                 <Input
                   id="name"
-                  value={customerData.name}
+                  value={typeof customerData.name === 'string' ? customerData.name : ''}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Enter full name"
                   required
@@ -240,7 +241,7 @@ export const CustomerRegistrationForm = () => {
                 <Input
                   id="email"
                   type="email"
-                  value={customerData.email}
+                  value={typeof customerData.email === 'string' ? customerData.email : ''}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="customer@email.com"
                 />
@@ -253,7 +254,7 @@ export const CustomerRegistrationForm = () => {
                 </Label>
                 <Input
                   id="phone"
-                  value={customerData.phone}
+                  value={typeof customerData.phone === 'string' ? customerData.phone : ''}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="(555) 123-4567"
                 />
@@ -266,7 +267,7 @@ export const CustomerRegistrationForm = () => {
                 </Label>
                 <Input
                   id="address"
-                  value={customerData.address}
+                  value={typeof customerData.address === 'string' ? customerData.address : ''}
                   onChange={(e) => handleInputChange('address', e.target.value)}
                   placeholder="Street address, city, state, zip"
                 />
@@ -303,7 +304,7 @@ export const CustomerRegistrationForm = () => {
               </Label>
               <Textarea
                 id="notes"
-                value={customerData.notes}
+                value={typeof customerData.notes === 'string' ? customerData.notes : ''}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 placeholder="Any additional information about this customer"
                 rows={4}
@@ -330,3 +331,4 @@ export const CustomerRegistrationForm = () => {
     </div>
   );
 };
+
