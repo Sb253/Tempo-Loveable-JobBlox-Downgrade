@@ -28,6 +28,11 @@ import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
 import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
 import { MobileOptimizations } from "@/components/MobileOptimizations";
 import { APIIntegrations } from "@/components/APIIntegrations";
+import { AdvancedReporting } from "@/components/AdvancedReporting";
+import { WorkflowAutomation } from "@/components/WorkflowAutomation";
+import { DocumentManagement } from "@/components/DocumentManagement";
+import { ResourceAllocation } from "@/components/ResourceAllocation";
+import { GanttChart } from "@/components/GanttChart";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -59,6 +64,11 @@ const Index = () => {
     { label: 'Analytics', value: 'analytics' },
     { label: 'Mobile', value: 'mobile' },
     { label: 'Integrations', value: 'integrations' },
+    { label: 'Advanced Reports', value: 'advanced-reports' },
+    { label: 'Workflows', value: 'workflows' },
+    { label: 'Documents', value: 'documents' },
+    { label: 'Resources', value: 'resources' },
+    { label: 'Project Timeline', value: 'timeline' },
   ];
 
   const getCurrentLabel = () => {
@@ -100,6 +110,16 @@ const Index = () => {
         return <MobileOptimizations />;
       case 'integrations':
         return <APIIntegrations />;
+      case 'advanced-reports':
+        return <AdvancedReporting />;
+      case 'workflows':
+        return <WorkflowAutomation />;
+      case 'documents':
+        return <DocumentManagement />;
+      case 'resources':
+        return <ResourceAllocation />;
+      case 'timeline':
+        return <GanttChart />;
       default:
         return (
           <div className="space-y-6">
