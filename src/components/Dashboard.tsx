@@ -11,6 +11,7 @@ import { DashboardCustomization } from "./DashboardCustomization";
 import { NavigationToggle } from "./NavigationToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { QuickActions } from "./QuickActions";
+import { MapView } from "./MapView";
 
 interface DashboardWidget {
   id: string;
@@ -36,6 +37,28 @@ export const Dashboard = () => {
     { id: 'recent-jobs', title: 'Recent Jobs', enabled: true, order: 1 },
     { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
   ]);
+
+  // Sample job data with coordinates for map display
+  const recentJobs = [
+    {
+      id: '1',
+      title: 'Kitchen Renovation',
+      customer: 'John Smith',
+      address: '123 Main St, Anytown, USA',
+      coordinates: [-74.006, 40.7128] as [number, number],
+      status: 'scheduled' as const,
+      time: 'Today 2:00 PM'
+    },
+    {
+      id: '2',
+      title: 'Bathroom Repair',
+      customer: 'ABC Construction',
+      address: '456 Business Ave, City, USA',
+      coordinates: [-74.0, 40.72] as [number, number],
+      status: 'in-progress' as const,
+      time: 'Tomorrow 9:00 AM'
+    }
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -112,29 +135,34 @@ export const Dashboard = () => {
       
       case 'recent-jobs':
         return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Jobs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 border rounded">
-                  <div>
-                    <p className="font-medium">Kitchen Renovation</p>
-                    <p className="text-sm text-muted-foreground">John Smith - Today 2:00 PM</p>
-                  </div>
-                  <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">Scheduled</span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Jobs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentJobs.map((job) => (
+                    <div key={job.id} className="flex justify-between items-center p-3 border rounded">
+                      <div>
+                        <p className="font-medium">{job.title}</p>
+                        <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                      </div>
+                      <span className={`text-sm px-2 py-1 rounded ${
+                        job.status === 'scheduled' 
+                          ? 'bg-blue-100 text-blue-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {job.status === 'scheduled' ? 'Scheduled' : 'In Progress'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex justify-between items-center p-3 border rounded">
-                  <div>
-                    <p className="font-medium">Bathroom Repair</p>
-                    <p className="text-sm text-muted-foreground">ABC Construction - Tomorrow 9:00 AM</p>
-                  </div>
-                  <span className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">In Progress</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+            
+            <MapView jobs={recentJobs} />
+          </div>
         );
       
       case 'quick-actions':
@@ -236,16 +264,11 @@ export const Dashboard = () => {
           <div key={widget.id}>
             {widget.id === 'stats' ? (
               getWidget(widget.id)
+            ) : widget.id === 'recent-jobs' ? (
+              getWidget(widget.id)
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {widget.id === 'recent-jobs' && enabledWidgets.find(w => w.id === 'quick-actions') ? (
-                  <>
-                    {getWidget('recent-jobs')}
-                    {getWidget('quick-actions')}
-                  </>
-                ) : (
-                  getWidget(widget.id)
-                )}
+                {getWidget(widget.id)}
               </div>
             )}
           </div>
