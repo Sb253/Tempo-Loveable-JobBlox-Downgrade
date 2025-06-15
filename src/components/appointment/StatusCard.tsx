@@ -64,12 +64,12 @@ export const StatusCard = ({
   };
 
   return (
-    <Card>
+    <Card className="bg-card border-border">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gray-400 rounded-full"></div>
-            <span className="font-medium">Status</span>
+            <div className="w-6 h-6 bg-muted rounded-full"></div>
+            <span className="font-medium text-foreground">Status</span>
           </div>
           <Badge variant="destructive">EXPIRED</Badge>
         </div>
@@ -79,16 +79,16 @@ export const StatusCard = ({
             <Button
               onClick={sendOnMyWayNotification}
               variant="outline"
-              className="w-full h-12 bg-orange-50 border-orange-200 hover:bg-orange-100 flex flex-col gap-1"
+              className="w-full h-12 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-950/40 flex flex-col gap-1"
               disabled={status === 'completed'}
             >
               <div className="flex items-center gap-1">
-                <Truck className="h-4 w-4 text-orange-600" />
-                <Mail className="h-3 w-3 text-orange-600" />
-                <MessageCircle className="h-3 w-3 text-orange-600" />
+                <Truck className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                <Mail className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+                <MessageCircle className="h-3 w-3 text-orange-600 dark:text-orange-400" />
               </div>
-              <span className="text-xs text-orange-600 font-medium">ON MY WAY</span>
-              <span className="text-xs text-orange-500">Text & Email</span>
+              <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">ON MY WAY</span>
+              <span className="text-xs text-orange-500 dark:text-orange-500">Text & Email</span>
             </Button>
           </div>
           
@@ -98,9 +98,9 @@ export const StatusCard = ({
                        timeTracking?.isActive ? onPauseTimeTracking : onStartTimeTracking}
               className={`w-full h-12 ${
                 timeTracking?.isActive 
-                  ? 'bg-red-500 hover:bg-red-600' 
-                  : 'bg-green-500 hover:bg-green-600'
-              } flex flex-col gap-1`}
+                  ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' 
+                  : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
+              } flex flex-col gap-1 text-white`}
             >
               <Play className="h-4 w-4" />
               <span className="text-xs font-medium">
@@ -113,20 +113,20 @@ export const StatusCard = ({
             <Button
               onClick={onCompleteAppointment}
               variant="outline"
-              className="w-full h-12 bg-gray-50 border-gray-200 hover:bg-gray-100 flex flex-col gap-1"
+              className="w-full h-12 bg-muted/50 border-border hover:bg-muted flex flex-col gap-1"
               disabled={status === 'completed'}
             >
-              <Square className="h-4 w-4 text-gray-600" />
-              <span className="text-xs text-gray-600 font-medium">FINISH</span>
+              <Square className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground font-medium">FINISH</span>
             </Button>
           </div>
         </div>
         
         {activeTime > 0 && (
           <div className="mt-4 text-center">
-            <div className="text-2xl font-bold">{formatDuration(activeTime)}</div>
+            <div className="text-2xl font-bold text-foreground">{formatDuration(activeTime)}</div>
             {timeTracking?.isActive && (
-              <div className="text-sm text-green-600 font-medium">● Recording</div>
+              <div className="text-sm text-green-600 dark:text-green-400 font-medium">● Recording</div>
             )}
           </div>
         )}

@@ -136,7 +136,7 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <AppointmentHeader appointmentId="5709" status={appointment.status} />
 
       <div className="space-y-3 p-4">
