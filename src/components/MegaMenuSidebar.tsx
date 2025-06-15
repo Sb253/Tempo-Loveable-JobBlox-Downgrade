@@ -64,7 +64,7 @@ export const MegaMenuSidebar = ({
       label: 'Dashboard',
       icon: Building2,
       defaultOpen: true,
-      items: sections.filter(s => ['dashboard', 'widgets', 'cards'].includes(s.id))
+      items: sections.filter(s => s.id === 'dashboard')
     },
     {
       label: 'Customer Management',

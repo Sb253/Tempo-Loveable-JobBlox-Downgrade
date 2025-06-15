@@ -3,8 +3,6 @@ import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dashboard } from "./Dashboard";
-import { CustomWidgetList } from "./CustomWidgetList";
-import { CustomCardList } from "./CustomCardList";
 import { CompanySettings } from "./CompanySettings";
 import { TeamManagement } from "./TeamManagement";
 import { SubcontractorManagement } from "./SubcontractorManagement";
@@ -63,8 +61,6 @@ const sections: SidebarSection[] = [
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
-  { id: 'widgets', label: 'Dashboard Widgets', icon: Palette },
-  { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
   { id: 'branch-management', label: 'Branch Management', icon: Building },
   { id: 'settings', label: 'Settings', icon: Settings },
@@ -195,10 +191,6 @@ export const AppLayout = () => {
         return <NotificationCenter />;
       case 'map-view':
         return <MapViewPage />;
-      case 'widgets':
-        return <CustomWidgetList />;
-      case 'cards':
-        return <CustomCardList />;
       case 'company-settings':
         return <CompanySettings />;
       case 'branch-management':
