@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Shield, User, Settings, Plus, Edit, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Shield, User, Settings, Plus, Edit, Trash2, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Permission {
@@ -26,19 +27,36 @@ interface Role {
   isDefault?: boolean;
 }
 
+interface WageStructure {
+  hourlyRate?: number;
+  salary?: number;
+  commission?: number;
+  combinationType?: 'hourly_commission' | 'salary_commission' | 'hourly_salary' | 'all_three';
+}
+
 interface Employee {
   id: string;
   name: string;
   email: string;
+  phone: string;
   role: string;
   status: 'active' | 'inactive';
+  wageStructure: WageStructure;
+  notificationPreferences: {
+    email: boolean;
+    sms: boolean;
+    scheduling: boolean;
+    jobUpdates: boolean;
+  };
 }
 
 export const AccessControl = () => {
   const { toast } = useToast();
   const [showRoleDialog, setShowRoleDialog] = useState(false);
   const [showEmployeeDialog, setShowEmployeeDialog] = useState(false);
+  const [showWageDialog, setShowWageDialog] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   const [permissions] = useState<Permission[]>([
     { id: 'view_dashboard', name: 'View Dashboard', description: 'Access main dashboard', enabled: true },
@@ -81,10 +99,36 @@ export const AccessControl = () => {
   ]);
 
   const [employees, setEmployees] = useState<Employee[]>([
-    { id: '1', name: 'John Smith', email: 'john@company.com', role: 'owner', status: 'active' },
-    { id: '2', name: 'Mike Johnson', email: 'mike@company.com', role: 'manager', status: 'active' },
-    { id: '3', name: 'Sarah Davis', email: 'sarah@company.com', role: 'employee', status: 'active' },
-    { id: '4', name: 'Tom Wilson', email: 'tom@company.com', role: 'accountant', status: 'active' }
+    { 
+      id: '1', 
+      name: 'John Smith', 
+      email: 'john@company.com', 
+      phone: '(555) 123-4567',
+      role: 'owner', 
+      status: 'active',
+      wageStructure: { salary: 75000 },
+      notificationPreferences: { email: true, sms: true, scheduling: true, jobUpdates: true }
+    },
+    { 
+      id: '2', 
+      name: 'Mike Johnson', 
+      email: 'mike@company.com', 
+      phone: '(555) 234-5678',
+      role: 'manager', 
+      status: 'active',
+      wageStructure: { hourlyRate: 35, commission: 5 },
+      notificationPreferences: { email: true, sms: false, scheduling: true, jobUpdates: true }
+    },
+    { 
+      id: '3', 
+      name: 'Sarah Davis', 
+      email: 'sarah@company.com', 
+      phone: '(555) 345-6789',
+      role: 'employee', 
+      status: 'active',
+      wageStructure: { hourlyRate: 25 },
+      notificationPreferences: { email: true, sms: true, scheduling: true, jobUpdates: false }
+    }
   ]);
 
   const handleCreateRole = () => {
@@ -97,12 +141,30 @@ export const AccessControl = () => {
     setShowRoleDialog(true);
   };
 
+  const handleEditEmployee = (employee: Employee) => {
+    setEditingEmployee(employee);
+    setShowEmployeeDialog(true);
+  };
+
+  const handleEditWage = (employee: Employee) => {
+    setEditingEmployee(employee);
+    setShowWageDialog(true);
+  };
+
   const handleSaveRole = () => {
     setShowRoleDialog(false);
     toast({
       title: "Role Saved",
       description: "Access role has been updated successfully.",
     });
+  };
+
+  const formatWageDisplay = (wage: WageStructure) => {
+    const parts = [];
+    if (wage.hourlyRate) parts.push(`$${wage.hourlyRate}/hr`);
+    if (wage.salary) parts.push(`$${wage.salary.toLocaleString()}/yr`);
+    if (wage.commission) parts.push(`${wage.commission}% commission`);
+    return parts.join(' + ') || 'Not set';
   };
 
   return (
@@ -114,7 +176,8 @@ export const AccessControl = () => {
       <Tabs defaultValue="roles" className="w-full">
         <TabsList>
           <TabsTrigger value="roles">Roles & Permissions</TabsTrigger>
-          <TabsTrigger value="employees">Employee Access</TabsTrigger>
+          <TabsTrigger value="employees">Employee Management</TabsTrigger>
+          <TabsTrigger value="wages">Wage Management</TabsTrigger>
           <TabsTrigger value="audit">Access Logs</TabsTrigger>
         </TabsList>
 
@@ -180,7 +243,7 @@ export const AccessControl = () => {
         <TabsContent value="employees">
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Employee Access</h2>
+              <h2 className="text-xl font-semibold">Employee Management</h2>
               <Button onClick={() => setShowEmployeeDialog(true)} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Employee
@@ -204,25 +267,73 @@ export const AccessControl = () => {
                         <div>
                           <h4 className="font-medium">{employee.name}</h4>
                           <p className="text-sm text-muted-foreground">{employee.email}</p>
+                          <p className="text-xs text-muted-foreground">{employee.phone}</p>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-4">
-                        <Badge variant="outline">
-                          {roles.find(r => r.id === employee.role)?.name || employee.role}
-                        </Badge>
+                        <div className="text-right">
+                          <Badge variant="outline">
+                            {roles.find(r => r.id === employee.role)?.name || employee.role}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formatWageDisplay(employee.wageStructure)}
+                          </p>
+                        </div>
                         <Badge className={employee.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
                           {employee.status}
                         </Badge>
-                        <Button variant="ghost" size="sm">
-                          <Settings className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => handleEditEmployee(employee)}>
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleEditWage(employee)}>
+                            <DollarSign className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="wages">
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Wage Management</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {employees.map((employee) => (
+                <Card key={employee.id}>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{employee.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {roles.find(r => r.id === employee.role)?.name}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-sm font-medium">Current Wage Structure</Label>
+                        <p className="text-sm">{formatWageDisplay(employee.wageStructure)}</p>
+                      </div>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleEditWage(employee)}
+                      >
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Edit Wage
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </TabsContent>
 
@@ -290,6 +401,187 @@ export const AccessControl = () => {
                 </Button>
                 <Button onClick={handleSaveRole}>
                   {editingRole ? 'Update Role' : 'Create Role'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Employee Dialog */}
+      {showEmployeeDialog && (
+        <Dialog open={true} onOpenChange={setShowEmployeeDialog}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {editingEmployee ? 'Edit Employee' : 'Add New Employee'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="emp-name">Full Name</Label>
+                  <Input
+                    id="emp-name"
+                    placeholder="Employee name"
+                    defaultValue={editingEmployee?.name || ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="emp-email">Email</Label>
+                  <Input
+                    id="emp-email"
+                    type="email"
+                    placeholder="email@company.com"
+                    defaultValue={editingEmployee?.email || ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="emp-phone">Phone</Label>
+                  <Input
+                    id="emp-phone"
+                    placeholder="(555) 123-4567"
+                    defaultValue={editingEmployee?.phone || ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="emp-role">Role</Label>
+                  <Select defaultValue={editingEmployee?.role || ''}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.id}>
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-base font-medium">Notification Preferences</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="email-notif" 
+                      defaultChecked={editingEmployee?.notificationPreferences.email}
+                    />
+                    <Label htmlFor="email-notif">Email Notifications</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="sms-notif" 
+                      defaultChecked={editingEmployee?.notificationPreferences.sms}
+                    />
+                    <Label htmlFor="sms-notif">SMS Notifications</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="schedule-notif" 
+                      defaultChecked={editingEmployee?.notificationPreferences.scheduling}
+                    />
+                    <Label htmlFor="schedule-notif">Scheduling Updates</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="job-notif" 
+                      defaultChecked={editingEmployee?.notificationPreferences.jobUpdates}
+                    />
+                    <Label htmlFor="job-notif">Job Updates</Label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setShowEmployeeDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowEmployeeDialog(false);
+                  toast({
+                    title: "Employee Saved",
+                    description: "Employee information has been updated successfully.",
+                  });
+                }}>
+                  {editingEmployee ? 'Update Employee' : 'Add Employee'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Wage Dialog */}
+      {showWageDialog && editingEmployee && (
+        <Dialog open={true} onOpenChange={setShowWageDialog}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Wage Structure - {editingEmployee.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="wage-type">Wage Structure Type</Label>
+                <Select defaultValue={editingEmployee.wageStructure.salary ? 'salary' : editingEmployee.wageStructure.hourlyRate ? 'hourly' : 'commission'}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select wage type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hourly">Hourly Rate</SelectItem>
+                    <SelectItem value="salary">Salary</SelectItem>
+                    <SelectItem value="commission">Commission Only</SelectItem>
+                    <SelectItem value="hourly_commission">Hourly + Commission</SelectItem>
+                    <SelectItem value="salary_commission">Salary + Commission</SelectItem>
+                    <SelectItem value="hourly_salary">Hourly + Salary</SelectItem>
+                    <SelectItem value="all_three">Hourly + Salary + Commission</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <Label htmlFor="hourly-rate">Hourly Rate ($)</Label>
+                  <Input
+                    id="hourly-rate"
+                    type="number"
+                    placeholder="25.00"
+                    defaultValue={editingEmployee.wageStructure.hourlyRate || ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="annual-salary">Annual Salary ($)</Label>
+                  <Input
+                    id="annual-salary"
+                    type="number"
+                    placeholder="50000"
+                    defaultValue={editingEmployee.wageStructure.salary || ''}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="commission-rate">Commission Rate (%)</Label>
+                  <Input
+                    id="commission-rate"
+                    type="number"
+                    placeholder="5"
+                    defaultValue={editingEmployee.wageStructure.commission || ''}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setShowWageDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => {
+                  setShowWageDialog(false);
+                  toast({
+                    title: "Wage Structure Updated",
+                    description: "Employee wage structure has been updated successfully.",
+                  });
+                }}>
+                  Update Wage
                 </Button>
               </div>
             </div>

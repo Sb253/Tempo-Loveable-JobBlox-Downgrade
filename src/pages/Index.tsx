@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
@@ -28,7 +27,8 @@ import { JobList } from "@/components/JobList";
 import { Pipeline } from "@/components/Pipeline";
 import { AccessControl } from "@/components/AccessControl";
 import { SubcontractorManagement } from "@/components/SubcontractorManagement";
-import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug, GitBranch, Shield, UserCheck } from "lucide-react";
+import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug, GitBranch, Shield, UserCheck, DollarSign } from "lucide-react";
+import { WageManagement } from "@/components/WageManagement";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -89,6 +89,8 @@ const Index = () => {
         return <JobChecklists />;
       case 'documents':
         return <DocumentManagement />;
+      case 'wage-management':
+        return <WageManagement />;
       default:
         return <div>Select a section from the sidebar.</div>;
     }
@@ -126,6 +128,7 @@ const Index = () => {
           { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
           { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
           { id: 'notifications', label: 'Customer Notifications', icon: MessageSquare },
+          { id: 'wage-management', label: 'Wage Management', icon: DollarSign },
           { id: 'settings', label: 'Settings', icon: Settings }
         ]}
       />
