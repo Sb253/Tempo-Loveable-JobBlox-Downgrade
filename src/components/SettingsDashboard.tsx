@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, User, Bell, Shield } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const SettingsDashboard = () => {
   return (
@@ -35,6 +36,13 @@ export const SettingsDashboard = () => {
               <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
                 <Input id="timezone" placeholder="EST" />
+              </div>
+              <div className="space-y-2">
+                <Label>Theme</Label>
+                <div className="flex items-center gap-2">
+                  <ThemeToggle />
+                  <span className="text-sm text-muted-foreground">Choose your preferred theme</span>
+                </div>
               </div>
               <Button>Save Changes</Button>
             </CardContent>
