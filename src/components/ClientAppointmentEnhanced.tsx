@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,6 +133,34 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
     });
   };
 
+  const sendOnMyWayNotification = async () => {
+    try {
+      // Calculate ETA (example: 15 minutes from now)
+      const eta = new Date(Date.now() + 15 * 60 * 1000);
+      const etaString = eta.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const message = `Hi ${appointment.customer}, this is ${appointment.technician} from Construction CRM. I'm on my way to your location for your ${appointment.scheduledTime} appointment. I should arrive around ${etaString}. Please text back if you have any questions!`;
+
+      // Simulate sending SMS and email
+      console.log(`Sending SMS to ${appointment.phone}: ${message}`);
+      console.log(`Sending email to ${appointment.email}: ${message}`);
+
+      // Update appointment status
+      setAppointment(prev => ({ ...prev, status: 'in-progress' }));
+
+      toast({
+        title: "Notification Sent",
+        description: `"On My Way" message sent to ${appointment.customer} via SMS and email`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send notification. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getActiveTime = () => {
     if (!appointment.timeTracking?.isActive || !appointment.timeTracking.startTime) {
       return appointment.timeTracking?.totalMinutes || 0;
@@ -164,28 +191,28 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
           {/* Action Buttons */}
           <div className="grid grid-cols-4 gap-4 text-center">
             <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+              <Button variant="outline" size="icon" className="w-12 h-12 rounded-full bg-blue-50 border-blue-200 hover:bg-blue-100">
                 <Edit className="h-5 w-5 text-blue-600" />
-              </div>
-              <span className="text-xs text-blue-600">Approve</span>
+              </Button>
+              <span className="text-xs text-blue-600 mt-1 font-medium">Approve</span>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+              <Button variant="outline" size="icon" className="w-12 h-12 rounded-full bg-blue-50 border-blue-200 hover:bg-blue-100">
                 <FileText className="h-5 w-5 text-blue-600" />
-              </div>
-              <span className="text-xs text-blue-600">Estimate</span>
+              </Button>
+              <span className="text-xs text-blue-600 mt-1 font-medium">Estimate</span>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+              <Button variant="outline" size="icon" className="w-12 h-12 rounded-full bg-blue-50 border-blue-200 hover:bg-blue-100">
                 <CheckCircle className="h-5 w-5 text-blue-600" />
-              </div>
-              <span className="text-xs text-blue-600">Copy to Job</span>
+              </Button>
+              <span className="text-xs text-blue-600 mt-1 font-medium">Copy to Job</span>
             </div>
             <div className="flex flex-col items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+              <Button variant="outline" size="icon" className="w-12 h-12 rounded-full bg-blue-50 border-blue-200 hover:bg-blue-100">
                 <MoreHorizontal className="h-5 w-5 text-blue-600" />
-              </div>
-              <span className="text-xs text-blue-600">More</span>
+              </Button>
+              <span className="text-xs text-blue-600 mt-1 font-medium">More</span>
             </div>
           </div>
         </div>
@@ -206,33 +233,42 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
             {/* Time Tracking Controls */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Truck className="h-6 w-6 text-gray-400" />
-                </div>
-                <span className="text-sm text-gray-500">ON MY WAY</span>
+                <Button
+                  onClick={sendOnMyWayNotification}
+                  variant="outline"
+                  className="w-12 h-12 rounded-full bg-orange-50 border-orange-200 hover:bg-orange-100"
+                  disabled={appointment.status === 'completed'}
+                >
+                  <Truck className="h-6 w-6 text-orange-600" />
+                </Button>
+                <span className="text-sm text-orange-600 font-medium block mt-2">ON MY WAY</span>
               </div>
               
               <div className="text-center">
                 <Button
                   onClick={appointment.status === 'scheduled' ? startTimeTracking : 
                            appointment.timeTracking?.isActive ? pauseTimeTracking : startTimeTracking}
-                  className="w-12 h-12 rounded-full p-0"
-                  variant={appointment.timeTracking?.isActive ? "destructive" : "default"}
+                  className={`w-12 h-12 rounded-full ${
+                    appointment.timeTracking?.isActive 
+                      ? 'bg-red-500 hover:bg-red-600' 
+                      : 'bg-green-500 hover:bg-green-600'
+                  }`}
                 >
                   <Play className="h-6 w-6" />
                 </Button>
-                <span className="text-sm text-blue-600 font-medium block mt-2">START</span>
+                <span className="text-sm text-green-600 font-medium block mt-2">START</span>
               </div>
               
               <div className="text-center">
                 <Button
                   onClick={completeAppointment}
-                  className="w-12 h-12 rounded-full p-0"
+                  variant="outline"
+                  className="w-12 h-12 rounded-full bg-gray-50 border-gray-200 hover:bg-gray-100"
                   disabled={appointment.status === 'completed'}
                 >
-                  <Square className="h-6 w-6" />
+                  <Square className="h-6 w-6 text-gray-600" />
                 </Button>
-                <span className="text-sm text-blue-600 font-medium block mt-2">FINISH</span>
+                <span className="text-sm text-gray-600 font-medium block mt-2">FINISH</span>
               </div>
             </div>
             
@@ -267,7 +303,7 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
               <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
                 $1,755,773
               </div>
-              <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs mt-6">
+              <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
                 Built in 1926
               </div>
               <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
@@ -279,25 +315,25 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">{appointment.customer}</h3>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
-                    <MessageCircle className="h-4 w-4" />
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0 rounded-full">
+                    <MessageCircle className="h-4 w-4 text-gray-600" />
                   </Button>
-                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0 rounded-full">
                     <MessageCircle className="h-4 w-4 text-blue-600" />
                   </Button>
-                  <Button size="sm" variant="outline" className="w-10 h-10 p-0">
-                    <Phone className="h-4 w-4" />
+                  <Button size="sm" variant="outline" className="w-10 h-10 p-0 rounded-full">
+                    <Phone className="h-4 w-4 text-green-600" />
                   </Button>
                 </div>
               </div>
               
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-gray-500 mt-1" />
-                <div>
-                  <p className="text-sm">1950 25th Ave E</p>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{appointment.address}</p>
                   <p className="text-sm text-gray-500">Seattle, WA, 98112</p>
                 </div>
-                <Button size="sm" variant="outline" className="w-10 h-10 p-0 ml-auto">
+                <Button size="sm" variant="outline" className="w-10 h-10 p-0 rounded-full">
                   <MapPin className="h-4 w-4 text-blue-600" />
                 </Button>
               </div>
@@ -313,7 +349,7 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                 <Calendar className="h-5 w-5" />
                 Schedule
               </div>
-              <Button size="sm" variant="ghost" className="p-1">
+              <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                 <Edit className="h-4 w-4 text-blue-600" />
               </Button>
             </CardTitle>
@@ -322,26 +358,24 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
             <div className="flex justify-between">
               <span className="text-sm">From:</span>
               <div className="text-right">
-                <div className="font-medium">Thu Mar 14</div>
-                <div className="text-sm text-gray-500">10:30a</div>
+                <div className="font-medium">{appointment.scheduledDate}</div>
+                <div className="text-sm text-gray-500">{appointment.scheduledTime}</div>
               </div>
             </div>
             
             <div className="flex justify-between">
               <span className="text-sm">To:</span>
               <div className="text-right">
-                <div className="font-medium">Thu Mar 14</div>
+                <div className="font-medium">{appointment.scheduledDate}</div>
                 <div className="text-sm text-gray-500">11:30a</div>
               </div>
             </div>
             
             <div className="flex items-center gap-2 pt-2">
-              <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
-                  alt="Technician" 
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-blue-600">
+                  {appointment.technician.charAt(0)}
+                </span>
               </div>
               <span className="font-medium">{appointment.technician}</span>
             </div>
@@ -356,7 +390,7 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                 <Calendar className="h-5 w-5" />
                 Expiration date
               </div>
-              <Button size="sm" variant="ghost" className="p-1">
+              <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                 <Edit className="h-4 w-4 text-blue-600" />
               </Button>
             </CardTitle>
@@ -385,10 +419,10 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                 Line Items
               </div>
               <div className="flex gap-1">
-                <Button size="sm" variant="ghost" className="p-1">
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                   <ChevronRight className="h-4 w-4 text-blue-600" />
                 </Button>
-                <Button size="sm" variant="ghost" className="p-1">
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                   <Edit className="h-4 w-4 text-blue-600" />
                 </Button>
               </div>
@@ -489,10 +523,10 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                 Notes
               </div>
               <div className="flex gap-1">
-                <Button size="sm" variant="ghost" className="p-1">
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                   <ChevronRight className="h-4 w-4 text-blue-600" />
                 </Button>
-                <Button size="sm" variant="ghost" className="p-1">
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
                   <Plus className="h-4 w-4 text-blue-600" />
                 </Button>
               </div>
@@ -500,17 +534,15 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
           </CardHeader>
           <CardContent>
             <div className="text-sm text-gray-500 mb-2">02/23/2024, 4:59PM</div>
-            <div className="font-medium mb-3">REMODEL OF SMALL BATHROOM ON THE UPPER FLOOR</div>
+            <div className="font-medium mb-3">{appointment.notes || "REMODEL OF SMALL BATHROOM ON THE UPPER FLOOR"}</div>
             
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-gray-200 rounded-full overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
-                  alt="Scott Bondy" 
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                <span className="text-xs font-semibold text-blue-600">
+                  {appointment.technician.split(' ').map(n => n.charAt(0)).join('')}
+                </span>
               </div>
-              <span className="font-medium">Scott Bondy</span>
+              <span className="font-medium">{appointment.technician}</span>
             </div>
           </CardContent>
         </Card>
@@ -524,7 +556,9 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                   <FileText className="h-5 w-5 text-gray-500" />
                   <span className="font-medium">Estimate Fields</span>
                 </div>
-                <Plus className="h-5 w-5 text-gray-500" />
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
+                  <Plus className="h-5 w-5 text-gray-500" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -536,7 +570,9 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                   <Tag className="h-5 w-5 text-gray-500" />
                   <span className="font-medium">Job Tags</span>
                 </div>
-                <Plus className="h-5 w-5 text-gray-500" />
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
+                  <Plus className="h-5 w-5 text-gray-500" />
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -548,7 +584,9 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
                   <Paperclip className="h-5 w-5 text-gray-500" />
                   <span className="font-medium">Attachments</span>
                 </div>
-                <Plus className="h-5 w-5 text-gray-500" />
+                <Button size="sm" variant="ghost" className="p-1 rounded-full hover:bg-gray-100">
+                  <Plus className="h-5 w-5 text-gray-500" />
+                </Button>
               </div>
             </CardContent>
           </Card>
