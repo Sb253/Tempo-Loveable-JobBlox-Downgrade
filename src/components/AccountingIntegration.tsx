@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Link, Settings, Sync, CheckCircle, AlertCircle, Database } from "lucide-react";
+import { Link, Settings, RefreshCw, CheckCircle, AlertCircle, Database } from "lucide-react";
 
 interface Integration {
   id: string;
@@ -224,7 +223,7 @@ export const AccountingIntegration = () => {
                       size="sm"
                       onClick={() => handleSync(integration.id)}
                     >
-                      <Sync className="h-4 w-4 mr-2" />
+                      <RefreshCw className="h-4 w-4 mr-2" />
                       Sync Now
                     </Button>
                     <Button
