@@ -244,6 +244,7 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
                         <SelectItem value="modern">Modern</SelectItem>
                         <SelectItem value="classic">Classic</SelectItem>
                         <SelectItem value="minimal">Minimal</SelectItem>
+                        <SelectItem value="contemporary">Contemporary</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

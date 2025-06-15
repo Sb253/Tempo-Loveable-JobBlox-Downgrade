@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useCompanyData } from "@/hooks/useCompanyData";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 
 interface EstimateLineItem {
   id: string;
@@ -30,14 +30,14 @@ interface EstimateData {
 
 interface EstimateTemplateProps {
   data: EstimateData;
-  template?: 'modern' | 'classic' | 'minimal';
+  template?: 'modern' | 'classic' | 'minimal' | 'contemporary';
 }
 
 export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({ 
   data, 
   template = 'modern' 
 }) => {
-  const companyData = useCompanyData();
+  const companySettings = useCompanySettings();
 
   const getFontClass = () => {
     switch (data.fontFamily) {
@@ -50,14 +50,53 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     }
   };
 
+  const renderCompanyInfo = () => (
+    <div className="space-y-1">
+      <div className="font-semibold">{companySettings.companyName}</div>
+      {companySettings.showAddress && (
+        <>
+          <div>{companySettings.businessAddress}</div>
+          <div>{companySettings.city}, {companySettings.state} {companySettings.zipCode}</div>
+        </>
+      )}
+      <div>Phone: {companySettings.phone}</div>
+      {companySettings.showEmail && <div>Email: {companySettings.email}</div>}
+      {companySettings.showWebsite && <div>Website: {companySettings.website}</div>}
+    </div>
+  );
+
+  const renderLicenseInfo = () => {
+    if (!companySettings.showLicense && !companySettings.showInsurance && !companySettings.showBonded) {
+      return null;
+    }
+
+    return (
+      <div className="mt-4 text-sm space-y-1">
+        {companySettings.showLicense && (
+          <>
+            <div>Business License: {companySettings.businessLicense}</div>
+            <div>Contractor License: {companySettings.contractorLicense}</div>
+            <div>State License: {companySettings.stateLicense}</div>
+          </>
+        )}
+        {companySettings.showInsurance && (
+          <div>Insurance Policy: {companySettings.insurancePolicy}</div>
+        )}
+        {companySettings.showBonded && companySettings.bonded && (
+          <div className="font-medium text-green-700">✓ Licensed, Bonded & Insured</div>
+        )}
+      </div>
+    );
+  };
+
   const renderModernTemplate = () => (
     <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header with gradient */}
       <div className="flex justify-between items-start mb-8 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg -z-10"></div>
         <div className="flex items-center gap-4 p-6">
-          {companyData.logo && (
-            <img src={companyData.logo} alt="Company Logo" className="h-16 w-auto object-contain" />
+          {companySettings.logo && (
+            <img src={companySettings.logo} alt="Company Logo" className="h-16 w-auto object-contain" />
           )}
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">ESTIMATE</h1>
@@ -78,11 +117,8 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 rounded-lg border-l-4 border-blue-500">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">From</h3>
           <div className="text-gray-700">
-            <div className="font-semibold">{companyData.name}</div>
-            <div>{companyData.address}</div>
-            <div>{companyData.city}</div>
-            <div>Phone: {companyData.phone}</div>
-            <div>Email: {companyData.email}</div>
+            {renderCompanyInfo()}
+            {renderLicenseInfo()}
           </div>
         </div>
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
@@ -168,6 +204,9 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     <div className={`bg-white p-8 max-w-4xl mx-auto border-4 border-gray-800 ${getFontClass()}`}>
       {/* Header */}
       <div className="text-center mb-8 border-b-4 border-gray-800 pb-6">
+        {companySettings.logo && (
+          <img src={companySettings.logo} alt="Company Logo" className="h-16 w-auto object-contain mx-auto mb-4" />
+        )}
         <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-wide">ESTIMATE</h1>
         <div className="text-xl text-gray-700 font-semibold">#{data.estimateNumber}</div>
       </div>
@@ -176,12 +215,9 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
       <div className="grid grid-cols-2 gap-8 mb-8">
         <div className="border-2 border-gray-600 p-4">
           <h3 className="text-lg font-bold text-gray-900 mb-3 border-b-2 border-gray-600 pb-1">FROM</h3>
-          <div className="text-gray-800 space-y-1">
-            <div className="font-bold">{companyData.name}</div>
-            <div>{companyData.address}</div>
-            <div>{companyData.city}</div>
-            <div>Phone: {companyData.phone}</div>
-            <div>Email: {companyData.email}</div>
+          <div className="text-gray-800">
+            {renderCompanyInfo()}
+            {renderLicenseInfo()}
           </div>
         </div>
         <div className="border-2 border-gray-600 p-4">
@@ -290,13 +326,8 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div>
           <div className="text-xs text-gray-400 mb-3 tracking-widest uppercase">From</div>
           <div className="text-gray-900 space-y-1">
-            <div className="font-medium text-lg">{companyData.name}</div>
-            <div className="text-sm text-gray-600 space-y-0.5">
-              <div>{companyData.address}</div>
-              <div>{companyData.city}</div>
-              <div>{companyData.phone}</div>
-              <div>{companyData.email}</div>
-            </div>
+            {renderCompanyInfo()}
+            {renderLicenseInfo()}
           </div>
         </div>
         <div>
@@ -378,11 +409,142 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     </div>
   );
 
+  const renderContemporaryTemplate = () => (
+    <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`} style={{ 
+      '--primary': companySettings.primaryColor,
+      '--secondary': companySettings.secondaryColor,
+      '--accent': companySettings.accentColor
+    } as React.CSSProperties}>
+      {/* Header */}
+      <div className="flex justify-between items-start mb-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r opacity-5 rounded-lg -z-10" style={{
+          background: `linear-gradient(135deg, ${companySettings.primaryColor}, ${companySettings.secondaryColor})`
+        }}></div>
+        <div className="flex items-center gap-6 p-6 z-10">
+          {companySettings.logo && (
+            <img src={companySettings.logo} alt="Company Logo" className="h-20 w-auto object-contain" />
+          )}
+          <div>
+            <h1 className="text-5xl font-light mb-3" style={{ color: companySettings.primaryColor }}>ESTIMATE</h1>
+            <div className="w-24 h-1 rounded-full" style={{ backgroundColor: companySettings.accentColor }}></div>
+          </div>
+        </div>
+        <div className="text-right p-6 z-10">
+          <div className="text-3xl font-light mb-3" style={{ color: companySettings.secondaryColor }}>#{data.estimateNumber}</div>
+          <div className="text-gray-600 space-y-2 text-sm">
+            <div>Issued: {new Date(data.issueDate).toLocaleDateString()}</div>
+            <div>Valid Until: {new Date(data.validUntil).toLocaleDateString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Company & Customer Info */}
+      <div className="grid grid-cols-2 gap-12 mb-12">
+        <div className="relative p-6 rounded-lg border-l-4" style={{ 
+          borderLeftColor: companySettings.primaryColor,
+          backgroundColor: `${companySettings.primaryColor}08`
+        }}>
+          <h3 className="text-lg font-medium mb-4" style={{ color: companySettings.primaryColor }}>From</h3>
+          <div className="text-gray-800 space-y-1">
+            {renderCompanyInfo()}
+            {renderLicenseInfo()}
+          </div>
+        </div>
+        <div className="relative p-6 rounded-lg border-l-4" style={{ 
+          borderLeftColor: companySettings.secondaryColor,
+          backgroundColor: `${companySettings.secondaryColor}08`
+        }}>
+          <h3 className="text-lg font-medium mb-4" style={{ color: companySettings.secondaryColor }}>Estimate For</h3>
+          <div className="text-gray-800">
+            <div className="font-semibold text-lg">{data.customer}</div>
+            {data.jobReference && <div className="text-gray-600 mt-2">Project: {data.jobReference}</div>}
+          </div>
+        </div>
+      </div>
+
+      {/* Line Items */}
+      <div className="mb-12 bg-white rounded-xl shadow-lg border overflow-hidden">
+        <table className="w-full">
+          <thead style={{ backgroundColor: companySettings.primaryColor }}>
+            <tr className="text-white">
+              <th className="text-left py-6 px-6 font-medium">Description</th>
+              <th className="text-right py-6 px-6 font-medium w-20">Qty</th>
+              <th className="text-right py-6 px-6 font-medium w-24">Rate</th>
+              <th className="text-right py-6 px-6 font-medium w-24">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.lineItems.map((item, index) => (
+              <tr key={item.id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                <td className="py-5 px-6 text-gray-800 font-medium">{item.description}</td>
+                <td className="py-5 px-6 text-right text-gray-600">{item.quantity}</td>
+                <td className="py-5 px-6 text-right text-gray-600">${item.rate.toFixed(2)}</td>
+                <td className="py-5 px-6 text-right text-gray-800 font-semibold">${item.amount.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Totals */}
+      <div className="flex justify-end mb-12">
+        <div className="w-80 rounded-xl shadow-lg border overflow-hidden">
+          <div className="py-4 px-6 text-white font-medium text-center" style={{ backgroundColor: companySettings.secondaryColor }}>
+            ESTIMATE SUMMARY
+          </div>
+          <div className="p-6 space-y-3">
+            <div className="flex justify-between py-2">
+              <span className="text-gray-600">Subtotal:</span>
+              <span className="text-gray-900 font-medium">${data.subtotal.toFixed(2)}</span>
+            </div>
+            {data.discount && data.discount > 0 && (
+              <div className="flex justify-between py-2" style={{ color: companySettings.accentColor }}>
+                <span>Discount:</span>
+                <span className="font-medium">-${data.discount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between py-2">
+              <span className="text-gray-600">Tax:</span>
+              <span className="text-gray-900 font-medium">${data.tax.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between py-4 border-t-2 font-bold text-xl" style={{ borderColor: companySettings.primaryColor }}>
+              <span className="text-gray-900">Total Estimate:</span>
+              <span style={{ color: companySettings.primaryColor }}>${data.total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Notes & Terms */}
+      {(data.notes || data.terms) && (
+        <div className="rounded-xl p-8 border-l-4" style={{ 
+          borderLeftColor: companySettings.accentColor,
+          backgroundColor: `${companySettings.accentColor}08`
+        }}>
+          {data.notes && (
+            <div className="mb-6">
+              <h4 className="font-semibold text-gray-900 mb-3" style={{ color: companySettings.primaryColor }}>Notes</h4>
+              <p className="text-gray-700 leading-relaxed">{data.notes}</p>
+            </div>
+          )}
+          {data.terms && (
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3" style={{ color: companySettings.primaryColor }}>Terms & Conditions</h4>
+              <p className="text-gray-700 leading-relaxed">{data.terms}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   switch (template) {
     case 'classic':
       return renderClassicTemplate();
     case 'minimal':
       return renderMinimalTemplate();
+    case 'contemporary':
+      return renderContemporaryTemplate();
     default:
       return renderModernTemplate();
   }

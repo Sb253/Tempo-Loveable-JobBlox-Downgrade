@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -19,10 +18,10 @@ export const QuotePreview: React.FC<QuotePreviewProps> = ({
   onTemplateSelect,
   selectedTemplate = 'modern'
 }) => {
-  const [currentTemplate, setCurrentTemplate] = useState<'modern' | 'classic' | 'minimal'>(selectedTemplate as 'modern' | 'classic' | 'minimal');
+  const [currentTemplate, setCurrentTemplate] = useState<'modern' | 'classic' | 'minimal' | 'contemporary'>(selectedTemplate as 'modern' | 'classic' | 'minimal' | 'contemporary');
 
   const handleTemplateChange = (template: string) => {
-    setCurrentTemplate(template as 'modern' | 'classic' | 'minimal');
+    setCurrentTemplate(template as 'modern' | 'classic' | 'minimal' | 'contemporary');
     onTemplateSelect(template);
   };
 
@@ -56,6 +55,7 @@ export const QuotePreview: React.FC<QuotePreviewProps> = ({
                   <SelectItem value="modern">Modern</SelectItem>
                   <SelectItem value="classic">Classic</SelectItem>
                   <SelectItem value="minimal">Minimal</SelectItem>
+                  <SelectItem value="contemporary">Contemporary</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" size="sm" onClick={handleSend}>
