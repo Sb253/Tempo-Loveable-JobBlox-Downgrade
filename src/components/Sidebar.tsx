@@ -1,7 +1,8 @@
 
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Building2 } from "lucide-react";
 
 interface SidebarSection {
   id: string;
@@ -15,11 +16,43 @@ interface SidebarProps {
   sections: SidebarSection[];
 }
 
+interface CompanyData {
+  name: string;
+  logo: string | null;
+}
+
 export const Sidebar = ({ activeSection, onSectionChange, sections }: SidebarProps) => {
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Construction CRM',
+    logo: null
+  });
+
+  useEffect(() => {
+    const savedCompanyData = localStorage.getItem('companySettings');
+    if (savedCompanyData) {
+      const data = JSON.parse(savedCompanyData);
+      setCompanyData({
+        name: data.name || 'Construction CRM',
+        logo: data.logo || null
+      });
+    }
+  }, []);
+
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary">Construction CRM</h1>
+        <div className="flex items-center gap-3">
+          {companyData.logo ? (
+            <img 
+              src={companyData.logo} 
+              alt="Company Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          ) : (
+            <Building2 className="h-8 w-8 text-primary" />
+          )}
+          <h1 className="text-2xl font-bold text-primary">{companyData.name}</h1>
+        </div>
       </div>
       
       <nav className="px-4 space-y-2">
