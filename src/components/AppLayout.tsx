@@ -20,6 +20,10 @@ import { SchedulingDashboard } from "./SchedulingDashboard";
 import { EstimateList } from "./EstimateList";
 import { PhotoDocumentation } from "./PhotoDocumentation";
 import { MobileFeaturesDashboard } from "./MobileFeaturesDashboard";
+import { RealTimeChat } from "./RealTimeChat";
+import { AdvancedInventorySystem } from "./AdvancedInventorySystem";
+import { FinancialAnalyticsDashboard } from "./FinancialAnalyticsDashboard";
+import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
 
 interface SidebarSection {
   id: string;
