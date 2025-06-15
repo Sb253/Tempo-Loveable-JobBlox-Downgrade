@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench, Settings, Building2, FileText, CreditCard, UserCheck, BarChart3, MessageSquare } from "lucide-react";
+import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench, Settings, Building2, FileText, CreditCard, UserCheck, BarChart3, MessageSquare, Calculator } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   NavigationMenu,

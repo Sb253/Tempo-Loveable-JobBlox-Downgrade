@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Star, MessageSquare, Share2, Send, ThumbsUp, AlertCircle, TrendingUp } from "lucide-react";
+import { Star, MessageSquare, Share2, Send, ThumbsUp, AlertCircle, TrendingUp, Mail, Clock, Calendar, Users, Target } from "lucide-react";
 
 export const ReviewManagement = () => {
   const { toast } = useToast();
@@ -62,6 +62,14 @@ export const ReviewManagement = () => {
     averageResponseTime: '2.3 hours'
   });
 
+  const [automationSettings, setAutomationSettings] = useState({
+    autoRequestEnabled: true,
+    requestDelay: 7, // days after job completion
+    reminderEnabled: true,
+    reminderInterval: 3, // days
+    maxReminders: 2
+  });
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -84,6 +92,17 @@ export const ReviewManagement = () => {
     toast({
       title: "Review Request Sent",
       description: "Review request email has been sent to recent customers.",
+    });
+  };
+
+  const handleAutomationToggle = (setting: string) => {
+    setAutomationSettings(prev => ({
+      ...prev,
+      [setting]: !prev[setting as keyof typeof prev]
+    }));
+    toast({
+      title: "Settings Updated",
+      description: "Automation settings have been saved.",
     });
   };
 
@@ -148,6 +167,7 @@ export const ReviewManagement = () => {
       <Tabs defaultValue="reviews" className="w-full">
         <TabsList>
           <TabsTrigger value="reviews">Recent Reviews</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="requests">Review Requests</TabsTrigger>
         </TabsList>
@@ -222,6 +242,97 @@ export const ReviewManagement = () => {
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        <TabsContent value="automation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Automated Review Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Enable Auto-Requests</h3>
+                  <p className="text-sm text-muted-foreground">Automatically send review requests after job completion</p>
+                </div>
+                <Button 
+                  variant={automationSettings.autoRequestEnabled ? "default" : "outline"}
+                  onClick={() => handleAutomationToggle('autoRequestEnabled')}
+                >
+                  {automationSettings.autoRequestEnabled ? 'Enabled' : 'Disabled'}
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Request Delay (days after completion)</label>
+                  <Input 
+                    type="number" 
+                    value={automationSettings.requestDelay}
+                    onChange={(e) => setAutomationSettings(prev => ({ ...prev, requestDelay: parseInt(e.target.value) }))}
+                    className="w-20 mt-1"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-medium">Follow-up Reminders</h3>
+                    <p className="text-sm text-muted-foreground">Send reminder emails to customers who haven't left reviews</p>
+                  </div>
+                  <Button 
+                    variant={automationSettings.reminderEnabled ? "default" : "outline"}
+                    onClick={() => handleAutomationToggle('reminderEnabled')}
+                  >
+                    {automationSettings.reminderEnabled ? 'Enabled' : 'Disabled'}
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Reminder Interval (days)</label>
+                    <Input 
+                      type="number" 
+                      value={automationSettings.reminderInterval}
+                      onChange={(e) => setAutomationSettings(prev => ({ ...prev, reminderInterval: parseInt(e.target.value) }))}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Max Reminders</label>
+                    <Input 
+                      type="number" 
+                      value={automationSettings.maxReminders}
+                      onChange={(e) => setAutomationSettings(prev => ({ ...prev, maxReminders: parseInt(e.target.value) }))}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Review Request Templates</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email Subject</label>
+                <Input placeholder="How was your experience with our service?" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email Message</label>
+                <textarea 
+                  className="w-full min-h-[100px] p-3 border rounded-md"
+                  placeholder="Hi {customer_name}, We'd love to hear about your experience with our recent {service_type} project..."
+                />
+              </div>
+              <Button>Save Template</Button>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
@@ -323,16 +434,23 @@ export const ReviewManagement = () => {
                 <div className="flex justify-between items-center p-3 border rounded">
                   <div>
                     <p className="font-medium">John Smith - Kitchen Project</p>
-                    <p className="text-sm text-muted-foreground">Sent 3 days ago</p>
+                    <p className="text-sm text-muted-foreground">Sent 3 days ago • Auto-request</p>
                   </div>
                   <Badge variant="outline">Pending</Badge>
                 </div>
                 <div className="flex justify-between items-center p-3 border rounded">
                   <div>
                     <p className="font-medium">Sarah Johnson - Bathroom Remodel</p>
-                    <p className="text-sm text-muted-foreground">Sent 1 week ago</p>
+                    <p className="text-sm text-muted-foreground">Sent 1 week ago • Manual request</p>
                   </div>
                   <Badge variant="default">Completed</Badge>
+                </div>
+                <div className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <p className="font-medium">Mike Wilson - Deck Construction</p>
+                    <p className="text-sm text-muted-foreground">Sent 2 weeks ago • Auto-request + 1 reminder</p>
+                  </div>
+                  <Badge variant="secondary">No Response</Badge>
                 </div>
               </div>
             </CardContent>

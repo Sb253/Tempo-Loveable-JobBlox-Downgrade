@@ -3,360 +3,456 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mail, Send, Users, TrendingUp, Eye, MousePointer, Share2, Calendar } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-
-interface Campaign {
-  id: string;
-  name: string;
-  type: 'email' | 'sms' | 'social';
-  status: 'draft' | 'active' | 'completed';
-  recipients: number;
-  opens: number;
-  clicks: number;
-  created: string;
-  scheduled?: string;
-}
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: '1',
-    name: 'Spring Home Renovation Specials',
-    type: 'email',
-    status: 'active',
-    recipients: 450,
-    opens: 180,
-    clicks: 45,
-    created: '2024-12-10',
-    scheduled: '2024-12-20'
-  },
-  {
-    id: '2',
-    name: 'Holiday Service Reminders',
-    type: 'sms',
-    status: 'completed',
-    recipients: 200,
-    opens: 185,
-    clicks: 25,
-    created: '2024-12-05'
-  },
-  {
-    id: '3',
-    name: 'Customer Testimonials Campaign',
-    type: 'social',
-    status: 'draft',
-    recipients: 0,
-    opens: 0,
-    clicks: 0,
-    created: '2024-12-15'
-  }
-];
+import { Mail, MessageSquare, Send, Users, Calendar, Target, TrendingUp, Clock, CheckCircle, Play, Pause } from "lucide-react";
 
 export const MarketingTools = () => {
   const { toast } = useToast();
-  const [campaigns] = useState<Campaign[]>(mockCampaigns);
-  const [showNewCampaign, setShowNewCampaign] = useState(false);
-  const [newCampaign, setNewCampaign] = useState({
-    name: '',
-    type: 'email',
-    subject: '',
-    content: '',
-    audience: 'all'
-  });
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+  
+  const [emailCampaigns] = useState([
+    {
+      id: '1',
+      name: 'Welcome New Customers',
+      type: 'automated',
+      status: 'active',
+      recipients: 156,
+      openRate: '24.5%',
+      clickRate: '3.2%',
+      lastSent: '2024-12-10'
+    },
+    {
+      id: '2',
+      name: 'Holiday Promotion',
+      type: 'manual',
+      status: 'draft',
+      recipients: 0,
+      openRate: '-',
+      clickRate: '-',
+      lastSent: null
+    },
+    {
+      id: '3',
+      name: 'Project Completion Follow-up',
+      type: 'automated',
+      status: 'active',
+      recipients: 43,
+      openRate: '31.8%',
+      clickRate: '5.7%',
+      lastSent: '2024-12-08'
     }
-  };
+  ]);
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'email': return Mail;
-      case 'sms': return Send;
-      case 'social': return Share2;
-      default: return Mail;
+  const [textCampaigns] = useState([
+    {
+      id: '1',
+      name: 'Appointment Reminders',
+      type: 'automated',
+      status: 'active',
+      sent: 23,
+      delivered: 22,
+      responseRate: '8.7%'
+    },
+    {
+      id: '2',
+      name: 'Service Promotions',
+      type: 'manual',
+      status: 'active',
+      sent: 89,
+      delivered: 87,
+      responseRate: '4.3%'
     }
-  };
+  ]);
 
-  const handleCreateCampaign = () => {
-    console.log('Creating new campaign:', newCampaign);
+  const handleCampaignAction = (action: string, campaignId: string) => {
     toast({
-      title: "Campaign Created",
-      description: `${newCampaign.name} has been created successfully.`,
+      title: `Campaign ${action}`,
+      description: `Campaign has been ${action.toLowerCase()}.`,
     });
-    setShowNewCampaign(false);
-    setNewCampaign({ name: '', type: 'email', subject: '', content: '', audience: 'all' });
   };
 
-  const totalRecipients = campaigns.reduce((sum, campaign) => sum + campaign.recipients, 0);
-  const totalOpens = campaigns.reduce((sum, campaign) => sum + campaign.opens, 0);
-  const totalClicks = campaigns.reduce((sum, campaign) => sum + campaign.clicks, 0);
-  const avgOpenRate = totalRecipients > 0 ? (totalOpens / totalRecipients * 100).toFixed(1) : '0';
-  const avgClickRate = totalOpens > 0 ? (totalClicks / totalOpens * 100).toFixed(1) : '0';
+  const createNewCampaign = (type: 'email' | 'text') => {
+    toast({
+      title: "New Campaign",
+      description: `Creating new ${type} campaign...`,
+    });
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Marketing Tools</h2>
-        <Button onClick={() => setShowNewCampaign(true)} className="flex items-center gap-2">
-          <Send className="h-4 w-4" />
-          New Campaign
-        </Button>
+        <h2 className="text-2xl font-bold">Marketing & Growth Tools</h2>
+        <div className="flex gap-2">
+          <Button onClick={() => createNewCampaign('email')} className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            New Email Campaign
+          </Button>
+          <Button variant="outline" onClick={() => createNewCampaign('text')} className="flex items-center gap-2">
+            <MessageSquare className="h-4 w-4" />
+            New Text Campaign
+          </Button>
+        </div>
       </div>
 
-      {/* Marketing Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Marketing Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Recipients</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalRecipients.toLocaleString()}</div>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-2xl font-bold">156</p>
+                <p className="text-sm text-muted-foreground">Email Subscribers</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Open Rate</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgOpenRate}%</div>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="text-2xl font-bold">134</p>
+                <p className="text-sm text-muted-foreground">SMS Subscribers</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Click Rate</CardTitle>
-            <MousePointer className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{avgClickRate}%</div>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-purple-600" />
+              <div>
+                <p className="text-2xl font-bold">27.3%</p>
+                <p className="text-sm text-muted-foreground">Avg Open Rate</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
-
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {campaigns.filter(c => c.status === 'active').length}
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="text-2xl font-bold">4.2%</p>
+                <p className="text-sm text-muted-foreground">Conversion Rate</p>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Marketing Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
-              <Mail className="h-6 w-6" />
-              <span>Email Newsletter</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
-              <Send className="h-6 w-6" />
-              <span>SMS Promotions</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
-              <Share2 className="h-6 w-6" />
-              <span>Social Media</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex flex-col items-center gap-2">
-              <Calendar className="h-6 w-6" />
-              <span>Seasonal Campaigns</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="email" className="w-full">
+        <TabsList>
+          <TabsTrigger value="email">Email Marketing</TabsTrigger>
+          <TabsTrigger value="text">Text Marketing</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-      {/* Campaign Templates */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Campaign Templates</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="border rounded-lg p-4">
-              <h4 className="font-medium mb-2">Service Reminder</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Remind customers about upcoming maintenance or seasonal services.
-              </p>
-              <Button variant="outline" size="sm">Use Template</Button>
-            </div>
-            <div className="border rounded-lg p-4">
-              <h4 className="font-medium mb-2">Special Promotion</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Announce special offers and discounts to your customer base.
-              </p>
-              <Button variant="outline" size="sm">Use Template</Button>
-            </div>
-            <div className="border rounded-lg p-4">
-              <h4 className="font-medium mb-2">Project Showcase</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Share recent project photos and customer testimonials.
-              </p>
-              <Button variant="outline" size="sm">Use Template</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Campaigns */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Campaigns</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {campaigns.map((campaign) => {
-              const IconComponent = getTypeIcon(campaign.type);
-              const openRate = campaign.recipients > 0 ? (campaign.opens / campaign.recipients * 100).toFixed(1) : '0';
-              const clickRate = campaign.opens > 0 ? (campaign.clicks / campaign.opens * 100).toFixed(1) : '0';
-
-              return (
-                <div key={campaign.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <IconComponent className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <h4 className="font-medium">{campaign.name}</h4>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getStatusColor(campaign.status)}>
+        <TabsContent value="email" className="space-y-4">
+          <div className="grid gap-4">
+            {emailCampaigns.map((campaign) => (
+              <Card key={campaign.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold">{campaign.name}</h3>
+                        <Badge variant={campaign.type === 'automated' ? 'default' : 'secondary'}>
+                          {campaign.type}
+                        </Badge>
+                        <Badge variant={campaign.status === 'active' ? 'default' : 'outline'}>
                           {campaign.status}
                         </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(campaign.created).toLocaleDateString()}
-                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Recipients:</span>
+                          <div className="font-medium">{campaign.recipients}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Open Rate:</span>
+                          <div className="font-medium">{campaign.openRate}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Click Rate:</span>
+                          <div className="font-medium">{campaign.clickRate}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Last Sent:</span>
+                          <div className="font-medium">
+                            {campaign.lastSent ? new Date(campaign.lastSent).toLocaleDateString() : 'Never'}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="grid grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="font-medium">{campaign.recipients}</p>
-                        <p className="text-muted-foreground">Recipients</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{openRate}%</p>
-                        <p className="text-muted-foreground">Open Rate</p>
-                      </div>
-                      <div>
-                        <p className="font-medium">{clickRate}%</p>
-                        <p className="text-muted-foreground">Click Rate</p>
-                      </div>
+                    
+                    <div className="flex gap-2">
+                      {campaign.status === 'active' ? (
+                        <Button size="sm" variant="outline" onClick={() => handleCampaignAction('Paused', campaign.id)}>
+                          <Pause className="h-3 w-3 mr-1" />
+                          Pause
+                        </Button>
+                      ) : (
+                        <Button size="sm" onClick={() => handleCampaignAction('Started', campaign.id)}>
+                          <Play className="h-3 w-3 mr-1" />
+                          Start
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline">
+                        Edit
+                      </Button>
+                      {campaign.status === 'draft' && (
+                        <Button size="sm" onClick={() => handleCampaignAction('Sent', campaign.id)}>
+                          <Send className="h-3 w-3 mr-1" />
+                          Send
+                        </Button>
+                      )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">View</Button>
-                    <Button variant="outline" size="sm">Edit</Button>
-                  </div>
-                </div>
-              );
-            })}
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* New Campaign Dialog */}
-      {showNewCampaign && (
-        <Dialog open={true} onOpenChange={setShowNewCampaign}>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Create New Marketing Campaign</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="campaignName">Campaign Name *</Label>
-                <Input
-                  id="campaignName"
-                  value={newCampaign.name}
-                  onChange={(e) => setNewCampaign(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter campaign name"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="campaignType">Campaign Type *</Label>
-                <Select value={newCampaign.type} onValueChange={(value) => setNewCampaign(prev => ({ ...prev, type: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select campaign type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="email">Email Campaign</SelectItem>
-                    <SelectItem value="sms">SMS Campaign</SelectItem>
-                    <SelectItem value="social">Social Media</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="audience">Target Audience *</Label>
-                <Select value={newCampaign.audience} onValueChange={(value) => setNewCampaign(prev => ({ ...prev, audience: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select audience" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Customers</SelectItem>
-                    <SelectItem value="active">Active Customers</SelectItem>
-                    <SelectItem value="prospects">Prospects</SelectItem>
-                    <SelectItem value="custom">Custom Segment</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {newCampaign.type === 'email' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Create Email Campaign</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="subject">Email Subject *</Label>
-                  <Input
-                    id="subject"
-                    value={newCampaign.subject}
-                    onChange={(e) => setNewCampaign(prev => ({ ...prev, subject: e.target.value }))}
-                    placeholder="Enter email subject"
-                  />
+                  <label className="text-sm font-medium">Campaign Name</label>
+                  <Input placeholder="Enter campaign name" />
                 </div>
-              )}
-
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Campaign Type</label>
+                  <select className="w-full px-3 py-2 border rounded-md">
+                    <option value="manual">One-time Send</option>
+                    <option value="automated">Automated</option>
+                  </select>
+                </div>
+              </div>
               <div className="space-y-2">
-                <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  value={newCampaign.content}
-                  onChange={(e) => setNewCampaign(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Enter campaign content"
-                  rows={6}
+                <label className="text-sm font-medium">Subject Line</label>
+                <Input placeholder="Enter email subject" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email Content</label>
+                <textarea 
+                  className="w-full min-h-[150px] p-3 border rounded-md"
+                  placeholder="Enter your email content..."
                 />
               </div>
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button type="button" variant="outline" onClick={() => setShowNewCampaign(false)}>
-                  Cancel
-                </Button>
-                <Button variant="outline">
-                  Save Draft
-                </Button>
-                <Button onClick={handleCreateCampaign}>
-                  Create & Send
-                </Button>
+              <div className="flex gap-2">
+                <Button>Save Draft</Button>
+                <Button variant="outline">Preview</Button>
+                <Button variant="outline">Send Test</Button>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="text" className="space-y-4">
+          <div className="grid gap-4">
+            {textCampaigns.map((campaign) => (
+              <Card key={campaign.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold">{campaign.name}</h3>
+                        <Badge variant={campaign.type === 'automated' ? 'default' : 'secondary'}>
+                          {campaign.type}
+                        </Badge>
+                        <Badge variant={campaign.status === 'active' ? 'default' : 'outline'}>
+                          {campaign.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Sent:</span>
+                          <div className="font-medium">{campaign.sent}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Delivered:</span>
+                          <div className="font-medium">{campaign.delivered}</div>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Response Rate:</span>
+                          <div className="font-medium">{campaign.responseRate}</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      {campaign.status === 'active' ? (
+                        <Button size="sm" variant="outline" onClick={() => handleCampaignAction('Paused', campaign.id)}>
+                          <Pause className="h-3 w-3 mr-1" />
+                          Pause
+                        </Button>
+                      ) : (
+                        <Button size="sm" onClick={() => handleCampaignAction('Started', campaign.id)}>
+                          <Play className="h-3 w-3 mr-1" />
+                          Start
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline">
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Create Text Campaign</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Campaign Name</label>
+                  <Input placeholder="Enter campaign name" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Campaign Type</label>
+                  <select className="w-full px-3 py-2 border rounded-md">
+                    <option value="manual">One-time Send</option>
+                    <option value="automated">Automated</option>
+                  </select>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Message Content</label>
+                <textarea 
+                  className="w-full min-h-[100px] p-3 border rounded-md"
+                  placeholder="Enter your text message (160 characters max)..."
+                  maxLength={160}
+                />
+                <p className="text-xs text-muted-foreground">160 characters remaining</p>
+              </div>
+              <div className="flex gap-2">
+                <Button>Save Draft</Button>
+                <Button variant="outline">Send Test</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="automation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                Marketing Automation Rules
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-medium">Welcome Email Series</h3>
+                    <p className="text-sm text-muted-foreground">Send welcome emails to new customers</p>
+                  </div>
+                  <Badge variant="default">Active</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-medium">Project Completion Follow-up</h3>
+                    <p className="text-sm text-muted-foreground">Email customers 3 days after project completion</p>
+                  </div>
+                  <Badge variant="default">Active</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-medium">Appointment Reminders</h3>
+                    <p className="text-sm text-muted-foreground">Text reminders 24 hours before appointments</p>
+                  </div>
+                  <Badge variant="default">Active</Badge>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-medium">Birthday Promotions</h3>
+                    <p className="text-sm text-muted-foreground">Send special offers on customer birthdays</p>
+                  </div>
+                  <Badge variant="outline">Inactive</Badge>
+                </div>
+              </div>
+              
+              <Button className="w-full">
+                <Plus className="h-4 w-4 mr-2" />
+                Create New Automation Rule
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Total Campaigns</span>
+                    <span className="font-semibold">12</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Emails Sent</span>
+                    <span className="font-semibold">2,456</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Avg Open Rate</span>
+                    <span className="font-semibold text-green-600">27.3%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Avg Click Rate</span>
+                    <span className="font-semibold text-blue-600">4.2%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Text Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span>Total Campaigns</span>
+                    <span className="font-semibold">8</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Messages Sent</span>
+                    <span className="font-semibold">1,234</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Delivery Rate</span>
+                    <span className="font-semibold text-green-600">98.2%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Response Rate</span>
+                    <span className="font-semibold text-blue-600">6.1%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
