@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt } from "lucide-react";
+import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { CustomerList } from "@/components/CustomerList";
 import { JobList } from "@/components/JobList";
 import { ScheduleView } from "@/components/ScheduleView";
@@ -33,6 +40,31 @@ const Index = () => {
     { title: "Scheduled Today", value: "8", icon: Calendar, color: "text-orange-600" },
     { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
   ];
+
+  const menuItems = [
+    { label: 'Dashboard', value: 'dashboard' },
+    { label: 'Customers', value: 'customers' },
+    { label: 'Jobs', value: 'jobs' },
+    { label: 'Schedule', value: 'schedule' },
+    { label: 'Estimates', value: 'estimates' },
+    { label: 'Invoices', value: 'invoices' },
+    { label: 'Expenses', value: 'expenses' },
+    { label: 'Payments', value: 'payments' },
+    { label: 'Team', value: 'team' },
+    { label: 'Notifications', value: 'notifications' },
+    { label: 'Reviews', value: 'reviews' },
+    { label: 'Marketing', value: 'marketing' },
+    { label: 'Reports', value: 'reports' },
+    { label: 'QuickBooks', value: 'quickbooks' },
+    { label: 'Analytics', value: 'analytics' },
+    { label: 'Mobile', value: 'mobile' },
+    { label: 'Integrations', value: 'integrations' },
+  ];
+
+  const getCurrentLabel = () => {
+    const current = menuItems.find(item => item.value === activeView);
+    return current ? current.label : 'Dashboard';
+  };
 
   const renderContent = () => {
     switch (activeView) {
@@ -180,110 +212,27 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <h1 className="text-xl font-semibold text-gray-900">Construction CRM</h1>
-              <nav className="flex space-x-4 overflow-x-auto">
-                <Button
-                  variant={activeView === 'dashboard' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('dashboard')}
-                >
-                  Dashboard
-                </Button>
-                <Button
-                  variant={activeView === 'customers' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('customers')}
-                >
-                  Customers
-                </Button>
-                <Button
-                  variant={activeView === 'jobs' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('jobs')}
-                >
-                  Jobs
-                </Button>
-                <Button
-                  variant={activeView === 'schedule' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('schedule')}
-                >
-                  Schedule
-                </Button>
-                <Button
-                  variant={activeView === 'estimates' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('estimates')}
-                >
-                  Estimates
-                </Button>
-                <Button
-                  variant={activeView === 'invoices' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('invoices')}
-                >
-                  Invoices
-                </Button>
-                <Button
-                  variant={activeView === 'expenses' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('expenses')}
-                >
-                  Expenses
-                </Button>
-                <Button
-                  variant={activeView === 'payments' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('payments')}
-                >
-                  Payments
-                </Button>
-                <Button
-                  variant={activeView === 'team' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('team')}
-                >
-                  Team
-                </Button>
-                <Button
-                  variant={activeView === 'notifications' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('notifications')}
-                >
-                  Notifications
-                </Button>
-                <Button
-                  variant={activeView === 'reviews' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('reviews')}
-                >
-                  Reviews
-                </Button>
-                <Button
-                  variant={activeView === 'marketing' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('marketing')}
-                >
-                  Marketing
-                </Button>
-                <Button
-                  variant={activeView === 'reports' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('reports')}
-                >
-                  Reports
-                </Button>
-                <Button
-                  variant={activeView === 'quickbooks' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('quickbooks')}
-                >
-                  QuickBooks
-                </Button>
-                <Button
-                  variant={activeView === 'analytics' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('analytics')}
-                >
-                  Analytics
-                </Button>
-                <Button
-                  variant={activeView === 'mobile' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('mobile')}
-                >
-                  Mobile
-                </Button>
-                <Button
-                  variant={activeView === 'integrations' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('integrations')}
-                >
-                  Integrations
-                </Button>
-              </nav>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Menu className="h-4 w-4" />
+                    {getCurrentLabel()}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="start">
+                  {menuItems.map((item, index) => (
+                    <div key={item.value}>
+                      <DropdownMenuItem
+                        onClick={() => setActiveView(item.value)}
+                        className={activeView === item.value ? "bg-accent" : ""}
+                      >
+                        {item.label}
+                      </DropdownMenuItem>
+                      {(index === 0 || index === 7 || index === 12) && <DropdownMenuSeparator />}
+                    </div>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
