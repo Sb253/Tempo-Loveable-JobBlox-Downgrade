@@ -27,6 +27,7 @@ import { EmployeeLocationManager } from "./EmployeeLocationManager";
 import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
 import { Communication } from "./Communication";
+import { ReviewManagement } from "./ReviewManagement";
 
 interface SidebarSection {
   id: string;
