@@ -222,10 +222,6 @@ export const AppLayout = () => {
         return <QuickBooksIntegration />;
       case 'accounting-integration':
         return <AccountingIntegration />;
-      case 'radius-assignment':
-        return <RadiusAssignment />;
-      case 'employee-locations':
-        return <EmployeeLocationManager />;
       default:
         return (
           <div className="p-6">
