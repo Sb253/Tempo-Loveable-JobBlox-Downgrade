@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 
 interface Job {
-  id?: string;
+  id: string;
   title: string;
   customer: string;
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
