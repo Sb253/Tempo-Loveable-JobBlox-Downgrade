@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,9 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { JobTemplates } from "@/components/JobTemplates";
 import { RealTimeDispatch } from "@/components/RealTimeDispatch";
 import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
+import { TimeTracking } from "@/components/TimeTracking";
+import { EmployeeChat } from "@/components/EmployeeChat";
+import { JobChecklists } from "@/components/JobChecklists";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -123,6 +127,9 @@ const Index = () => {
     { label: 'Accounting Integration', value: 'accounting-integration' },
     { label: 'Payments', value: 'payments' },
     { label: 'Team', value: 'team' },
+    { label: 'Time Tracking', value: 'time-tracking' },
+    { label: 'Employee Chat', value: 'employee-chat' },
+    { label: 'Job Checklists', value: 'job-checklists' },
     { label: 'Notifications', value: 'notifications' },
     { label: 'Reviews', value: 'reviews' },
     { label: 'Marketing', value: 'marketing' },
@@ -200,6 +207,12 @@ const Index = () => {
         return <ReportsView />;
       case 'team':
         return <TeamManagement />;
+      case 'time-tracking':
+        return <TimeTracking />;
+      case 'employee-chat':
+        return <EmployeeChat />;
+      case 'job-checklists':
+        return <JobChecklists />;
       case 'notifications':
         return <NotificationCenter />;
       case 'reviews':
@@ -415,8 +428,8 @@ const Index = () => {
             </div>
 
             {/* CSS Variables for Chart Colors */}
-            <style jsx>{`
-              :root {
+            <style>
+              {`:root {
                 --color-won-jobs: #10b981;
                 --color-lost-jobs: #ef4444;
                 --color-pending: #f59e0b;
@@ -427,8 +440,8 @@ const Index = () => {
                 --color-lost-jobs: #f87171;
                 --color-pending: #fbbf24;
                 --color-in-progress: #60a5fa;
-              }
-            `}</style>
+              }`}
+            </style>
           </div>
         );
     }
@@ -458,7 +471,7 @@ const Index = () => {
                       >
                         {item.label}
                       </DropdownMenuItem>
-                      {(index === 0 || index === 7 || index === 12 || index === 21) && <DropdownMenuSeparator />}
+                      {(index === 0 || index === 7 || index === 15 || index === 24) && <DropdownMenuSeparator />}
                     </div>
                   ))}
                 </DropdownMenuContent>
