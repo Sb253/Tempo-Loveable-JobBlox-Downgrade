@@ -1,14 +1,15 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { AppointmentHeader } from './appointment/AppointmentHeader';
 import { StatusCard } from './appointment/StatusCard';
 import { CustomerCard } from './appointment/CustomerCard';
 import { ScheduleCard } from './appointment/ScheduleCard';
-import { ExpirationCard } from './appointment/ExpirationCard';
+import { EditableExpirationCard } from './appointment/EditableExpirationCard';
 import { LineItemsCard } from './appointment/LineItemsCard';
-import { NotesCard } from './appointment/NotesCard';
-import { ExpandableSections } from './appointment/ExpandableSections';
+import { EditableNotesCard } from './appointment/EditableNotesCard';
+import { EstimateFieldsCard } from './appointment/EstimateFieldsCard';
+import { AttachmentsCard } from './appointment/AttachmentsCard';
+import { OnMyWayButtonOptions } from './appointment/OnMyWayButtonOptions';
 
 interface Appointment {
   id: string;
@@ -40,6 +41,7 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
   const { toast } = useToast();
   const [appointment, setAppointment] = useState<Appointment>(selectedAppointment);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showOnMyWayOptions, setShowOnMyWayOptions] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -135,6 +137,36 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
     return `${mins}m`;
   };
 
+  const handleNotesUpdate = (newNotes: string) => {
+    setAppointment(prev => ({
+      ...prev,
+      notes: newNotes
+    }));
+  };
+
+  if (showOnMyWayOptions) {
+    return (
+      <div className="bg-background min-h-screen p-4">
+        <button 
+          onClick={() => setShowOnMyWayOptions(false)}
+          className="mb-4 text-blue-600 hover:underline"
+        >
+          ← Back to Appointment
+        </button>
+        <OnMyWayButtonOptions 
+          appointment={{
+            customer: appointment.customer,
+            phone: appointment.phone,
+            email: appointment.email,
+            technician: appointment.technician,
+            scheduledTime: appointment.scheduledTime
+          }}
+          status={appointment.status}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-background min-h-screen">
       <AppointmentHeader appointmentId="5709" status={appointment.status} />
@@ -171,16 +203,28 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
           technician={appointment.technician}
         />
 
-        <ExpirationCard />
+        <EditableExpirationCard />
 
         <LineItemsCard />
 
-        <NotesCard
+        <EditableNotesCard
           notes={appointment.notes}
           technician={appointment.technician}
+          onNotesUpdate={handleNotesUpdate}
         />
 
-        <ExpandableSections />
+        <EstimateFieldsCard />
+
+        <AttachmentsCard />
+
+        <div className="mt-4">
+          <button 
+            onClick={() => setShowOnMyWayOptions(true)}
+            className="text-blue-600 hover:underline text-sm"
+          >
+            → View "On My Way" Button Options
+          </button>
+        </div>
       </div>
     </div>
   );
