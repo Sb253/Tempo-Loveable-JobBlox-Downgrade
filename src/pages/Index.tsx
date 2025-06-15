@@ -64,6 +64,7 @@ import { useCompanyData } from "@/hooks/useCompanyData";
 import { FinancingOptions } from "@/components/FinancingOptions";
 import { LeadGeneration } from "@/components/LeadGeneration";
 import { QuoteManagement } from "@/components/QuoteManagement";
+import { SchedulingDashboard } from "@/components/SchedulingDashboard";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
