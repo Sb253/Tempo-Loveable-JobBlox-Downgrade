@@ -1,5 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { TopMenuNavigation } from "./TopMenuNavigation";
 import { Dashboard } from "./Dashboard";
 import { CustomWidgetList } from "./CustomWidgetList";
@@ -8,6 +11,7 @@ import { CompanySettings } from "./CompanySettings";
 import { NavigationSettings } from "./NavigationSettings";
 import { TeamManagement } from "./TeamManagement";
 import { SubcontractorManagement } from "./SubcontractorManagement";
+import { MapView } from "./MapView";
 
 interface SidebarSection {
   id: string;
@@ -46,6 +50,50 @@ const sections: SidebarSection[] = [
   { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
   { id: 'settings', label: 'Settings', icon: Settings }
+];
+
+// Sample job data with appointments and jobs
+const jobsAndAppointments = [
+  {
+    id: '1',
+    title: 'Kitchen Renovation',
+    customer: 'John Smith',
+    address: '123 Main St, Anytown, USA',
+    coordinates: [-74.006, 40.7128] as [number, number],
+    status: 'scheduled' as const,
+    type: 'job' as const,
+    time: 'Today 2:00 PM'
+  },
+  {
+    id: '2',
+    title: 'Bathroom Repair',
+    customer: 'ABC Construction',
+    address: '456 Business Ave, City, USA',
+    coordinates: [-74.0, 40.72] as [number, number],
+    status: 'in-progress' as const,
+    type: 'job' as const,
+    time: 'Tomorrow 9:00 AM'
+  },
+  {
+    id: '3',
+    title: 'Consultation Meeting',
+    customer: 'Sarah Johnson',
+    address: '789 Oak Street, Downtown, USA',
+    coordinates: [-74.01, 40.715] as [number, number],
+    status: 'scheduled' as const,
+    type: 'appointment' as const,
+    time: 'Friday 3:00 PM'
+  },
+  {
+    id: '4',
+    title: 'Project Estimate',
+    customer: 'Mike Wilson',
+    address: '321 Pine Ave, Suburb, USA',
+    coordinates: [-73.99, 40.725] as [number, number],
+    status: 'completed' as const,
+    type: 'appointment' as const,
+    time: 'Yesterday 11:00 AM'
+  }
 ];
 
 export const AppLayout = () => {
@@ -165,6 +213,216 @@ export const AppLayout = () => {
   );
 };
 
+// Placeholder components for missing sections
+const Pipeline = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Sales Pipeline</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Sales pipeline and lead management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const CustomerList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Customer Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Customer list and management interface will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const JobList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Job Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Job list and tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const CustomerForm = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Add New Customer</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Customer registration form will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const JobForm = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Create New Job</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Job creation form will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EstimateList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Estimates</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Estimate management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const InvoiceList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Invoices</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Invoice management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ScheduleView = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Schedule</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Calendar and scheduling system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ExpenseList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Expenses</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Expense tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const TimeTracking = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Time Tracking</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Time tracking and reporting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const MaterialInventory = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Material Inventory</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Inventory management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EquipmentTracking = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Equipment Tracking</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Equipment management and tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const PhotoDocumentation = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Photo Documentation</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Photo management and documentation system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EmployeeChat = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Employee Communication</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Internal communication and messaging system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ReviewManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Review Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Customer review management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const KPIDashboard = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">KPI Dashboard</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Key performance indicators and goals tracking will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ReportsView = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Reports</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Reporting and analytics system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AdvancedAnalytics = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Advanced Analytics</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Advanced analytics and insights will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const NotificationCenter = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Notifications</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Notification management center will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
 const VehicleManagement = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Vehicle Management</h2>
@@ -201,7 +459,7 @@ const QualityControl = () => (
 const MapViewPage = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Map View</h2>
-    <MapView jobs={[]} />
+    <MapView jobs={jobsAndAppointments} />
   </div>
 );
 
@@ -261,6 +519,14 @@ const SettingsView = () => {
               <p className="text-sm text-muted-foreground mb-3">Connect with your custom systems via API</p>
               <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
                 Add Custom API
+              </button>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Map Settings</h4>
+              <p className="text-sm text-muted-foreground mb-3">Configure map display and location settings</p>
+              <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors">
+                Configure Maps
               </button>
             </div>
           </div>

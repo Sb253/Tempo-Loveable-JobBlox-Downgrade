@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, Plus, Palette, Check } from "lucide-react";
+import { Trash2, Edit, Plus, Palette, Check, BarChart3, Users, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "./ThemeProvider";
 
@@ -42,7 +42,7 @@ export const CustomThemeList = () => {
     if (savedThemes) {
       setThemes(JSON.parse(savedThemes));
     } else {
-      // Enhanced colorful default themes
+      // Enhanced colorful default themes with better color combinations
       const defaultThemes: CustomTheme[] = [
         {
           id: '1',
@@ -50,7 +50,7 @@ export const CustomThemeList = () => {
           primary: '#8B5CF6',
           secondary: '#A78BFA',
           accent: '#C084FC',
-          background: '#F3F4F6',
+          background: '#FAFAFA',
           foreground: '#111827',
           card: '#FFFFFF',
           isActive: false
@@ -217,6 +217,47 @@ export const CustomThemeList = () => {
     });
   };
 
+  const ThemePreview = ({ theme }: { theme: CustomTheme }) => (
+    <div 
+      className="w-full h-24 rounded-lg border overflow-hidden"
+      style={{ backgroundColor: theme.background }}
+    >
+      <div className="p-2 space-y-1">
+        <div 
+          className="w-full h-3 rounded"
+          style={{ backgroundColor: theme.primary }}
+        />
+        <div className="flex gap-1">
+          <div 
+            className="w-8 h-2 rounded"
+            style={{ backgroundColor: theme.secondary }}
+          />
+          <div 
+            className="w-6 h-2 rounded"
+            style={{ backgroundColor: theme.accent }}
+          />
+          <div 
+            className="w-4 h-2 rounded"
+            style={{ backgroundColor: theme.card, border: `1px solid ${theme.foreground}20` }}
+          />
+        </div>
+        <div className="flex gap-1 justify-between">
+          <div className="flex gap-1">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.primary }}>
+              <BarChart3 className="w-2 h-2 m-0.5 text-white" />
+            </div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.secondary }}>
+              <Users className="w-2 h-2 m-0.5 text-white" />
+            </div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.accent }}>
+              <DollarSign className="w-2 h-2 m-0.5 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -224,7 +265,10 @@ export const CustomThemeList = () => {
           <h3 className="text-lg font-semibold colorful-text">Custom Themes</h3>
           <p className="text-sm text-muted-foreground">Create and manage vibrant color themes for your dashboard</p>
         </div>
-        <Button className="colorful-button flex items-center gap-2">
+        <Button 
+          onClick={() => setShowAddDialog(true)}
+          className="colorful-button flex items-center gap-2"
+        >
           <Plus className="h-4 w-4" />
           Add Theme
         </Button>
@@ -260,24 +304,26 @@ export const CustomThemeList = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
+              <ThemePreview theme={theme} />
+              
               <div className="flex gap-2">
                 <div 
-                  className="w-8 h-8 rounded-lg border shadow-sm" 
+                  className="w-6 h-6 rounded border shadow-sm" 
                   style={{ backgroundColor: theme.primary }}
                   title="Primary"
                 />
                 <div 
-                  className="w-8 h-8 rounded-lg border shadow-sm" 
+                  className="w-6 h-6 rounded border shadow-sm" 
                   style={{ backgroundColor: theme.secondary }}
                   title="Secondary"
                 />
                 <div 
-                  className="w-8 h-8 rounded-lg border shadow-sm" 
+                  className="w-6 h-6 rounded border shadow-sm" 
                   style={{ backgroundColor: theme.accent }}
                   title="Accent"
                 />
                 <div 
-                  className="w-8 h-8 rounded-lg border shadow-sm" 
+                  className="w-6 h-6 rounded border shadow-sm" 
                   style={{ backgroundColor: theme.background }}
                   title="Background"
                 />

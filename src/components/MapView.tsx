@@ -4,10 +4,8 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Navigation, Settings } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { MapPin, Navigation } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 interface Job {
@@ -17,6 +15,8 @@ interface Job {
   address: string;
   coordinates: [number, number];
   status: 'scheduled' | 'in-progress' | 'completed';
+  type: 'job' | 'appointment';
+  time: string;
 }
 
 interface MapViewProps {
@@ -28,19 +28,32 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
-  const [mapboxToken, setMapboxToken] = useState('pk.eyJ1Ijoic2NvdHRiOTcxIiwiYSI6ImNtYng0M2d2cTB2dXkybW9zOTJmdzg1MWQifQ.3rpXH4NfcWycCt58VAyGzg');
+  const [mapboxToken] = useState('pk.eyJ1Ijoic2NvdHRiOTcxIiwiYSI6ImNtYng0M2d2cTB2dXkybW9zOTJmdzg1MWQifQ.3rpXH4NfcWycCt58VAyGzg');
 
-  const getMarkerColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return '#3b82f6';
-      case 'in-progress':
-        return '#f59e0b';
-      case 'completed':
-        return '#10b981';
-      default:
-        return '#6b7280';
+  const getMarkerColor = (status: string, type: string) => {
+    if (type === 'appointment') {
+      switch (status) {
+        case 'scheduled':
+          return '#8B5CF6'; // Purple for scheduled appointments
+        case 'in-progress':
+          return '#EC4899'; // Pink for in-progress appointments
+        case 'completed':
+          return '#059669'; // Green for completed appointments
+        default:
+          return '#6b7280';
+      }
+    } else {
+      // Job colors
+      switch (status) {
+        case 'scheduled':
+          return '#3b82f6'; // Blue for scheduled jobs
+        case 'in-progress':
+          return '#f59e0b'; // Orange for in-progress jobs
+        case 'completed':
+          return '#10b981'; // Emerald for completed jobs
+        default:
+          return '#6b7280';
+      }
     }
   };
 
@@ -50,6 +63,13 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation([longitude, latitude]);
+          if (map.current) {
+            map.current.flyTo({
+              center: [longitude, latitude],
+              zoom: 12,
+              essential: true
+            });
+          }
           toast({
             title: "Location Found",
             description: "Map centered on your current location.",
@@ -112,31 +132,53 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         .addTo(map.current);
     }
 
-    // Add markers for each job
+    // Add markers for each job and appointment
     jobs.forEach((job) => {
       if (!map.current) return;
 
       const markerEl = document.createElement('div');
-      markerEl.style.width = '20px';
-      markerEl.style.height = '20px';
-      markerEl.style.borderRadius = '50%';
-      markerEl.style.backgroundColor = getMarkerColor(job.status);
+      markerEl.style.width = '24px';
+      markerEl.style.height = '24px';
+      markerEl.style.borderRadius = job.type === 'appointment' ? '4px' : '50%';
+      markerEl.style.backgroundColor = getMarkerColor(job.status, job.type);
       markerEl.style.border = '3px solid white';
       markerEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
 
+      // Add icon indicator for type
+      if (job.type === 'appointment') {
+        markerEl.style.clipPath = 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)';
+      }
+
       const popupContent = `
-        <div style="padding: 8px; max-width: 200px;">
-          <h3 style="font-weight: bold; margin: 0 0 8px 0;">${job.title}</h3>
+        <div style="padding: 12px; max-width: 250px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <h3 style="font-weight: bold; margin: 0;">${job.title}</h3>
+            <span style="
+              display: inline-block;
+              padding: 2px 6px;
+              font-size: 10px;
+              border-radius: 4px;
+              background-color: ${job.type === 'appointment' ? '#8B5CF6' : '#3b82f6'};
+              color: white;
+              text-transform: uppercase;
+              font-weight: 500;
+            ">
+              ${job.type}
+            </span>
+          </div>
           <p style="margin: 4px 0; color: #666; font-size: 14px;">${job.customer}</p>
           <p style="margin: 4px 0; font-size: 14px;">${job.address}</p>
+          <p style="margin: 4px 0; font-size: 12px; color: #666;">${job.time}</p>
           <span style="
             display: inline-block;
-            padding: 2px 8px;
+            padding: 4px 8px;
             font-size: 12px;
-            border-radius: 4px;
-            background-color: ${getMarkerColor(job.status)}20;
-            color: ${getMarkerColor(job.status)};
+            border-radius: 6px;
+            background-color: ${getMarkerColor(job.status, job.type)}20;
+            color: ${getMarkerColor(job.status, job.type)};
+            font-weight: 500;
+            text-transform: capitalize;
           ">
             ${job.status.replace('-', ' ')}
           </span>
@@ -169,83 +211,85 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
     };
   }, [jobs, userLocation, mapboxToken]);
 
-  return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Job Locations
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={getCurrentLocation}
-                className="flex items-center gap-2"
-              >
-                <Navigation className="h-4 w-4" />
-                My Location
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSettings(true)}
-                className="flex items-center gap-2"
-              >
-                <Settings className="h-4 w-4" />
-                Settings
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="w-full h-96 rounded-lg border overflow-hidden">
-            <div ref={mapContainer} className="w-full h-full" />
-          </div>
-        </CardContent>
-      </Card>
+  // Count jobs and appointments by type and status
+  const jobStats = jobs.reduce((acc, job) => {
+    if (job.type === 'job') {
+      acc.jobs[job.status] = (acc.jobs[job.status] || 0) + 1;
+    } else {
+      acc.appointments[job.status] = (acc.appointments[job.status] || 0) + 1;
+    }
+    return acc;
+  }, { jobs: {} as Record<string, number>, appointments: {} as Record<string, number> });
 
-      {/* Map Settings Dialog */}
-      <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Map Settings</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="mapbox-token">Mapbox Access Token</Label>
-              <Input
-                id="mapbox-token"
-                value={mapboxToken}
-                onChange={(e) => setMapboxToken(e.target.value)}
-                placeholder="Enter your Mapbox public token"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Get your token from{" "}
-                <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600">
-                  mapbox.com
-                </a>
-              </p>
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setShowSettings(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => {
-                setShowSettings(false);
-                toast({
-                  title: "Settings Updated",
-                  description: "Map settings have been updated.",
-                });
-              }}>
-                Save
-              </Button>
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Job & Appointment Locations
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={getCurrentLocation}
+              className="flex items-center gap-2"
+            >
+              <Navigation className="h-4 w-4" />
+              My Location
+            </Button>
+          </div>
+        </div>
+        
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+            <span>Jobs</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
+            <span>Appointments</span>
+          </div>
+          <div className="flex gap-4">
+            <Badge variant="outline" className="bg-blue-50">Scheduled</Badge>
+            <Badge variant="outline" className="bg-orange-50">In Progress</Badge>
+            <Badge variant="outline" className="bg-green-50">Completed</Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="w-full h-96 rounded-lg border overflow-hidden">
+          <div ref={mapContainer} className="w-full h-full" />
+        </div>
+        
+        {/* Stats */}
+        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-medium mb-2">Jobs</h4>
+            <div className="space-y-1">
+              {Object.entries(jobStats.jobs).map(([status, count]) => (
+                <div key={status} className="flex justify-between">
+                  <span className="capitalize">{status.replace('-', ' ')}:</span>
+                  <span className="font-medium">{count}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+          <div>
+            <h4 className="font-medium mb-2">Appointments</h4>
+            <div className="space-y-1">
+              {Object.entries(jobStats.appointments).map(([status, count]) => (
+                <div key={status} className="flex justify-between">
+                  <span className="capitalize">{status.replace('-', ' ')}:</span>
+                  <span className="font-medium">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
