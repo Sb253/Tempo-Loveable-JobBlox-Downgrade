@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { Dashboard } from "@/components/Dashboard";
 import { MegaMenuSidebar } from "@/components/MegaMenuSidebar";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Settings, Home, Users, Briefcase, MessageSquare, Star, Truck, Calendar, DollarSign, BarChart3, Building2, Bell, Cog, UserPlus, FileText, TrendingUp, CreditCard, Clock, Database, Package, FileImage, AlertTriangle, CheckCircle, Target, PieChart, Map, UserCheck, Hammer, Activity, Calculator } from "lucide-react";
 
@@ -52,6 +51,30 @@ import { Pipeline } from "@/components/Pipeline";
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
+
+  // Mock data for components that need it
+  const mockJobs = [
+    {
+      id: '1',
+      title: 'Kitchen Renovation',
+      customer: 'John Smith',
+      address: '123 Main St, City, State',
+      status: 'in-progress',
+      scheduledDate: '2024-01-15',
+      assignedTo: 'Mike Johnson'
+    },
+    {
+      id: '2',
+      title: 'Bathroom Remodel',
+      customer: 'Sarah Wilson',
+      address: '456 Oak Ave, City, State',
+      status: 'scheduled',
+      scheduledDate: '2024-01-20',
+      assignedTo: 'Tom Brown'
+    }
+  ];
 
   // Complete sidebar sections configuration
   const sidebarSections = [
@@ -109,11 +132,39 @@ const Index = () => {
   const handleSectionChange = (section: string) => {
     console.log('Index: Section changed to:', section);
     setActiveSection(section);
+    
+    // Handle special form sections
+    if (section === 'customer-form') {
+      setShowCustomerForm(true);
+      setActiveSection('customers'); // Show customers list as background
+    } else if (section === 'job-form') {
+      setShowJobForm(true);
+      setActiveSection('jobs'); // Show jobs list as background
+    } else {
+      setShowCustomerForm(false);
+      setShowJobForm(false);
+    }
   };
 
   const handleSidebarToggle = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed);
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+  };
+
+  const handleCloseCustomerForm = () => {
+    setShowCustomerForm(false);
+    setActiveSection('customers');
+  };
+
+  const handleCloseJobForm = () => {
+    setShowJobForm(false);
+    setActiveSection('jobs');
+  };
+
+  const handleSaveJob = (jobData: any) => {
+    console.log('Saving job:', jobData);
+    setShowJobForm(false);
+    setActiveSection('jobs');
   };
 
   // Function to render the appropriate component based on active section
@@ -127,12 +178,8 @@ const Index = () => {
         return <Pipeline />;
       case 'customers':
         return <CustomerList />;
-      case 'customer-form':
-        return <CustomerForm />;
       case 'jobs':
         return <JobList />;
-      case 'job-form':
-        return <JobForm />;
       case 'estimates':
         return <EstimateList />;
       case 'invoices':
@@ -166,7 +213,7 @@ const Index = () => {
       case 'analytics':
         return <AdvancedAnalytics />;
       case 'map-view':
-        return <MapView />;
+        return <MapView jobs={mockJobs} />;
       case 'team-management':
         return <TeamManagement />;
       case 'subcontractor-management':
@@ -230,6 +277,18 @@ const Index = () => {
           {renderActiveComponent()}
         </div>
       </div>
+
+      {/* Modal Forms */}
+      {showCustomerForm && (
+        <CustomerForm onClose={handleCloseCustomerForm} />
+      )}
+
+      {showJobForm && (
+        <JobForm 
+          onClose={handleCloseJobForm}
+          onSave={handleSaveJob}
+        />
+      )}
     </div>
   );
 };
