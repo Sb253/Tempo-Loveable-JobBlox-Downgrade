@@ -24,7 +24,7 @@ export const JobLocationsList = ({ jobs }: JobLocationsListProps) => {
       case 'scheduled':
         return 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white';
       case 'in-progress':
-        return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
+        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white';
       case 'completed':
         return 'bg-gradient-to-r from-green-500 to-emerald-500 text-white';
       default:

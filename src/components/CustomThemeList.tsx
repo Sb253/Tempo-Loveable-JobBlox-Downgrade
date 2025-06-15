@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,11 +68,11 @@ export const CustomThemeList = () => {
         },
         {
           id: '3',
-          name: 'Sunset Orange',
-          primary: '#F97316',
-          secondary: '#EA580C',
-          accent: '#FB923C',
-          background: '#FFF7ED',
+          name: 'Coral Sunset',
+          primary: '#FF6B6B',
+          secondary: '#FF8E8E',
+          accent: '#FFB3B3',
+          background: '#FFF5F5',
           foreground: '#1F2937',
           card: '#FFFFFF',
           isActive: false

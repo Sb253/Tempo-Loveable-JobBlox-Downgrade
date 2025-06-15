@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -46,19 +45,19 @@
     --sidebar-border: 262 50% 90%;
     --sidebar-ring: 262 83% 58%;
 
-    /* Enhanced colorful accents */
+    /* Enhanced colorful accents (replaced yellow with coral) */
     --success: 142 76% 36%;
     --success-foreground: 355.7 100% 97.3%;
-    --warning: 32 95% 44%;
+    --warning: 16 90% 48%;
     --warning-foreground: 355.7 100% 97.3%;
     --info: 221 83% 53%;
     --info-foreground: 355.7 100% 97.3%;
     
-    /* Vibrant gradient backgrounds */
+    /* Vibrant gradient backgrounds (removed yellow, added coral) */
     --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(340 82% 52%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(142 76% 36%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(32 95% 44%) 0%, hsl(340 82% 52%) 100%);
-    --gradient-rainbow: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(221 83% 53%) 25%, hsl(142 76% 36%) 50%, hsl(32 95% 44%) 75%, hsl(340 82% 52%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(16 90% 48%) 0%, hsl(340 82% 52%) 100%);
+    --gradient-rainbow: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(221 83% 53%) 20%, hsl(142 76% 36%) 40%, hsl(16 90% 48%) 60%, hsl(340 82% 52%) 80%, hsl(280 100% 70%) 100%);
   }
 
   .dark {
@@ -99,19 +98,19 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 263 70% 50.4%;
 
-    /* Enhanced colorful accents for dark mode */
+    /* Enhanced colorful accents for dark mode (replaced yellow with coral) */
     --success: 142 69% 58%;
     --success-foreground: 355.7 100% 97.3%;
-    --warning: 32 81% 58%;
+    --warning: 16 84% 60%;
     --warning-foreground: 355.7 100% 97.3%;
     --info: 221 70% 58%;
     --info-foreground: 355.7 100% 97.3%;
     
-    /* Vibrant gradient backgrounds for dark mode */
+    /* Vibrant gradient backgrounds for dark mode (removed yellow, added coral) */
     --gradient-primary: linear-gradient(135deg, hsl(263 70% 50.4%) 0%, hsl(340 75% 55%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(221 70% 58%) 0%, hsl(142 69% 58%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(32 81% 58%) 0%, hsl(340 75% 55%) 100%);
-    --gradient-rainbow: linear-gradient(135deg, hsl(263 70% 50.4%) 0%, hsl(221 70% 58%) 25%, hsl(142 69% 58%) 50%, hsl(32 81% 58%) 75%, hsl(340 75% 55%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(16 84% 60%) 0%, hsl(340 75% 55%) 100%);
+    --gradient-rainbow: linear-gradient(135deg, hsl(263 70% 50.4%) 0%, hsl(221 70% 58%) 20%, hsl(142 69% 58%) 40%, hsl(16 84% 60%) 60%, hsl(340 75% 55%) 80%, hsl(280 100% 70%) 100%);
   }
 }
 

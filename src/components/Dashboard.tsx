@@ -122,7 +122,7 @@ export const Dashboard = () => {
                 'from-purple-500 to-pink-500',
                 'from-blue-500 to-cyan-500', 
                 'from-green-500 to-emerald-500',
-                'from-orange-500 to-red-500'
+                'from-coral-500 to-red-500'
               ];
               return (
                 <Card key={index} className="relative overflow-hidden border-0 shadow-lg">
@@ -155,7 +155,7 @@ export const Dashboard = () => {
                   {recentJobs.map((job, index) => {
                     const statusColors = {
                       'scheduled': 'from-blue-500 to-indigo-500',
-                      'in-progress': 'from-yellow-500 to-orange-500'
+                      'in-progress': 'from-orange-500 to-red-500'
                     };
                     return (
                       <div key={job.id} className="flex justify-between items-center p-3 border rounded-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">

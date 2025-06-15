@@ -61,12 +61,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Enhanced vibrant colors for both modes
+        // Enhanced vibrant colors for both modes (removed yellow)
         vibrant: {
           purple: "#8B5CF6",
           blue: "#3B82F6", 
           green: "#10B981",
-          yellow: "#F59E0B",
+          coral: "#FF6B6B",
           red: "#EF4444",
           pink: "#EC4899",
           indigo: "#6366F1",
@@ -80,12 +80,12 @@ export default {
           rose: "#F43F5E",
           amber: "#D97706",
         },
-        // Dark mode vibrant colors
+        // Dark mode vibrant colors (removed yellow)
         "vibrant-dark": {
           purple: "#A78BFA",
           blue: "#60A5FA",
           green: "#34D399", 
-          yellow: "#FBBF24",
+          coral: "#FF8E8E",
           red: "#F87171",
           pink: "#F472B6",
           indigo: "#818CF8",
