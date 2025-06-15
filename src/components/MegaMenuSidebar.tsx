@@ -3,8 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X, Hammer, Settings } from "lucide-react";
-import { useRolePermissions } from "@/hooks/useRolePermissions";
+import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X, Hammer } from "lucide-react";
 
 interface SidebarSection {
   id: string;
@@ -28,11 +27,6 @@ interface MegaMenuSidebarProps {
   onToggleCollapse?: (collapsed: boolean) => void;
 }
 
-interface CompanyData {
-  name: string;
-  logo: string | null;
-}
-
 export const MegaMenuSidebar = ({ 
   activeSection, 
   onSectionChange, 
@@ -41,23 +35,7 @@ export const MegaMenuSidebar = ({
   collapsed = false,
   onToggleCollapse
 }: MegaMenuSidebarProps) => {
-  const [companyData, setCompanyData] = useState<CompanyData>({
-    name: 'Your Company',
-    logo: null
-  });
   const [openGroups, setOpenGroups] = useState<string[]>([]);
-  const { permissions } = useRolePermissions();
-
-  useEffect(() => {
-    const savedCompanyData = localStorage.getItem('companySettings');
-    if (savedCompanyData) {
-      const data = JSON.parse(savedCompanyData);
-      setCompanyData({
-        name: data.companyName || 'Your Company',
-        logo: data.logo || null
-      });
-    }
-  }, []);
 
   // Group sections into logical categories
   const menuGroups: SidebarGroup[] = [
@@ -179,37 +157,8 @@ export const MegaMenuSidebar = ({
           )}
         </div>
         
-        {/* User Company Info - Only visible when not collapsed */}
-        {!collapsed && (
-          <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
-            <div className="flex items-center gap-2 min-w-0">
-              {companyData.logo ? (
-                <img 
-                  src={companyData.logo} 
-                  alt="Company Logo" 
-                  className="h-5 w-5 object-contain flex-shrink-0"
-                />
-              ) : (
-                <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              )}
-              <span className="text-sm font-medium text-muted-foreground truncate">{companyData.name}</span>
-            </div>
-            {permissions.canManageCompany && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={() => handleSectionClick('company-settings')}
-                title="Manage Company Settings"
-              >
-                <Settings className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
-        )}
-        
         {/* Collapse Toggle */}
-        <div className="flex justify-end mt-3">
+        <div className="flex justify-end">
           <Button
             variant="ghost"
             size="icon"

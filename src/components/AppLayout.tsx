@@ -30,6 +30,7 @@ import { SafetyManagement } from "./SafetyManagement";
 import { QualityControl as QualityControlComponent } from "./QualityControl";
 import { AddJobSection } from "./AddJobSection";
 import { TimeTracking } from "./TimeTracking";
+import { AppHeader } from "./AppHeader";
 
 interface SidebarSection {
   id: string;
@@ -154,6 +155,10 @@ export const AppLayout = () => {
   const handleSidebarToggle = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed);
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+  };
+
+  const handleCompanySettingsClick = () => {
+    setActiveSection('company-settings');
   };
 
   const renderSection = () => {
@@ -485,19 +490,23 @@ export const AppLayout = () => {
   const sidebarWidth = sidebarCollapsed ? 80 : 320;
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <MegaMenuSidebar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        sections={sections}
-        isVisible={true}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={handleSidebarToggle}
-      />
+    <div className="min-h-screen bg-background flex flex-col">
+      <AppHeader onCompanySettingsClick={handleCompanySettingsClick} />
+      
+      <div className="flex flex-1">
+        <MegaMenuSidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          isVisible={true}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={handleSidebarToggle}
+        />
 
-      <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
-        {renderSection()}
-      </main>
+        <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
+          {renderSection()}
+        </main>
+      </div>
     </div>
   );
 };
