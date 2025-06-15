@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
 import { TopMenuNavigation } from "./TopMenuNavigation";
@@ -61,6 +60,52 @@ export const AppLayout = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard />;
+      case 'pipeline':
+        return <Pipeline />;
+      case 'customers':
+        return <CustomerList />;
+      case 'jobs':
+        return <JobList />;
+      case 'customer-form':
+        return <CustomerForm />;
+      case 'job-form':
+        return <JobForm />;
+      case 'estimates':
+        return <EstimateList />;
+      case 'invoices':
+        return <InvoiceList />;
+      case 'schedule':
+        return <ScheduleView />;
+      case 'expenses':
+        return <ExpenseList />;
+      case 'time-tracking':
+        return <TimeTracking />;
+      case 'inventory':
+        return <MaterialInventory />;
+      case 'equipment':
+        return <EquipmentTracking />;
+      case 'vehicles':
+        return <VehicleManagement />;
+      case 'photos':
+        return <PhotoDocumentation />;
+      case 'communication':
+        return <EmployeeChat />;
+      case 'reviews':
+        return <ReviewManagement />;
+      case 'safety':
+        return <SaftyManagement />;
+      case 'quality':
+        return <QualityControl />;
+      case 'goals':
+        return <KPIDashboard />;
+      case 'reports':
+        return <ReportsView />;
+      case 'analytics':
+        return <AdvancedAnalytics />;
+      case 'notifications':
+        return <NotificationCenter />;
+      case 'map-view':
+        return <MapViewPage />;
       case 'widgets':
         return <CustomWidgetList />;
       case 'cards':
@@ -76,13 +121,20 @@ export const AppLayout = () => {
       default:
         return (
           <div className="p-6">
-            <div className="text-center">
+            <div className="text-center space-y-4">
               <h2 className="text-2xl font-bold mb-4 colorful-text">
                 {sections.find(s => s.id === activeSection)?.label || 'Section'}
               </h2>
-              <p className="text-muted-foreground">
-                This section is ready for implementation. The navigation system is working correctly.
-              </p>
+              <div className="max-w-md mx-auto">
+                <Card>
+                  <CardContent className="p-6">
+                    <p className="text-muted-foreground mb-4">
+                      This section is ready for implementation. The navigation system is working correctly.
+                    </p>
+                    <Badge variant="outline">Coming Soon</Badge>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         );
@@ -112,6 +164,46 @@ export const AppLayout = () => {
     </div>
   );
 };
+
+const VehicleManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Vehicle Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Vehicle tracking and management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const SaftyManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Safety protocols and incident management system.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const QualityControl = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Quality Control</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Quality control checklists and inspection management.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const MapViewPage = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Map View</h2>
+    <MapView jobs={[]} />
+  </div>
+);
 
 const SettingsView = () => {
   return (

@@ -9,96 +9,113 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, Calendar, Users, DollarSign, Clock, FileText, TrendingUp, Activity } from "lucide-react";
+import { 
+  Plus, Edit, Trash2, Eye, EyeOff, BarChart3, Calendar, Users, DollarSign, 
+  Clock, FileText, Settings, MapPin, Wrench, TrendingUp, Activity, 
+  CreditCard, Package, AlertTriangle, CheckCircle, Target, Star, 
+  MessageSquare, Camera, PieChart, Building, Phone, Mail
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface CustomCard {
+interface DashboardCard {
   id: string;
   title: string;
   description: string;
-  type: 'metric' | 'chart' | 'list' | 'status' | 'progress' | 'summary';
+  category: 'business' | 'financial' | 'operational' | 'analytics' | 'communication';
   enabled: boolean;
   size: 'small' | 'medium' | 'large' | 'full-width';
   order: number;
   icon: string;
   color: string;
-  value?: string;
-  trend?: string;
   dataSource?: string;
+  customContent?: string;
 }
+
+const availableCards = [
+  // Business Cards
+  { id: 'revenue-chart', title: 'Revenue Chart', description: 'Monthly revenue trends and forecasts', category: 'business', icon: 'TrendingUp', color: 'blue' },
+  { id: 'job-pipeline', title: 'Job Pipeline', description: 'Jobs in different stages of completion', category: 'business', icon: 'BarChart3', color: 'green' },
+  { id: 'customer-satisfaction', title: 'Customer Satisfaction', description: 'Average customer ratings and feedback', category: 'business', icon: 'Star', color: 'purple' },
+  { id: 'lead-conversion', title: 'Lead Conversion', description: 'Lead to customer conversion rates', category: 'business', icon: 'Target', color: 'orange' },
+  { id: 'business-growth', title: 'Business Growth', description: 'Year-over-year growth metrics', category: 'business', icon: 'TrendingUp', color: 'blue' },
+  
+  // Financial Cards
+  { id: 'monthly-revenue', title: 'Monthly Revenue', description: 'Total revenue for current month', category: 'financial', icon: 'DollarSign', color: 'green' },
+  { id: 'profit-margin', title: 'Profit Margin', description: 'Current profit margins and trends', category: 'financial', icon: 'PieChart', color: 'blue' },
+  { id: 'outstanding-invoices', title: 'Outstanding Invoices', description: 'Unpaid invoices and aging', category: 'financial', icon: 'FileText', color: 'red' },
+  { id: 'expenses-tracking', title: 'Expenses Tracking', description: 'Monthly expenses breakdown', category: 'financial', icon: 'CreditCard', color: 'orange' },
+  { id: 'payment-status', title: 'Payment Status', description: 'Recent payments and pending amounts', category: 'financial', icon: 'CheckCircle', color: 'green' },
+  
+  // Operational Cards
+  { id: 'active-jobs', title: 'Active Jobs', description: 'Currently active and scheduled jobs', category: 'operational', icon: 'Wrench', color: 'blue' },
+  { id: 'team-schedule', title: 'Team Schedule', description: 'Today\'s team assignments', category: 'operational', icon: 'Calendar', color: 'purple' },
+  { id: 'equipment-status', title: 'Equipment Status', description: 'Equipment availability and maintenance', category: 'operational', icon: 'Package', color: 'orange' },
+  { id: 'job-locations', title: 'Job Locations', description: 'Map view of all job locations', category: 'operational', icon: 'MapPin', color: 'red' },
+  { id: 'safety-alerts', title: 'Safety Alerts', description: 'Safety incidents and alerts', category: 'operational', icon: 'AlertTriangle', color: 'red' },
+  { id: 'quality-metrics', title: 'Quality Metrics', description: 'Quality control and inspection results', category: 'operational', icon: 'CheckCircle', color: 'green' },
+  
+  // Analytics Cards
+  { id: 'performance-analytics', title: 'Performance Analytics', description: 'Key performance indicators', category: 'analytics', icon: 'Activity', color: 'blue' },
+  { id: 'time-tracking', title: 'Time Tracking', description: 'Employee time tracking and productivity', category: 'analytics', icon: 'Clock', color: 'purple' },
+  { id: 'customer-analytics', title: 'Customer Analytics', description: 'Customer behavior and insights', category: 'analytics', icon: 'Users', color: 'green' },
+  { id: 'job-completion-rate', title: 'Job Completion Rate', description: 'On-time completion statistics', category: 'analytics', icon: 'Target', color: 'blue' },
+  { id: 'resource-utilization', title: 'Resource Utilization', description: 'Team and equipment utilization rates', category: 'analytics', icon: 'BarChart3', color: 'orange' },
+  
+  // Communication Cards
+  { id: 'recent-messages', title: 'Recent Messages', description: 'Latest customer communications', category: 'communication', icon: 'MessageSquare', color: 'blue' },
+  { id: 'customer-reviews', title: 'Customer Reviews', description: 'Recent customer reviews and ratings', category: 'communication', icon: 'Star', color: 'green' },
+  { id: 'notifications', title: 'Notifications', description: 'System notifications and alerts', category: 'communication', icon: 'AlertTriangle', color: 'red' },
+  { id: 'communication-log', title: 'Communication Log', description: 'All customer interactions history', category: 'communication', icon: 'Phone', color: 'purple' },
+  { id: 'email-campaigns', title: 'Email Campaigns', description: 'Marketing email performance', category: 'communication', icon: 'Mail', color: 'blue' }
+];
 
 export const CustomCardList = () => {
   const { toast } = useToast();
-  const [cards, setCards] = useState<CustomCard[]>([
+  const [cards, setCards] = useState<DashboardCard[]>([
     {
       id: '1',
-      title: 'Revenue This Month',
-      description: 'Total revenue generated this month',
-      type: 'metric',
+      title: 'Revenue Chart',
+      description: 'Monthly revenue trends and forecasts',
+      category: 'financial',
       enabled: true,
-      size: 'medium',
+      size: 'large',
       order: 0,
-      icon: 'DollarSign',
-      color: 'green',
-      value: '$45,230',
-      trend: '+23% from last month'
+      icon: 'TrendingUp',
+      color: 'blue'
     },
     {
       id: '2',
       title: 'Active Jobs',
-      description: 'Number of jobs currently in progress',
-      type: 'status',
+      description: 'Currently active and scheduled jobs',
+      category: 'operational',
       enabled: true,
       size: 'medium',
       order: 1,
-      icon: 'Activity',
-      color: 'blue',
-      value: '12',
-      trend: '+8% from last week'
-    },
-    {
-      id: '3',
-      title: 'Customer Growth',
-      description: 'Monthly customer acquisition chart',
-      type: 'chart',
-      enabled: false,
-      size: 'large',
-      order: 2,
-      icon: 'TrendingUp',
-      color: 'purple'
+      icon: 'Wrench',
+      color: 'green'
     }
   ]);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [editingCard, setEditingCard] = useState<CustomCard | null>(null);
-  const [newCard, setNewCard] = useState<Partial<CustomCard>>({
+  const [editingCard, setEditingCard] = useState<DashboardCard | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [newCard, setNewCard] = useState<Partial<DashboardCard>>({
     title: '',
     description: '',
-    type: 'metric',
+    category: 'business',
     enabled: true,
     size: 'medium',
     icon: 'BarChart3',
     color: 'blue'
   });
 
-  const cardTypes = [
-    { value: 'metric', label: 'Metric Card', icon: DollarSign },
-    { value: 'chart', label: 'Chart Card', icon: BarChart3 },
-    { value: 'list', label: 'List Card', icon: FileText },
-    { value: 'status', label: 'Status Card', icon: Activity },
-    { value: 'progress', label: 'Progress Card', icon: TrendingUp },
-    { value: 'summary', label: 'Summary Card', icon: Clock }
-  ];
-
-  const iconOptions = [
-    { value: 'BarChart3', label: 'Bar Chart', icon: BarChart3 },
-    { value: 'Calendar', label: 'Calendar', icon: Calendar },
-    { value: 'Users', label: 'Users', icon: Users },
-    { value: 'DollarSign', label: 'Dollar Sign', icon: DollarSign },
-    { value: 'Clock', label: 'Clock', icon: Clock },
-    { value: 'FileText', label: 'File Text', icon: FileText },
-    { value: 'TrendingUp', label: 'Trending Up', icon: TrendingUp },
-    { value: 'Activity', label: 'Activity', icon: Activity }
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'business', label: 'Business' },
+    { value: 'financial', label: 'Financial' },
+    { value: 'operational', label: 'Operational' },
+    { value: 'analytics', label: 'Analytics' },
+    { value: 'communication', label: 'Communication' }
   ];
 
   const colorOptions = [
@@ -107,9 +124,7 @@ export const CustomCardList = () => {
     { value: 'purple', label: 'Purple', class: 'bg-purple-500' },
     { value: 'orange', label: 'Orange', class: 'bg-orange-500' },
     { value: 'red', label: 'Red', class: 'bg-red-500' },
-    { value: 'pink', label: 'Pink', class: 'bg-pink-500' },
-    { value: 'indigo', label: 'Indigo', class: 'bg-indigo-500' },
-    { value: 'cyan', label: 'Cyan', class: 'bg-cyan-500' }
+    { value: 'pink', label: 'Pink', class: 'bg-pink-500' }
   ];
 
   const sizeOptions = [
@@ -129,25 +144,24 @@ export const CustomCardList = () => {
       return;
     }
 
-    const card: CustomCard = {
+    const card: DashboardCard = {
       id: Date.now().toString(),
       title: newCard.title,
       description: newCard.description || '',
-      type: newCard.type as CustomCard['type'],
+      category: newCard.category as DashboardCard['category'],
       enabled: newCard.enabled ?? true,
-      size: newCard.size as CustomCard['size'],
+      size: newCard.size as DashboardCard['size'],
       order: cards.length,
       icon: newCard.icon || 'BarChart3',
       color: newCard.color || 'blue',
-      value: newCard.value,
-      trend: newCard.trend
+      customContent: newCard.customContent
     };
 
     setCards([...cards, card]);
     setNewCard({
       title: '',
       description: '',
-      type: 'metric',
+      category: 'business',
       enabled: true,
       size: 'medium',
       icon: 'BarChart3',
@@ -161,36 +175,10 @@ export const CustomCardList = () => {
     });
   };
 
-  const handleEditCard = (card: CustomCard) => {
+  const handleEditCard = (card: DashboardCard) => {
     setEditingCard(card);
     setNewCard(card);
     setShowAddDialog(true);
-  };
-
-  const handleUpdateCard = () => {
-    if (!editingCard || !newCard.title) return;
-
-    const updatedCards = cards.map(c => 
-      c.id === editingCard.id ? { ...c, ...newCard } : c
-    );
-    
-    setCards(updatedCards);
-    setEditingCard(null);
-    setShowAddDialog(false);
-    setNewCard({
-      title: '',
-      description: '',
-      type: 'metric',
-      enabled: true,
-      size: 'medium',
-      icon: 'BarChart3',
-      color: 'blue'
-    });
-
-    toast({
-      title: "Card Updated",
-      description: "Card has been updated successfully"
-    });
   };
 
   const handleDeleteCard = (id: string) => {
@@ -207,9 +195,36 @@ export const CustomCardList = () => {
     ));
   };
 
+  const addPrebuiltCard = (cardTemplate: any) => {
+    const card: DashboardCard = {
+      id: Date.now().toString(),
+      ...cardTemplate,
+      enabled: true,
+      size: 'medium' as const,
+      order: cards.length
+    };
+
+    setCards([...cards, card]);
+    toast({
+      title: "Card Added",
+      description: `${card.title} has been added to your dashboard`
+    });
+  };
+
+  const filteredCards = cards.filter(card => 
+    selectedCategory === 'all' || card.category === selectedCategory
+  );
+
+  const filteredAvailableCards = availableCards.filter(card =>
+    selectedCategory === 'all' || card.category === selectedCategory
+  );
+
   const getIconComponent = (iconName: string) => {
     const iconMap: Record<string, any> = {
-      BarChart3, Calendar, Users, DollarSign, Clock, FileText, TrendingUp, Activity
+      BarChart3, Calendar, Users, DollarSign, Clock, FileText, Settings,
+      MapPin, Wrench, TrendingUp, Activity, CreditCard, Package,
+      AlertTriangle, CheckCircle, Target, Star, MessageSquare, Camera,
+      PieChart, Building, Phone, Mail
     };
     return iconMap[iconName] || BarChart3;
   };
@@ -218,88 +233,139 @@ export const CustomCardList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Custom Dashboard Cards</h2>
-          <p className="text-muted-foreground">Create and manage your dashboard cards</p>
+          <h2 className="text-2xl font-bold">Dashboard Cards</h2>
+          <p className="text-muted-foreground">Manage and configure your dashboard cards</p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Card
-        </Button>
+        <div className="flex gap-2">
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Custom Card
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-4">
-        {cards.map((card) => {
-          const IconComponent = getIconComponent(card.icon);
-          const colorClass = colorOptions.find(c => c.value === card.color)?.class || 'bg-blue-500';
-          
-          return (
-            <Card key={card.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-lg ${colorClass} text-white`}>
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{card.title}</h3>
-                      <p className="text-sm text-muted-foreground">{card.description}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="secondary">{card.type}</Badge>
-                        <Badge variant="outline">{card.size}</Badge>
-                        {card.enabled ? (
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        ) : (
-                          <Badge variant="secondary">Disabled</Badge>
-                        )}
+      {/* Available Pre-built Cards */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Available Cards</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredAvailableCards.map((cardTemplate) => {
+            const IconComponent = getIconComponent(cardTemplate.icon);
+            const colorClass = colorOptions.find(c => c.value === cardTemplate.color)?.class || 'bg-blue-500';
+            
+            return (
+              <Card key={cardTemplate.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${colorClass} text-white`}>
+                        <IconComponent className="h-4 w-4" />
                       </div>
-                      {card.value && (
-                        <div className="mt-2">
-                          <span className="text-2xl font-bold">{card.value}</span>
-                          {card.trend && (
-                            <span className="text-sm text-muted-foreground ml-2">{card.trend}</span>
+                      <div>
+                        <CardTitle className="text-sm">{cardTemplate.title}</CardTitle>
+                        <Badge variant="secondary" className="text-xs">
+                          {cardTemplate.category}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => addPrebuiltCard(cardTemplate)}
+                      className="h-8"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <p className="text-xs text-muted-foreground">{cardTemplate.description}</p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Current Dashboard Cards */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Current Dashboard Cards</h3>
+        <div className="grid gap-4">
+          {filteredCards.map((card) => {
+            const IconComponent = getIconComponent(card.icon);
+            const colorClass = colorOptions.find(c => c.value === card.color)?.class || 'bg-blue-500';
+            
+            return (
+              <Card key={card.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${colorClass} text-white`}>
+                        <IconComponent className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold">{card.title}</h3>
+                        <p className="text-sm text-muted-foreground">{card.description}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="secondary">{card.category}</Badge>
+                          <Badge variant="outline">{card.size}</Badge>
+                          {card.enabled ? (
+                            <Badge className="bg-green-100 text-green-800">Active</Badge>
+                          ) : (
+                            <Badge variant="secondary">Disabled</Badge>
                           )}
                         </div>
-                      )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => toggleCardEnabled(card.id)}
+                      >
+                        {card.enabled ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleEditCard(card)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleDeleteCard(card.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => toggleCardEnabled(card.id)}
-                    >
-                      {card.enabled ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleEditCard(card)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleDeleteCard(card.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
 
       {/* Add/Edit Card Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCard ? 'Edit Card' : 'Add New Card'}
+              {editingCard ? 'Edit Card' : 'Add Custom Card'}
             </DialogTitle>
           </DialogHeader>
           
@@ -321,122 +387,69 @@ export const CustomCardList = () => {
                 value={newCard.description || ''}
                 onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
                 placeholder="Enter card description"
-                rows={2}
+                rows={3}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Card Type</Label>
-                <Select
-                  value={newCard.type}
-                  onValueChange={(value: CustomCard['type']) => setNewCard({ ...newCard, type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cardTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        <div className="flex items-center gap-2">
-                          <type.icon className="h-4 w-4" />
-                          {type.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Size</Label>
-                <Select
-                  value={newCard.size}
-                  onValueChange={(value: CustomCard['size']) => setNewCard({ ...newCard, size: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sizeOptions.map((size) => (
-                      <SelectItem key={size.value} value={size.value}>
-                        {size.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select
+                value={newCard.category}
+                onValueChange={(value: DashboardCard['category']) => setNewCard({ ...newCard, category: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="business">Business</SelectItem>
+                  <SelectItem value="financial">Financial</SelectItem>
+                  <SelectItem value="operational">Operational</SelectItem>
+                  <SelectItem value="analytics">Analytics</SelectItem>
+                  <SelectItem value="communication">Communication</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Icon</Label>
-                <Select
-                  value={newCard.icon}
-                  onValueChange={(value) => setNewCard({ ...newCard, icon: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {iconOptions.map((icon) => (
-                      <SelectItem key={icon.value} value={icon.value}>
-                        <div className="flex items-center gap-2">
-                          <icon.icon className="h-4 w-4" />
-                          {icon.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Color</Label>
-                <Select
-                  value={newCard.color}
-                  onValueChange={(value) => setNewCard({ ...newCard, color: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {colorOptions.map((color) => (
-                      <SelectItem key={color.value} value={color.value}>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-4 h-4 rounded ${color.class}`} />
-                          {color.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>Size</Label>
+              <Select
+                value={newCard.size}
+                onValueChange={(value: DashboardCard['size']) => setNewCard({ ...newCard, size: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sizeOptions.map((size) => (
+                    <SelectItem key={size.value} value={size.value}>
+                      {size.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {(newCard.type === 'metric' || newCard.type === 'status') && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="value">Value</Label>
-                  <Input
-                    id="value"
-                    value={newCard.value || ''}
-                    onChange={(e) => setNewCard({ ...newCard, value: e.target.value })}
-                    placeholder="e.g., $45,230 or 12"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="trend">Trend</Label>
-                  <Input
-                    id="trend"
-                    value={newCard.trend || ''}
-                    onChange={(e) => setNewCard({ ...newCard, trend: e.target.value })}
-                    placeholder="e.g., +23% from last month"
-                  />
-                </div>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label>Color</Label>
+              <Select
+                value={newCard.color}
+                onValueChange={(value) => setNewCard({ ...newCard, color: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {colorOptions.map((color) => (
+                    <SelectItem key={color.value} value={color.value}>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-4 h-4 rounded ${color.class}`} />
+                        {color.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <div className="flex items-center space-x-2">
               <Switch
@@ -454,7 +467,7 @@ export const CustomCardList = () => {
               setNewCard({
                 title: '',
                 description: '',
-                type: 'metric',
+                category: 'business',
                 enabled: true,
                 size: 'medium',
                 icon: 'BarChart3',
@@ -463,7 +476,7 @@ export const CustomCardList = () => {
             }}>
               Cancel
             </Button>
-            <Button onClick={editingCard ? handleUpdateCard : handleAddCard}>
+            <Button onClick={handleAddCard}>
               {editingCard ? 'Update Card' : 'Add Card'}
             </Button>
           </div>
