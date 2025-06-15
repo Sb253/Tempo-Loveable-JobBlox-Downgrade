@@ -13,6 +13,10 @@ import { MapView } from "./MapView";
 import { ClientAppointment } from "./ClientAppointment";
 import { Sidebar } from "./Sidebar";
 import { MobileSettings } from "./MobileSettings";
+import { CustomerList } from "./CustomerList";
+import { JobList } from "./JobList";
+import { InvoiceList } from "./InvoiceList";
+import { SchedulingDashboard } from "./SchedulingDashboard";
 
 interface SidebarSection {
   id: string;
@@ -130,7 +134,7 @@ export const AppLayout = () => {
       case 'invoices':
         return <InvoiceList />;
       case 'schedule':
-        return <ScheduleView />;
+        return <SchedulingDashboard />;
       case 'expenses':
         return <ExpenseList />;
       case 'time-tracking':
@@ -541,3 +545,14 @@ const SettingsView = () => {
     </div>
   );
 };
+
+const SchedulingDashboard = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Scheduling Dashboard</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Scheduling dashboard will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
