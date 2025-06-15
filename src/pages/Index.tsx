@@ -51,6 +51,7 @@ import { PredictiveAnalytics } from "@/components/PredictiveAnalytics";
 import { CustomerLifetimeValue } from "@/components/CustomerLifetimeValue";
 import { KPIDashboard } from "@/components/KPIDashboard";
 import { AutomatedInsights } from "@/components/AutomatedInsights";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -373,6 +374,7 @@ const Index = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
