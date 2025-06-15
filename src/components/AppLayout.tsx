@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -268,17 +267,6 @@ export const AppLayout = () => {
 };
 
 // Placeholder components for missing sections
-const Pipeline = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Sales Pipeline</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Sales pipeline and lead management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const CustomerForm = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Add New Customer</h2>
