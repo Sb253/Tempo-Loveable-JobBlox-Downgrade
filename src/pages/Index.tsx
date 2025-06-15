@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dashboard } from "@/components/Dashboard";
 import { MegaMenuSidebar } from "@/components/MegaMenuSidebar";
@@ -43,7 +42,7 @@ import { BranchManagement } from "@/components/BranchManagement";
 import { CompanySettings } from "@/components/CompanySettings";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { SettingsDashboard } from "@/components/SettingsDashboard";
-import { CustomerForm } from "@/components/CustomerForm";
+import { CustomerRegistrationForm } from "@/components/CustomerRegistrationForm";
 import { JobForm } from "@/components/JobForm";
 import { ClientAppointment } from "@/components/ClientAppointment";
 import { Pipeline } from "@/components/Pipeline";
@@ -51,7 +50,6 @@ import { Pipeline } from "@/components/Pipeline";
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
 
   // Mock data for components that need it - fixed to match Job interface
@@ -100,7 +98,7 @@ const Index = () => {
     { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
     { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
     { id: 'customers', label: 'Customers', icon: Users },
-    { id: 'customer-form', label: 'Add Customer', icon: UserPlus },
+    { id: 'customer-form', label: 'Customer Intake', icon: UserPlus },
     { id: 'jobs', label: 'Jobs', icon: Briefcase },
     { id: 'job-form', label: 'Add Job', icon: FileText },
     { id: 'estimates', label: 'Estimates', icon: FileText },
@@ -152,14 +150,10 @@ const Index = () => {
     setActiveSection(section);
     
     // Handle special form sections
-    if (section === 'customer-form') {
-      setShowCustomerForm(true);
-      setActiveSection('customers'); // Show customers list as background
-    } else if (section === 'job-form') {
+    if (section === 'job-form') {
       setShowJobForm(true);
       setActiveSection('jobs'); // Show jobs list as background
     } else {
-      setShowCustomerForm(false);
       setShowJobForm(false);
     }
   };
@@ -167,11 +161,6 @@ const Index = () => {
   const handleSidebarToggle = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed);
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
-  };
-
-  const handleCloseCustomerForm = () => {
-    setShowCustomerForm(false);
-    setActiveSection('customers');
   };
 
   const handleCloseJobForm = () => {
@@ -189,13 +178,15 @@ const Index = () => {
   const renderActiveComponent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onSectionChange={handleSectionChange} />;
       case 'client-appointment':
         return <ClientAppointment />;
       case 'pipeline':
         return <Pipeline />;
       case 'customers':
         return <CustomerList />;
+      case 'customer-form':
+        return <CustomerRegistrationForm />;
       case 'jobs':
         return <JobList />;
       case 'estimates':
@@ -269,7 +260,7 @@ const Index = () => {
       case 'settings':
         return <SettingsDashboard />;
       default:
-        return <Dashboard />;
+        return <Dashboard onSectionChange={handleSectionChange} />;
     }
   };
 
@@ -297,10 +288,6 @@ const Index = () => {
       </div>
 
       {/* Modal Forms */}
-      {showCustomerForm && (
-        <CustomerForm onClose={handleCloseCustomerForm} />
-      )}
-
       {showJobForm && (
         <JobForm 
           onClose={handleCloseJobForm}

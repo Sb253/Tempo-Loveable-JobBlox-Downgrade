@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ interface QuickActionsProps {
   onSiteAssessment?: () => void;
   onClientInformation?: () => void;
   onProjectProposal?: () => void;
+  onSectionChange?: (section: string) => void;
 }
 
 export const QuickActions = ({
@@ -55,7 +57,8 @@ export const QuickActions = ({
   onInitialConsultation,
   onSiteAssessment,
   onClientInformation,
-  onProjectProposal
+  onProjectProposal,
+  onSectionChange
 }: QuickActionsProps) => {
   const [showAppointmentScheduler, setShowAppointmentScheduler] = useState(false);
 
@@ -87,7 +90,7 @@ export const QuickActions = ({
       description: 'Collect details',
       icon: UserPlus,
       color: 'from-purple-500 to-purple-600',
-      onClick: onClientInformation || (() => {})
+      onClick: () => onSectionChange?.('customer-form')
     },
     {
       id: 'project-proposal',
@@ -114,7 +117,7 @@ export const QuickActions = ({
       description: 'New client record',
       icon: Users,
       color: 'from-green-500 to-green-600',
-      onClick: onAddCustomer || (() => {})
+      onClick: () => onSectionChange?.('customer-form')
     },
     {
       id: 'estimate',
