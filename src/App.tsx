@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import MembersArea from "./pages/MembersArea";
 import JobsPage from "./pages/JobsPage";
+import CommunicationPage from "./pages/CommunicationPage";
+import ReviewsPage from "./pages/ReviewsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/members" element={<MembersArea />} />
             <Route path="/jobs" element={<JobsPage />} />
+            <Route path="/communication" element={<CommunicationPage />} />
+            <Route path="/reviews" element={<ReviewsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
