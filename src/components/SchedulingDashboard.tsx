@@ -3,12 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DragDropCalendar } from "@/components/scheduling/DragDropCalendar";
 import { MapCalendarView } from "@/components/scheduling/MapCalendarView";
 import { ListView } from "@/components/scheduling/ListView";
 import { JobDetailsPanel } from "@/components/scheduling/JobDetailsPanel";
 import { RecurringJobForm } from "@/components/scheduling/RecurringJobForm";
-import { Calendar, MapPin, List, Clock, Plus, Filter, Settings } from "lucide-react";
+import { PhotoUpload } from "./PhotoUpload";
+import { Calendar, MapPin, List, Clock, Plus, Filter, Settings, Camera } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 
 export interface Job {
@@ -103,6 +105,8 @@ export const SchedulingDashboard = () => {
   const [activeView, setActiveView] = useState<'month' | 'week' | 'day' | 'map' | 'list'>('month');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [showRecurringForm, setShowRecurringForm] = useState(false);
+  const [showCameraDialog, setShowCameraDialog] = useState(false);
+  const [selectedJobForPhoto, setSelectedJobForPhoto] = useState<Job | null>(null);
 
   const jobTypeColors = {
     inspection: 'bg-blue-500',
@@ -131,6 +135,21 @@ export const SchedulingDashboard = () => {
         : job
     ));
     toast.success("Job rescheduled successfully");
+  };
+
+  const handleTakePhoto = (job: Job) => {
+    setSelectedJobForPhoto(job);
+    setShowCameraDialog(true);
+  };
+
+  const handlePhotoUpload = (uploadedPhoto: any) => {
+    if (selectedJobForPhoto) {
+      toast.success("Photo captured!", {
+        description: `Photo saved for ${selectedJobForPhoto.title}`
+      });
+    }
+    setShowCameraDialog(false);
+    setSelectedJobForPhoto(null);
   };
 
   const getJobStats = () => {
@@ -271,6 +290,7 @@ export const SchedulingDashboard = () => {
                 onJobMove={handleJobMove}
                 onJobSelect={setSelectedJob}
                 jobTypeColors={jobTypeColors}
+                onTakePhoto={handleTakePhoto}
               />
             </TabsContent>
 
@@ -281,6 +301,7 @@ export const SchedulingDashboard = () => {
                 onJobMove={handleJobMove}
                 onJobSelect={setSelectedJob}
                 jobTypeColors={jobTypeColors}
+                onTakePhoto={handleTakePhoto}
               />
             </TabsContent>
 
@@ -291,6 +312,7 @@ export const SchedulingDashboard = () => {
                 onJobMove={handleJobMove}
                 onJobSelect={setSelectedJob}
                 jobTypeColors={jobTypeColors}
+                onTakePhoto={handleTakePhoto}
               />
             </TabsContent>
 
@@ -309,6 +331,7 @@ export const SchedulingDashboard = () => {
                 onJobUpdate={handleJobUpdate}
                 statusColors={statusColors}
                 jobTypeColors={jobTypeColors}
+                onTakePhoto={handleTakePhoto}
               />
             </TabsContent>
           </Tabs>
@@ -337,6 +360,21 @@ export const SchedulingDashboard = () => {
           }}
         />
       )}
+
+      {/* Camera Dialog */}
+      <Dialog open={showCameraDialog} onOpenChange={setShowCameraDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Take Photo for {selectedJobForPhoto?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <PhotoUpload 
+            onUpload={handlePhotoUpload}
+            maxFiles={3}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

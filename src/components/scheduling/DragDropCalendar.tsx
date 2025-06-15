@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, Camera } from "lucide-react";
 import { Job } from "@/components/SchedulingDashboard";
 
 interface DragDropCalendarProps {
@@ -14,6 +13,7 @@ interface DragDropCalendarProps {
   onJobMove: (jobId: string, newDate: string, newTime?: string) => void;
   onJobSelect: (job: Job) => void;
   jobTypeColors: Record<string, string>;
+  onTakePhoto?: (job: Job) => void;
 }
 
 export const DragDropCalendar = ({ 
@@ -21,7 +21,8 @@ export const DragDropCalendar = ({
   view, 
   onJobMove, 
   onJobSelect, 
-  jobTypeColors 
+  jobTypeColors,
+  onTakePhoto 
 }: DragDropCalendarProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -76,6 +77,43 @@ export const DragDropCalendar = ({
     }
     return slots;
   };
+
+  const renderJobCard = (job: Job, isCompact = false) => (
+    <Card
+      className={`cursor-pointer transition-all hover:shadow-md`}
+      onClick={() => onJobSelect(job)}
+    >
+      <CardContent className={isCompact ? "p-2" : "p-3"}>
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`w-${isCompact ? '2' : '3'} h-${isCompact ? '2' : '3'} rounded ${jobTypeColors[job.jobType]}`}></div>
+          <span className={`font-medium ${isCompact ? 'text-xs' : 'text-sm'}`}>{job.title}</span>
+        </div>
+        <div className={`${isCompact ? 'text-xs' : 'text-xs'} text-muted-foreground`}>
+          <div className="flex items-center gap-1">
+            <Clock className={`h-3 w-3`} />
+            {formatTime(job.startTime)} - {job.endTime ? formatTime(job.endTime) : 'Open'}
+          </div>
+          <div>{job.customer}</div>
+        </div>
+        {onTakePhoto && (
+          <div className="mt-2">
+            <Button 
+              variant="outline" 
+              size={isCompact ? "sm" : "sm"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTakePhoto(job);
+              }}
+              className="w-full"
+            >
+              <Camera className="h-3 w-3 mr-1" />
+              Photo
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 
   const renderDayView = () => {
     const date = selectedDate.toISOString().split('T')[0];
@@ -141,29 +179,16 @@ export const DragDropCalendar = ({
                   {dayJobs.map((job, index) => (
                     <Draggable key={job.id} draggableId={job.id} index={index}>
                       {(provided, snapshot) => (
-                        <Card
+                        <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`cursor-pointer transition-all ${
-                            snapshot.isDragging ? 'shadow-lg scale-105' : 'hover:shadow-md'
+                          className={`transition-all ${
+                            snapshot.isDragging ? 'shadow-lg scale-105' : ''
                           }`}
-                          onClick={() => onJobSelect(job)}
                         >
-                          <CardContent className="p-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className={`w-3 h-3 rounded ${jobTypeColors[job.jobType]}`}></div>
-                              <span className="font-medium text-sm">{job.title}</span>
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {formatTime(job.startTime)} - {job.endTime ? formatTime(job.endTime) : 'Open'}
-                              </div>
-                              <div>{job.customer}</div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                          {renderJobCard(job)}
+                        </div>
                       )}
                     </Draggable>
                   ))}
@@ -236,25 +261,16 @@ export const DragDropCalendar = ({
                         {dayJobs.map((job, index) => (
                           <Draggable key={job.id} draggableId={job.id} index={index}>
                             {(provided, snapshot) => (
-                              <Card
+                              <div
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`mb-2 cursor-pointer transition-all ${
-                                  snapshot.isDragging ? 'shadow-lg scale-105' : 'hover:shadow-md'
+                                className={`mb-2 transition-all ${
+                                  snapshot.isDragging ? 'shadow-lg scale-105' : ''
                                 }`}
-                                onClick={() => onJobSelect(job)}
                               >
-                                <CardContent className="p-2">
-                                  <div className="flex items-center gap-1 mb-1">
-                                    <div className={`w-2 h-2 rounded ${jobTypeColors[job.jobType]}`}></div>
-                                    <span className="font-medium text-xs">{job.title}</span>
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {formatTime(job.startTime)}
-                                  </div>
-                                </CardContent>
-                              </Card>
+                                {renderJobCard(job, true)}
+                              </div>
                             )}
                           </Draggable>
                         ))}
@@ -299,30 +315,50 @@ export const DragDropCalendar = ({
                   {getJobsForDate(selectedDate.toISOString().split('T')[0]).map((job, index) => (
                     <Draggable key={job.id} draggableId={job.id} index={index}>
                       {(provided, snapshot) => (
-                        <Card
+                        <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`cursor-pointer transition-all ${
-                            snapshot.isDragging ? 'shadow-lg scale-105' : 'hover:shadow-md'
+                          className={`transition-all ${
+                            snapshot.isDragging ? 'shadow-lg scale-105' : ''
                           }`}
-                          onClick={() => onJobSelect(job)}
                         >
-                          <CardContent className="p-3">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className={`w-3 h-3 rounded ${jobTypeColors[job.jobType]}`}></div>
-                              <span className="font-medium">{job.title}</span>
-                              <Badge variant="outline">{job.status}</Badge>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              <div>{job.customer}</div>
-                              <div className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {formatTime(job.startTime)} - {job.endTime ? formatTime(job.endTime) : 'Open'}
+                          <Card
+                            className={`cursor-pointer transition-all hover:shadow-md`}
+                            onClick={() => onJobSelect(job)}
+                          >
+                            <CardContent className="p-3">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className={`w-3 h-3 rounded ${jobTypeColors[job.jobType]}`}></div>
+                                <span className="font-medium">{job.title}</span>
+                                <Badge variant="outline">{job.status}</Badge>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                              <div className="text-sm text-muted-foreground">
+                                <div>{job.customer}</div>
+                                <div className="flex items-center gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  {formatTime(job.startTime)} - {job.endTime ? formatTime(job.endTime) : 'Open'}
+                                </div>
+                              </div>
+                              {onTakePhoto && (
+                                <div className="mt-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onTakePhoto(job);
+                                    }}
+                                    className="w-full"
+                                  >
+                                    <Camera className="h-3 w-3 mr-1" />
+                                    Take Photo
+                                  </Button>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </div>
                       )}
                     </Draggable>
                   ))}

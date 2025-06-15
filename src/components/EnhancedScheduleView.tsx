@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Calendar, Clock, MapPin, User, Plus, Filter, Search, Zap, Navigation, Bell } from "lucide-react";
+import { Calendar, Clock, MapPin, User, Plus, Filter, Search, Zap, Navigation, Bell, Camera } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { PhotoUpload } from "./PhotoUpload";
 
 interface Job {
   id: string;
@@ -82,6 +82,8 @@ export const EnhancedScheduleView = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [showCameraDialog, setShowCameraDialog] = useState(false);
+  const [selectedJobForPhoto, setSelectedJobForPhoto] = useState<string | null>(null);
 
   const jobTemplates: JobTemplate[] = [
     { id: '1', name: 'Kitchen Inspection', description: 'Standard kitchen assessment', estimatedDuration: '2h', category: 'Inspection' },
@@ -181,6 +183,22 @@ export const EnhancedScheduleView = () => {
         description: `"On My Way" message sent to ${job.customer}`
       });
     }
+  };
+
+  const handleTakePhoto = (jobId: string) => {
+    setSelectedJobForPhoto(jobId);
+    setShowCameraDialog(true);
+  };
+
+  const handlePhotoUpload = (uploadedPhoto: any) => {
+    const job = jobs.find(j => j.id === selectedJobForPhoto);
+    if (job) {
+      toast.success("Photo captured!", {
+        description: `Photo saved for ${job.title}`
+      });
+    }
+    setShowCameraDialog(false);
+    setSelectedJobForPhoto(null);
   };
 
   const getCoordinatesDisplay = (coordinates?: [number, number]) => {
@@ -360,6 +378,14 @@ export const EnhancedScheduleView = () => {
                               <Bell className="h-4 w-4 mr-2" />
                               Notify Customer
                             </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleTakePhoto(job.id)}
+                            >
+                              <Camera className="h-4 w-4 mr-2" />
+                              Take Photo
+                            </Button>
                             <Button variant="outline" size="sm">
                               Edit
                             </Button>
@@ -375,6 +401,21 @@ export const EnhancedScheduleView = () => {
           </DragDropContext>
         </CardContent>
       </Card>
+
+      {/* Camera Dialog */}
+      <Dialog open={showCameraDialog} onOpenChange={setShowCameraDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              Take Photo for {jobs.find(j => j.id === selectedJobForPhoto)?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <PhotoUpload 
+            onUpload={handlePhotoUpload}
+            maxFiles={3}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
