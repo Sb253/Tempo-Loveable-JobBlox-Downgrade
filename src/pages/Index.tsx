@@ -60,12 +60,14 @@ import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
 import { TimeTracking } from "@/components/TimeTracking";
 import { EmployeeChat } from "@/components/EmployeeChat";
 import { JobChecklists } from "@/components/JobChecklists";
+import { useCompanyData } from "@/hooks/useCompanyData";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
   const [showAdvancedInvoiceForm, setShowAdvancedInvoiceForm] = useState(false);
+  const companyData = useCompanyData();
 
   const stats = [
     { title: "Total Customers", value: "156", icon: Users, color: "text-blue-600" },
@@ -443,7 +445,18 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-xl font-semibold text-foreground">Construction CRM</h1>
+              <div className="flex items-center gap-3">
+                {companyData.logo && (
+                  <img 
+                    src={companyData.logo} 
+                    alt="Company Logo" 
+                    className="h-10 w-auto object-contain"
+                  />
+                )}
+                <h1 className="text-xl font-semibold text-foreground">
+                  {companyData.logo ? companyData.name : 'Construction CRM'}
+                </h1>
+              </div>
               
               <NavigationMenu>
                 <NavigationMenuList>
