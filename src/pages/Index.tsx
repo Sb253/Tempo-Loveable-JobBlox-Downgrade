@@ -47,6 +47,10 @@ import { PhotoDocumentation } from "@/components/PhotoDocumentation";
 import { WeatherAlerts } from "@/components/WeatherAlerts";
 import { EquipmentTracking } from "@/components/EquipmentTracking";
 import { MaterialInventory } from "@/components/MaterialInventory";
+import { PredictiveAnalytics } from "@/components/PredictiveAnalytics";
+import { CustomerLifetimeValue } from "@/components/CustomerLifetimeValue";
+import { KPIDashboard } from "@/components/KPIDashboard";
+import { AutomatedInsights } from "@/components/AutomatedInsights";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -125,6 +129,10 @@ const Index = () => {
     { label: 'Weather Alerts', value: 'weather-alerts' },
     { label: 'Equipment Tracking', value: 'equipment-tracking' },
     { label: 'Material Inventory', value: 'material-inventory' },
+    { label: 'Predictive Analytics', value: 'predictive-analytics' },
+    { label: 'Customer LTV', value: 'customer-ltv' },
+    { label: 'KPI Dashboard', value: 'kpi-dashboard' },
+    { label: 'AI Insights', value: 'ai-insights' },
   ];
 
   const getCurrentLabel = () => {
@@ -212,6 +220,14 @@ const Index = () => {
         return <EquipmentTracking />;
       case 'material-inventory':
         return <MaterialInventory />;
+      case 'predictive-analytics':
+        return <PredictiveAnalytics />;
+      case 'customer-ltv':
+        return <CustomerLifetimeValue />;
+      case 'kpi-dashboard':
+        return <KPIDashboard />;
+      case 'ai-insights':
+        return <AutomatedInsights />;
       default:
         return (
           <div className="space-y-6">
