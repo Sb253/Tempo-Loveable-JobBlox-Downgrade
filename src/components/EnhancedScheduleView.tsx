@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, User, Plus } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { MapView } from "./MapView";
 
 interface ScheduleItem {
   id: string;
@@ -18,6 +18,7 @@ interface ScheduleItem {
   date: string;
 }
 
+// Sample coordinates for demo purposes
 const mockScheduleItems: ScheduleItem[] = [
   {
     id: '1',
@@ -51,6 +52,34 @@ const mockScheduleItems: ScheduleItem[] = [
     status: 'scheduled',
     technician: 'Tom Wilson',
     date: '2024-12-18'
+  }
+];
+
+// Mock job locations with coordinates
+const mockJobLocations = [
+  {
+    id: '1',
+    title: 'Kitchen Renovation - Site Visit',
+    customer: 'John Smith',
+    address: '123 Main St, Anytown',
+    coordinates: [-74.006, 40.7128] as [number, number],
+    status: 'scheduled' as const
+  },
+  {
+    id: '2',
+    title: 'Bathroom Repair',
+    customer: 'ABC Construction Inc.',
+    address: '456 Business Ave, City',
+    coordinates: [-74.0, 40.72] as [number, number],
+    status: 'in-progress' as const
+  },
+  {
+    id: '3',
+    title: 'Deck Installation - Materials Delivery',
+    customer: 'Sarah Johnson',
+    address: '789 Oak Drive, Hometown',
+    coordinates: [-73.99, 40.71] as [number, number],
+    status: 'scheduled' as const
   }
 ];
 
@@ -104,6 +133,9 @@ export const EnhancedScheduleView = () => {
           </Button>
         </div>
       </div>
+
+      {/* Map View */}
+      <MapView jobs={mockJobLocations} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Drag and Drop Schedule */}
