@@ -9,6 +9,7 @@ import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette } from "l
 import { useToast } from "@/hooks/use-toast";
 import { DashboardCustomization } from "./DashboardCustomization";
 import { NavigationToggle } from "./NavigationToggle";
+import { ThemeToggle } from "./ThemeToggle";
 import { QuickActions } from "./QuickActions";
 
 interface DashboardWidget {
@@ -26,6 +27,9 @@ export const Dashboard = () => {
   const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
+  const [currentLayout, setCurrentLayout] = useState<'sidebar' | 'menu>(() => {
+    return (localStorage.getItem('navigationLayout') as 'sidebar' | 'menu') || 'sidebar';
+  });
 
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
     { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
@@ -77,6 +81,10 @@ export const Dashboard = () => {
       title: "Timezone Updated",
       description: `Timezone has been set to ${tempTimezone}`,
     });
+  };
+
+  const handleLayoutChange = (layout: 'sidebar' | 'menu') => {
+    setCurrentLayout(layout);
   };
 
   const getWidget = (id: string) => {
@@ -206,14 +214,21 @@ export const Dashboard = () => {
           </div>
         </div>
         
-        <Button 
-          variant="outline" 
-          onClick={() => setShowCustomization(true)}
-          className="flex items-center gap-2"
-        >
-          <Palette className="h-4 w-4" />
-          Customize Dashboard
-        </Button>
+        <div className="flex items-center gap-3">
+          <NavigationToggle 
+            currentLayout={currentLayout} 
+            onLayoutChange={handleLayoutChange} 
+          />
+          <ThemeToggle />
+          <Button 
+            variant="outline" 
+            onClick={() => setShowCustomization(true)}
+            className="flex items-center gap-2"
+          >
+            <Palette className="h-4 w-4" />
+            Customize Dashboard
+          </Button>
+        </div>
       </div>
       
       <div className="space-y-6">
