@@ -62,6 +62,7 @@ import { EmployeeChat } from "@/components/EmployeeChat";
 import { JobChecklists } from "@/components/JobChecklists";
 import { useCompanyData } from "@/hooks/useCompanyData";
 import { FinancingOptions } from "@/components/FinancingOptions";
+import { LeadGeneration } from "@/components/LeadGeneration";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -125,6 +126,14 @@ const Index = () => {
       ]
     },
     {
+      title: "Lead Generation",
+      items: [
+        { label: 'Lead Pipeline', value: 'lead-generation', icon: TrendingUp },
+        { label: 'Marketing Tools', value: 'marketing', icon: MessageSquare },
+        { label: 'Reviews', value: 'reviews', icon: Users },
+      ]
+    },
+    {
       title: "Financial",
       items: [
         { label: 'Estimates', value: 'estimates', icon: FileText },
@@ -168,6 +177,12 @@ const Index = () => {
         return <RealTimeDispatch />;
       case 'on-my-way':
         return <OnMyWayNotifications />;
+      case 'lead-generation':
+        return <LeadGeneration />;
+      case 'marketing':
+        return <MarketingTools />;
+      case 'reviews':
+        return <ReviewManagement />;
       case 'estimates':
         return <EstimateList />;
       case 'invoices':
@@ -206,54 +221,6 @@ const Index = () => {
         return <JobChecklists />;
       case 'notifications':
         return <NotificationCenter />;
-      case 'reviews':
-        return <ReviewManagement />;
-      case 'marketing':
-        return <MarketingTools />;
-      case 'quickbooks':
-        return <QuickBooksIntegration />;
-      case 'analytics':
-        return <AdvancedAnalytics />;
-      case 'mobile':
-        return <MobileOptimizations />;
-      case 'integrations':
-        return <APIIntegrations />;
-      case 'advanced-reports':
-        return <AdvancedReporting />;
-      case 'workflows':
-        return <WorkflowAutomation />;
-      case 'documents':
-        return <DocumentManagement />;
-      case 'resources':
-        return <ResourceAllocation />;
-      case 'timeline':
-        return <GanttChart />;
-      case 'customer-portal':
-        return <CustomerPortal />;
-      case 'online-booking':
-        return <OnlineBooking />;
-      case 'follow-up':
-        return <AutomatedFollowUp />;
-      case 'mobile-docs':
-        return <MobileJobDocumentation />;
-      case 'gps-tracking':
-        return <GPSTracking />;
-      case 'photo-docs':
-        return <PhotoDocumentation />;
-      case 'weather-alerts':
-        return <WeatherAlerts />;
-      case 'equipment-tracking':
-        return <EquipmentTracking />;
-      case 'material-inventory':
-        return <MaterialInventory />;
-      case 'predictive-analytics':
-        return <PredictiveAnalytics />;
-      case 'customer-ltv':
-        return <CustomerLifetimeValue />;
-      case 'kpi-dashboard':
-        return <KPIDashboard />;
-      case 'ai-insights':
-        return <AutomatedInsights />;
       case 'settings':
         return <CompanySettings />;
       case 'financing':

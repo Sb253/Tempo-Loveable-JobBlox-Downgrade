@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, MessageSquare, Send, Users, Calendar, Target, TrendingUp, Clock, CheckCircle, Play, Pause } from "lucide-react";
+import { Mail, MessageSquare, Send, Users, Calendar, Target, TrendingUp, Clock, CheckCircle, Play, Pause, Plus } from "lucide-react";
 
 export const MarketingTools = () => {
   const { toast } = useToast();
