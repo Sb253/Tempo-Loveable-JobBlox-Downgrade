@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu } from "lucide-react";
+import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +52,9 @@ import { CustomerLifetimeValue } from "@/components/CustomerLifetimeValue";
 import { KPIDashboard } from "@/components/KPIDashboard";
 import { AutomatedInsights } from "@/components/AutomatedInsights";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { JobTemplates } from "@/components/JobTemplates";
+import { RealTimeDispatch } from "@/components/RealTimeDispatch";
+import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -99,7 +101,10 @@ const Index = () => {
     { label: 'Dashboard', value: 'dashboard' },
     { label: 'Customers', value: 'customers' },
     { label: 'Jobs', value: 'jobs' },
+    { label: 'Job Templates', value: 'job-templates' },
     { label: 'Schedule', value: 'schedule' },
+    { label: 'Real-Time Dispatch', value: 'real-time-dispatch' },
+    { label: 'On My Way Notifications', value: 'on-my-way' },
     { label: 'Estimates', value: 'estimates' },
     { label: 'Invoices', value: 'invoices' },
     { label: 'Advanced Invoicing', value: 'advanced-invoicing' },
@@ -148,8 +153,14 @@ const Index = () => {
         return <CustomerList />;
       case 'jobs':
         return <JobList />;
+      case 'job-templates':
+        return <JobTemplates />;
       case 'schedule':
         return <EnhancedScheduleView />;
+      case 'real-time-dispatch':
+        return <RealTimeDispatch />;
+      case 'on-my-way':
+        return <OnMyWayNotifications />;
       case 'estimates':
         return <EstimateList />;
       case 'invoices':
@@ -270,6 +281,14 @@ const Index = () => {
                 <Button variant="outline" onClick={() => setActiveView('schedule')}>
                   <Calendar className="h-4 w-4 mr-2" />
                   View Schedule
+                </Button>
+                <Button variant="outline" onClick={() => setActiveView('real-time-dispatch')}>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Dispatch Center
+                </Button>
+                <Button variant="outline" onClick={() => setActiveView('job-templates')}>
+                  <Wrench className="h-4 w-4 mr-2" />
+                  Job Templates
                 </Button>
                 <Button variant="outline" onClick={() => setActiveView('profit-analysis')}>
                   <TrendingUp className="h-4 w-4 mr-2" />
