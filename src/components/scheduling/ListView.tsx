@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Calendar, Clock, MapPin, User, Phone, Mail } from "lucide-react";
+import { Search, Filter, Calendar, Clock, MapPin, User, Phone, Mail, Camera } from "lucide-react";
 import { Job } from "@/components/SchedulingDashboard";
 
 interface ListViewProps {
@@ -14,6 +13,7 @@ interface ListViewProps {
   onJobUpdate: (job: Job) => void;
   statusColors: Record<string, string>;
   jobTypeColors: Record<string, string>;
+  onTakePhoto?: (job: Job) => void;
 }
 
 export const ListView = ({ 
@@ -21,7 +21,8 @@ export const ListView = ({
   onJobSelect, 
   onJobUpdate, 
   statusColors, 
-  jobTypeColors 
+  jobTypeColors,
+  onTakePhoto 
 }: ListViewProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -253,6 +254,15 @@ export const ListView = ({
                       <Button variant="outline" size="sm" className="flex-1">
                         Call
                       </Button>
+                      {onTakePhoto && (
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => onTakePhoto(job)}
+                        >
+                          <Camera className="h-3 w-3" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
