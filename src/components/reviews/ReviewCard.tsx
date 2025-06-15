@@ -1,10 +1,10 @@
 
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, Share2, Send, AlertCircle } from "lucide-react";
+import { Star, MessageSquare, ExternalLink } from "lucide-react";
 
 interface Review {
   id: string;
@@ -15,8 +15,8 @@ interface Review {
   text: string;
   date: string;
   platform: string;
-  status: string;
-  response: string | null;
+  status: 'published' | 'needs_response' | 'responded';
+  response?: string | null;
 }
 
 interface ReviewCardProps {
@@ -25,6 +25,9 @@ interface ReviewCardProps {
 }
 
 export const ReviewCard = ({ review, onSendResponse }: ReviewCardProps) => {
+  const [responseText, setResponseText] = useState('');
+  const [showResponseForm, setShowResponseForm] = useState(false);
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -36,72 +39,99 @@ export const ReviewCard = ({ review, onSendResponse }: ReviewCardProps) => {
     ));
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'published':
+        return 'bg-green-100 text-green-800';
+      case 'needs_response':
+        return 'bg-red-100 text-red-800';
+      case 'responded':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const handleSendResponse = () => {
+    if (responseText.trim()) {
+      onSendResponse(review.id);
+      setResponseText('');
+      setShowResponseForm(false);
+    }
+  };
+
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="flex items-start gap-4">
-          <Avatar>
-            <AvatarImage src={review.avatar} />
-            <AvatarFallback>{review.customer.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                <h3 className="font-semibold">{review.customer}</h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex">{renderStars(review.rating)}</div>
-                  <Badge variant="outline">{review.platform}</Badge>
-                  <Badge variant={
-                    review.status === 'needs_response' ? 'destructive' : 
-                    review.status === 'published' ? 'default' : 'secondary'
-                  }>
-                    {review.status.replace('_', ' ')}
-                  </Badge>
-                </div>
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar>
+              <AvatarImage src={review.avatar} />
+              <AvatarFallback>{review.customer.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="font-semibold">{review.customer}</h3>
+              <div className="flex items-center gap-2">
+                <div className="flex">{renderStars(review.rating)}</div>
+                <span className="text-sm text-muted-foreground">on {review.platform}</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {new Date(review.date).toLocaleDateString()}
-              </span>
-            </div>
-
-            <h4 className="font-medium mb-2">{review.title}</h4>
-            <p className="text-muted-foreground mb-4">{review.text}</p>
-
-            {review.response ? (
-              <div className="bg-muted p-3 rounded-lg">
-                <p className="text-sm font-medium mb-1">Your Response:</p>
-                <p className="text-sm">{review.response}</p>
-              </div>
-            ) : review.status === 'needs_response' ? (
-              <div className="space-y-2">
-                <Input placeholder="Write your response..." />
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={() => onSendResponse(review.id)}>
-                    <Send className="h-3 w-3 mr-1" />
-                    Send Response
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Save Draft
-                  </Button>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="flex gap-2 mt-4">
-              <Button variant="outline" size="sm">
-                <Share2 className="h-3 w-3 mr-1" />
-                Share
-              </Button>
-              {review.status === 'needs_response' && (
-                <div className="flex items-center gap-1 text-orange-600">
-                  <AlertCircle className="h-3 w-3" />
-                  <span className="text-xs">Needs Response</span>
-                </div>
-              )}
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Badge className={getStatusColor(review.status)}>
+              {review.status.replace('_', ' ')}
+            </Badge>
+            <Button variant="outline" size="sm">
+              <ExternalLink className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <h4 className="font-medium mb-2">{review.title}</h4>
+          <p className="text-sm text-muted-foreground">{review.text}</p>
+          <p className="text-xs text-muted-foreground mt-2">{review.date}</p>
+        </div>
+
+        {review.response && (
+          <div className="bg-muted p-3 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="text-sm font-medium">Your Response</span>
+            </div>
+            <p className="text-sm">{review.response}</p>
+          </div>
+        )}
+
+        {review.status === 'needs_response' && (
+          <div className="space-y-3">
+            {!showResponseForm ? (
+              <Button 
+                onClick={() => setShowResponseForm(true)}
+                className="w-full"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Respond to Review
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <textarea
+                  className="w-full min-h-[100px] p-3 border rounded-md"
+                  placeholder="Write your response..."
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <Button onClick={handleSendResponse}>Send Response</Button>
+                  <Button variant="outline" onClick={() => setShowResponseForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
