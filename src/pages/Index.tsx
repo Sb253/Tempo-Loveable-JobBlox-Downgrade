@@ -46,6 +46,7 @@ import { CustomerRegistrationForm } from "@/components/CustomerRegistrationForm"
 import { JobForm } from "@/components/JobForm";
 import { ClientAppointment } from "@/components/ClientAppointment";
 import { Pipeline } from "@/components/Pipeline";
+import { BackendSettings } from "@/components/BackendSettings";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -134,6 +135,7 @@ const Index = () => {
     { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
     { id: 'branch-management', label: 'Branch Management', icon: Building2 },
     { id: 'company-settings', label: 'Company Settings', icon: Building2 },
+    { id: 'backend-settings', label: 'Backend Settings', icon: Cog },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'settings', label: 'Settings', icon: Cog },
   ];
@@ -255,6 +257,8 @@ const Index = () => {
         return <BranchManagement />;
       case 'company-settings':
         return <CompanySettings />;
+      case 'backend-settings':
+        return <BackendSettings />;
       case 'notifications':
         return <NotificationCenter />;
       case 'settings':
