@@ -1,176 +1,205 @@
-import { useState, useEffect } from 'react';
-import { Sidebar } from "@/components/Sidebar";
-import { TopMenuNavigation } from "@/components/TopMenuNavigation";
-import { NavigationSettings } from "@/components/NavigationSettings";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Building, Users, FileText, Calendar, Settings, DollarSign, User } from "lucide-react";
+import { Link } from "react-router-dom";
+
+// Import components
 import { Dashboard } from "@/components/Dashboard";
-import { MapView } from "@/components/MapView";
-import { SettingsDashboard } from "@/components/SettingsDashboard";
-import { SchedulingDashboard } from "@/components/SchedulingDashboard";
-import { GPSTracking } from "@/components/GPSTracking";
-import { RealTimeDispatch } from "@/components/RealTimeDispatch";
-import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
+import { CustomerForm } from "@/components/CustomerForm";
 import { CustomerList } from "@/components/CustomerList";
-import { CustomerPortal } from "@/components/CustomerPortal";
-import { ReviewManagement } from "@/components/ReviewManagement";
-import { LeadGeneration } from "@/components/LeadGeneration";
-import { PaymentProcessing } from "@/components/PaymentProcessing";
-import { ExpenseList } from "@/components/ExpenseList";
-import { ReportsView } from "@/components/ReportsView";
-import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
-import { AdvancedReporting } from "@/components/AdvancedReporting";
-import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
-import { APIIntegrations } from "@/components/APIIntegrations";
-import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
-import { JobCosting } from "@/components/JobCosting";
-import { BusinessIntegrations } from "@/components/BusinessIntegrations";
-import { JobChecklists } from "@/components/JobChecklists";
-import { DocumentManagement } from "@/components/DocumentManagement";
+import { JobForm } from "@/components/JobForm";
 import { JobList } from "@/components/JobList";
-import { Pipeline } from "@/components/Pipeline";
-import { AccessControl } from "@/components/AccessControl";
-import { SubcontractorManagement } from "@/components/SubcontractorManagement";
-import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug, GitBranch, Shield, UserCheck, DollarSign } from "lucide-react";
-import { WageManagement } from "@/components/WageManagement";
+import { EstimateForm } from "@/components/EstimateForm";
+import { EstimateList } from "@/components/EstimateList";
+import { InvoiceForm } from "@/components/InvoiceForm";
+import { InvoiceList } from "@/components/InvoiceList";
+import { ScheduleView } from "@/components/ScheduleView";
+import { ReportsView } from "@/components/ReportsView";
+import { SettingsDashboard } from "@/components/SettingsDashboard";
+import { CompanyInfoSettings } from "@/components/CompanyInfoSettings";
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
-  const [navigationLayout, setNavigationLayout] = useState<'sidebar' | 'menu'>('sidebar');
-  const [showNavigationSettings, setShowNavigationSettings] = useState(false);
-
-  useEffect(() => {
-    const savedLayout = localStorage.getItem('navigationLayout') as 'sidebar' | 'menu';
-    if (savedLayout) {
-      setNavigationLayout(savedLayout);
-    }
-  }, []);
-
-  const sections = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'pipeline', label: 'Pipeline', icon: GitBranch },
-    { id: 'scheduling', label: 'Scheduling', icon: Calendar },
-    { id: 'job-list', label: 'Job Management', icon: CheckSquare },
-    { id: 'job-checklists', label: 'Job Checklists', icon: CheckSquare },
-    { id: 'customers', label: 'Customer Management', icon: Users },
-    { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
-    { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
-    { id: 'reviews', label: 'Review Management', icon: Star },
-    { id: 'payments', label: 'Payment Processing', icon: CreditCard },
-    { id: 'expenses', label: 'Expense Tracking', icon: Receipt },
-    { id: 'job-costing', label: 'Job Costing', icon: TrendingDown },
-    { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
-    { id: 'profit-analysis', label: 'Profit Analysis', icon: TrendingDown },
-    { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
-    { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
-    { id: 'documents', label: 'Document Management', icon: FileText },
-    { id: 'subcontractor-management', label: 'Subcontractors', icon: UserCheck },
-    { id: 'access-control', label: 'Access Control', icon: Shield },
-    { id: 'api-integrations', label: 'API Integrations', icon: Cloud },
-    { id: 'business-integrations', label: 'Business Tools', icon: Plug },
-    { id: 'quickbooks', label: 'QuickBooks', icon: Cloud },
-    { id: 'map', label: 'Map View', icon: MapPin },
-    { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
-    { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
-    { id: 'notifications', label: 'Customer Notifications', icon: MessageSquare },
-    { id: 'wage-management', label: 'Wage Management', icon: DollarSign },
-    { id: 'settings', label: 'Settings', icon: Settings }
-  ];
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'pipeline':
-        return <Pipeline />;
-      case 'scheduling':
-        return <SchedulingDashboard />;
-      case 'map':
-        return <MapView jobs={[]} />;
-      case 'customers':
-        return <CustomerList />;
-      case 'customer-portal':
-        return <CustomerPortal />;
-      case 'reviews':
-        return <ReviewManagement />;
-      case 'leads':
-        return <LeadGeneration />;
-      case 'payments':
-        return <PaymentProcessing />;
-      case 'expenses':
-        return <ExpenseList />;
-      case 'reports':
-        return <ReportsView />;
-      case 'profit-analysis':
-        return <ProfitMarginAnalysis />;
-      case 'advanced-reporting':
-        return <AdvancedReporting />;
-      case 'analytics':
-        return <AdvancedAnalytics />;
-      case 'job-costing':
-        return <JobCosting />;
-      case 'api-integrations':
-        return <APIIntegrations />;
-      case 'quickbooks':
-        return <QuickBooksIntegration />;
-      case 'business-integrations':
-        return <BusinessIntegrations />;
-      case 'access-control':
-        return <AccessControl />;
-      case 'subcontractor-management':
-        return <SubcontractorManagement />;
-      case 'settings':
-        return <SettingsDashboard />;
-      case 'gps-tracking':
-        return <GPSTracking />;
-      case 'dispatch':
-        return <RealTimeDispatch />;
-      case 'notifications':
-        return <OnMyWayNotifications />;
-      case 'job-list':
-        return <JobList />;
-      case 'job-checklists':
-        return <JobChecklists />;
-      case 'documents':
-        return <DocumentManagement />;
-      case 'wage-management':
-        return <WageManagement />;
-      default:
-        return <div>Select a section from the sidebar.</div>;
-    }
-  };
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="min-h-screen bg-background">
-      {navigationLayout === 'sidebar' ? (
-        <>
-          <Sidebar 
-            activeSection={activeSection} 
-            onSectionChange={setActiveSection}
-            sections={sections}
-          />
-          <main className="ml-64 p-8">
-            {renderContent()}
-          </main>
-        </>
-      ) : (
-        <>
-          <TopMenuNavigation
-            activeSection={activeSection}
-            onSectionChange={setActiveSection}
-            sections={sections}
-            onNavigationSettings={() => setShowNavigationSettings(true)}
-          />
-          <main className="p-8">
-            {renderContent()}
-          </main>
-        </>
-      )}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <Building className="h-8 w-8 text-blue-600" />
+              <h1 className="text-2xl font-bold text-gray-900">JobFlow Pro</h1>
+              <Badge variant="secondary">Admin Dashboard</Badge>
+            </div>
+            <Link to="/members">
+              <Button variant="outline">
+                <User className="h-4 w-4 mr-2" />
+                Customer Portal
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
 
-      <NavigationSettings
-        open={showNavigationSettings}
-        onOpenChange={setShowNavigationSettings}
-        currentLayout={navigationLayout}
-        onLayoutChange={setNavigationLayout}
-      />
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid grid-cols-8 w-full">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="customers" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Customers
+            </TabsTrigger>
+            <TabsTrigger value="jobs" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Jobs
+            </TabsTrigger>
+            <TabsTrigger value="estimates" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Estimates
+            </TabsTrigger>
+            <TabsTrigger value="invoices" className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Invoices
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Schedule
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="dashboard">
+            <Dashboard />
+          </TabsContent>
+
+          <TabsContent value="customers">
+            <Card>
+              <CardHeader>
+                <CardTitle>Customer Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="list" className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="list">Customer List</TabsTrigger>
+                    <TabsTrigger value="add">Add Customer</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="list">
+                    <CustomerList />
+                  </TabsContent>
+                  <TabsContent value="add">
+                    <CustomerForm />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="jobs">
+            <Card>
+              <CardHeader>
+                <CardTitle>Job Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="list" className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="list">Job List</TabsTrigger>
+                    <TabsTrigger value="add">Add Job</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="list">
+                    <JobList />
+                  </TabsContent>
+                  <TabsContent value="add">
+                    <JobForm />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="estimates">
+            <Card>
+              <CardHeader>
+                <CardTitle>Estimate Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="list" className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="list">Estimate List</TabsTrigger>
+                    <TabsTrigger value="add">Create Estimate</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="list">
+                    <EstimateList />
+                  </TabsContent>
+                  <TabsContent value="add">
+                    <EstimateForm />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="invoices">
+            <Card>
+              <CardHeader>
+                <CardTitle>Invoice Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="list" className="w-full">
+                  <TabsList>
+                    <TabsTrigger value="list">Invoice List</TabsTrigger>
+                    <TabsTrigger value="add">Create Invoice</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="list">
+                    <InvoiceList />
+                  </TabsContent>
+                  <TabsContent value="add">
+                    <InvoiceForm />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schedule">
+            <ScheduleView />
+          </TabsContent>
+
+          <TabsContent value="reports">
+            <ReportsView />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <Tabs defaultValue="general" className="w-full">
+              <TabsList>
+                <TabsTrigger value="general">General Settings</TabsTrigger>
+                <TabsTrigger value="company">Company Info</TabsTrigger>
+              </TabsList>
+              <TabsContent value="general">
+                <SettingsDashboard />
+              </TabsContent>
+              <TabsContent value="company">
+                <CompanyInfoSettings />
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
+        </Tabs>
+      </main>
     </div>
   );
 };
