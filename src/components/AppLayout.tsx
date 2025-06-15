@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -219,6 +220,10 @@ export const AppLayout = () => {
         return <QuickBooksIntegration />;
       case 'accounting-integration':
         return <AccountingIntegration />;
+      case 'radius-assignment':
+        return <RadiusAssignment />;
+      case 'employee-locations':
+        return <EmployeeLocationManager />;
       default:
         return (
           <div className="p-6">
