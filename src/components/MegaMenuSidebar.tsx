@@ -61,18 +61,12 @@ export const MegaMenuSidebar = ({
   // Group sections into logical categories
   const menuGroups: SidebarGroup[] = [
     {
-      label: 'Dashboard',
-      icon: Building2,
-      defaultOpen: true,
-      items: sections.filter(s => s.id === 'dashboard')
-    },
-    {
       label: 'Customer Management',
       icon: sections.find(s => s.id === 'customers')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
         ['customers', 'customer-form', 'pipeline', 'client-appointment', 'communication', 'reviews'].includes(s.id)
-      )
+      ).map(item => item.id === 'customer-form' ? { ...item, label: 'Customer Intake' } : item)
     },
     {
       label: 'Job Management',
@@ -131,6 +125,9 @@ export const MegaMenuSidebar = ({
       )
     }
   ];
+
+  // Get dashboard section separately
+  const dashboardSection = sections.find(s => s.id === 'dashboard');
 
   // Initialize open groups based on active section
   useEffect(() => {
@@ -196,6 +193,44 @@ export const MegaMenuSidebar = ({
       {/* Navigation */}
       <ScrollArea className="flex-1 px-4 py-2">
         <div className="space-y-2">
+          {/* Dashboard Home Link */}
+          {dashboardSection && (
+            <div className="mb-4">
+              {collapsed ? (
+                <div className="flex justify-center py-2">
+                  <Button
+                    variant={activeSection === 'dashboard' ? "default" : "ghost"}
+                    size="icon"
+                    className="h-10 w-10"
+                    title={dashboardSection.label}
+                    onClick={() => {
+                      console.log('MegaMenuSidebar: Dashboard clicked:', dashboardSection.id);
+                      onSectionChange(dashboardSection.id);
+                    }}
+                  >
+                    <dashboardSection.icon className="h-5 w-5" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant={activeSection === 'dashboard' ? "default" : "ghost"}
+                  className={cn(
+                    "w-full justify-start gap-3 text-sm h-10",
+                    activeSection === 'dashboard' && "bg-primary text-primary-foreground"
+                  )}
+                  onClick={() => {
+                    console.log('MegaMenuSidebar: Dashboard clicked:', dashboardSection.id);
+                    onSectionChange(dashboardSection.id);
+                  }}
+                >
+                  <dashboardSection.icon className="h-5 w-5" />
+                  {dashboardSection.label}
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Menu Groups */}
           {menuGroups.map((group) => {
             if (group.items.length === 0) return null;
             
