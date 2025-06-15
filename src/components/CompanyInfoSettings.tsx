@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,7 +67,8 @@ export const CompanyInfoSettings: React.FC = () => {
     showAddress: true,
     primaryColor: '#3B82F6',
     secondaryColor: '#8B5CF6',
-    accentColor: '#10B981'
+    accentColor: '#10B981',
+    defaultFont: 'sans'
   });
 
   const handleInputChange = (field: keyof CompanyInfoSettings, value: string | boolean) => {
