@@ -88,7 +88,6 @@ export const StatusCard = ({
                 <MessageCircle className="h-3 w-3 text-orange-600 dark:text-orange-400" />
               </div>
               <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">ON MY WAY</span>
-              <span className="text-xs text-orange-500 dark:text-orange-500">Text & Email</span>
             </Button>
           </div>
           
