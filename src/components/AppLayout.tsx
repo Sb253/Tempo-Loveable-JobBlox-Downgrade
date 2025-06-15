@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { MegaMenu } from "./MegaMenu";
 import { Sidebar } from "./Sidebar";
 import { Dashboard } from "./Dashboard";
 import { CustomerList } from "./CustomerList";
@@ -40,10 +40,10 @@ export const AppLayout = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar activeView={activeView} setActiveView={setActiveView} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+    <div className="flex flex-col h-screen bg-gray-50">
+      <MegaMenu activeView={activeView} setActiveView={setActiveView} />
+      <div className="flex-1 overflow-hidden">
+        <main className="h-full overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           {renderContent()}
         </main>
       </div>
