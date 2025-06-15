@@ -1,7 +1,8 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign } from "lucide-react";
+import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt } from "lucide-react";
 import { CustomerList } from "@/components/CustomerList";
 import { JobList } from "@/components/JobList";
 import { ScheduleView } from "@/components/ScheduleView";
@@ -10,6 +11,9 @@ import { JobForm } from "@/components/JobForm";
 import { EstimateList } from "@/components/EstimateList";
 import { InvoiceList } from "@/components/InvoiceList";
 import { EnhancedScheduleView } from "@/components/EnhancedScheduleView";
+import { ExpenseList } from "@/components/ExpenseList";
+import { PaymentProcessing } from "@/components/PaymentProcessing";
+import { ReportsView } from "@/components/ReportsView";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -20,7 +24,7 @@ const Index = () => {
     { title: "Total Customers", value: "156", icon: Users, color: "text-blue-600" },
     { title: "Active Jobs", value: "23", icon: Briefcase, color: "text-green-600" },
     { title: "Scheduled Today", value: "8", icon: Calendar, color: "text-orange-600" },
-    { title: "Monthly Revenue", value: "$45,230", icon: DollarSign, color: "text-purple-600" }
+    { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
   ];
 
   const renderContent = () => {
@@ -35,6 +39,12 @@ const Index = () => {
         return <EstimateList />;
       case 'invoices':
         return <InvoiceList />;
+      case 'expenses':
+        return <ExpenseList />;
+      case 'payments':
+        return <PaymentProcessing />;
+      case 'reports':
+        return <ReportsView />;
       default:
         return (
           <div className="space-y-6">
@@ -72,6 +82,10 @@ const Index = () => {
                   <Calendar className="h-4 w-4 mr-2" />
                   View Schedule
                 </Button>
+                <Button variant="outline" onClick={() => setActiveView('payments')}>
+                  <DollarSign className="h-4 w-4 mr-2" />
+                  Process Payment
+                </Button>
               </CardContent>
             </Card>
 
@@ -101,21 +115,30 @@ const Index = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Upcoming Jobs</CardTitle>
+                  <CardTitle>Financial Summary</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span>Kitchen Renovation</span>
-                      <span className="text-sm text-muted-foreground">Tomorrow</span>
+                      <span className="flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4 text-green-600" />
+                        Revenue This Month
+                      </span>
+                      <span className="font-semibold text-green-600">$67,230</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Bathroom Repair</span>
-                      <span className="text-sm text-muted-foreground">Dec 18</span>
+                      <span className="flex items-center gap-2">
+                        <Receipt className="h-4 w-4 text-blue-600" />
+                        Pending Invoices
+                      </span>
+                      <span className="font-semibold">$15,450</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Deck Installation</span>
-                      <span className="text-sm text-muted-foreground">Dec 20</span>
+                      <span className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-purple-600" />
+                        Monthly Expenses
+                      </span>
+                      <span className="font-semibold">$38,120</span>
                     </div>
                   </div>
                 </CardContent>
@@ -170,6 +193,24 @@ const Index = () => {
                   onClick={() => setActiveView('invoices')}
                 >
                   Invoices
+                </Button>
+                <Button
+                  variant={activeView === 'expenses' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('expenses')}
+                >
+                  Expenses
+                </Button>
+                <Button
+                  variant={activeView === 'payments' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('payments')}
+                >
+                  Payments
+                </Button>
+                <Button
+                  variant={activeView === 'reports' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('reports')}
+                >
+                  Reports
                 </Button>
               </nav>
             </div>
