@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -580,28 +581,6 @@ const AccountingIntegration = () => (
     <Card>
       <CardContent className="p-6">
         <p>Accounting and financial management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const RadiusAssignment = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Radius Assignment</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Radius assignment and geofencing system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const EmployeeLocationManager = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Employee Locations</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Employee location tracking and management system will be implemented here.</p>
       </CardContent>
     </Card>
   </div>
