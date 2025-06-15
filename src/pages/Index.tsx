@@ -1,16 +1,16 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench } from "lucide-react";
+import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench, Settings, Building2, FileText, CreditCard, UserCheck, BarChart3, MessageSquare } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { CompanySettings } from "@/components/CompanySettings";
 import { CustomerList } from "@/components/CustomerList";
 import { JobList } from "@/components/JobList";
 import { ScheduleView } from "@/components/ScheduleView";
@@ -110,57 +110,44 @@ const Index = () => {
     }
   ];
 
-  const menuItems = [
-    { label: 'Dashboard', value: 'dashboard' },
-    { label: 'Customers', value: 'customers' },
-    { label: 'Jobs', value: 'jobs' },
-    { label: 'Job Templates', value: 'job-templates' },
-    { label: 'Schedule', value: 'schedule' },
-    { label: 'Real-Time Dispatch', value: 'real-time-dispatch' },
-    { label: 'On My Way Notifications', value: 'on-my-way' },
-    { label: 'Estimates', value: 'estimates' },
-    { label: 'Invoices', value: 'invoices' },
-    { label: 'Advanced Invoicing', value: 'advanced-invoicing' },
-    { label: 'Expenses', value: 'expenses' },
-    { label: 'Profit Analysis', value: 'profit-analysis' },
-    { label: 'Tax Reporting', value: 'tax-reporting' },
-    { label: 'Accounting Integration', value: 'accounting-integration' },
-    { label: 'Payments', value: 'payments' },
-    { label: 'Team', value: 'team' },
-    { label: 'Time Tracking', value: 'time-tracking' },
-    { label: 'Employee Chat', value: 'employee-chat' },
-    { label: 'Job Checklists', value: 'job-checklists' },
-    { label: 'Notifications', value: 'notifications' },
-    { label: 'Reviews', value: 'reviews' },
-    { label: 'Marketing', value: 'marketing' },
-    { label: 'Reports', value: 'reports' },
-    { label: 'QuickBooks', value: 'quickbooks' },
-    { label: 'Analytics', value: 'analytics' },
-    { label: 'Mobile', value: 'mobile' },
-    { label: 'Integrations', value: 'integrations' },
-    { label: 'Advanced Reports', value: 'advanced-reports' },
-    { label: 'Workflows', value: 'workflows' },
-    { label: 'Documents', value: 'documents' },
-    { label: 'Resources', value: 'resources' },
-    { label: 'Project Timeline', value: 'timeline' },
-    { label: 'Customer Portal', value: 'customer-portal' },
-    { label: 'Online Booking', value: 'online-booking' },
-    { label: 'Follow-up Automation', value: 'follow-up' },
-    { label: 'Mobile Documentation', value: 'mobile-docs' },
-    { label: 'GPS Tracking', value: 'gps-tracking' },
-    { label: 'Photo Documentation', value: 'photo-docs' },
-    { label: 'Weather Alerts', value: 'weather-alerts' },
-    { label: 'Equipment Tracking', value: 'equipment-tracking' },
-    { label: 'Material Inventory', value: 'material-inventory' },
-    { label: 'Predictive Analytics', value: 'predictive-analytics' },
-    { label: 'Customer LTV', value: 'customer-ltv' },
-    { label: 'KPI Dashboard', value: 'kpi-dashboard' },
-    { label: 'AI Insights', value: 'ai-insights' },
+  const navigationSections = [
+    {
+      title: "Core Operations",
+      items: [
+        { label: 'Dashboard', value: 'dashboard', icon: BarChart3 },
+        { label: 'Customers', value: 'customers', icon: Users },
+        { label: 'Jobs', value: 'jobs', icon: Briefcase },
+        { label: 'Schedule', value: 'schedule', icon: Calendar },
+        { label: 'Real-Time Dispatch', value: 'real-time-dispatch', icon: Zap },
+      ]
+    },
+    {
+      title: "Financial",
+      items: [
+        { label: 'Estimates', value: 'estimates', icon: FileText },
+        { label: 'Invoices', value: 'invoices', icon: Receipt },
+        { label: 'Advanced Invoicing', value: 'advanced-invoicing', icon: CreditCard },
+        { label: 'Payments', value: 'payments', icon: DollarSign },
+        { label: 'Profit Analysis', value: 'profit-analysis', icon: TrendingUp },
+      ]
+    },
+    {
+      title: "Team & Communication",
+      items: [
+        { label: 'Team Management', value: 'team', icon: Users },
+        { label: 'Time Tracking', value: 'time-tracking', icon: UserCheck },
+        { label: 'Employee Chat', value: 'employee-chat', icon: MessageSquare },
+        { label: 'Job Checklists', value: 'job-checklists', icon: Wrench },
+      ]
+    }
   ];
 
   const getCurrentLabel = () => {
-    const current = menuItems.find(item => item.value === activeView);
-    return current ? current.label : 'Dashboard';
+    for (const section of navigationSections) {
+      const found = section.items.find(item => item.value === activeView);
+      if (found) return found.label;
+    }
+    return activeView === 'settings' ? 'Settings' : 'Dashboard';
   };
 
   const renderContent = () => {
@@ -263,6 +250,8 @@ const Index = () => {
         return <KPIDashboard />;
       case 'ai-insights':
         return <AutomatedInsights />;
+      case 'settings':
+        return <CompanySettings />;
       default:
         return (
           <div className="space-y-6">
@@ -455,29 +444,57 @@ const Index = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <h1 className="text-xl font-semibold text-foreground">Construction CRM</h1>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Menu className="h-4 w-4" />
-                    {getCurrentLabel()}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="start">
-                  {menuItems.map((item, index) => (
-                    <div key={item.value}>
-                      <DropdownMenuItem
-                        onClick={() => setActiveView(item.value)}
-                        className={activeView === item.value ? "bg-accent" : ""}
-                      >
-                        {item.label}
-                      </DropdownMenuItem>
-                      {(index === 0 || index === 7 || index === 15 || index === 24) && <DropdownMenuSeparator />}
-                    </div>
+              
+              <NavigationMenu>
+                <NavigationMenuList>
+                  {navigationSections.map((section) => (
+                    <NavigationMenuItem key={section.title}>
+                      <NavigationMenuTrigger className="text-sm">
+                        {section.title}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <div className="grid w-[400px] gap-3 p-4">
+                          <div className="row-span-3">
+                            <h4 className="mb-2 text-sm font-medium leading-none">{section.title}</h4>
+                            <div className="grid gap-2">
+                              {section.items.map((item) => (
+                                <button
+                                  key={item.value}
+                                  onClick={() => setActiveView(item.value)}
+                                  className={`flex items-center gap-2 p-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left ${
+                                    activeView === item.value ? "bg-accent text-accent-foreground" : ""
+                                  }`}
+                                >
+                                  <item.icon className="h-4 w-4" />
+                                  {item.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
                   ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                </NavigationMenuList>
+              </NavigationMenu>
+
+              <span className="text-sm text-muted-foreground">
+                Current: {getCurrentLabel()}
+              </span>
             </div>
-            <ThemeToggle />
+            
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setActiveView('settings')}
+                className={activeView === 'settings' ? "bg-accent" : ""}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>

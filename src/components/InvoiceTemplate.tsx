@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { useCompanyData } from "@/hooks/useCompanyData";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface LineItem {
@@ -36,13 +36,20 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
   data, 
   template = 'modern' 
 }) => {
+  const companyData = useCompanyData();
+
   const renderModernTemplate = () => (
     <div className="bg-white p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">INVOICE</h1>
-          <div className="w-20 h-1 bg-blue-600"></div>
+        <div className="flex items-center gap-4">
+          {companyData.logo && (
+            <img src={companyData.logo} alt="Company Logo" className="h-16 w-auto object-contain" />
+          )}
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">INVOICE</h1>
+            <div className="w-20 h-1 bg-blue-600"></div>
+          </div>
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-blue-600 mb-2">#{data.invoiceNumber}</div>
@@ -58,11 +65,11 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">From</h3>
           <div className="text-gray-600">
-            <div className="font-semibold">Your Construction Company</div>
-            <div>123 Business Street</div>
-            <div>City, State 12345</div>
-            <div>Phone: (555) 123-4567</div>
-            <div>Email: info@yourcompany.com</div>
+            <div className="font-semibold">{companyData.name}</div>
+            <div>{companyData.address}</div>
+            <div>{companyData.city}</div>
+            <div>Phone: {companyData.phone}</div>
+            <div>Email: {companyData.email}</div>
           </div>
         </div>
         <div>

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
+import { useCompanyData } from "@/hooks/useCompanyData";
 
 interface LineItem {
   id: string;
@@ -30,13 +30,20 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
   data, 
   template = 'modern' 
 }) => {
+  const companyData = useCompanyData();
+
   const renderModernTemplate = () => (
     <div className="bg-white p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
-          <div className="w-20 h-1 bg-green-600"></div>
+        <div className="flex items-center gap-4">
+          {companyData.logo && (
+            <img src={companyData.logo} alt="Company Logo" className="h-16 w-auto object-contain" />
+          )}
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
+            <div className="w-20 h-1 bg-green-600"></div>
+          </div>
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-green-600 mb-2">#{data.estimateNumber}</div>
@@ -53,11 +60,11 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">From</h3>
           <div className="text-gray-600">
-            <div className="font-semibold">Your Construction Company</div>
-            <div>123 Business Street</div>
-            <div>City, State 12345</div>
-            <div>Phone: (555) 123-4567</div>
-            <div>Email: info@yourcompany.com</div>
+            <div className="font-semibold">{companyData.name}</div>
+            <div>{companyData.address}</div>
+            <div>{companyData.city}</div>
+            <div>Phone: {companyData.phone}</div>
+            <div>Email: {companyData.email}</div>
           </div>
         </div>
         <div>
@@ -130,6 +137,9 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     <div className="bg-white p-8 max-w-4xl mx-auto border-2 border-gray-800">
       {/* Header */}
       <div className="text-center mb-8 border-b-2 border-gray-800 pb-4">
+        {companyData.logo && (
+          <img src={companyData.logo} alt="Company Logo" className="h-12 w-auto object-contain mx-auto mb-4" />
+        )}
         <h1 className="text-3xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
         <div className="text-xl text-gray-700">#{data.estimateNumber}</div>
       </div>
@@ -139,10 +149,10 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div className="border border-gray-400 p-4">
           <h3 className="text-lg font-bold text-gray-900 mb-2 border-b border-gray-400 pb-1">FROM</h3>
           <div className="text-gray-700">
-            <div className="font-bold">Your Construction Company</div>
-            <div>123 Business Street</div>
-            <div>City, State 12345</div>
-            <div>Phone: (555) 123-4567</div>
+            <div className="font-bold">{companyData.name}</div>
+            <div>{companyData.address}</div>
+            <div>{companyData.city}</div>
+            <div>Phone: {companyData.phone}</div>
           </div>
         </div>
         <div className="border border-gray-400 p-4">
@@ -223,7 +233,12 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     <div className="bg-white p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-12">
-        <h1 className="text-5xl font-light text-gray-400">estimate</h1>
+        <div className="flex items-center gap-4">
+          {companyData.logo && (
+            <img src={companyData.logo} alt="Company Logo" className="h-12 w-auto object-contain" />
+          )}
+          <h1 className="text-5xl font-light text-gray-400">estimate</h1>
+        </div>
         <div className="text-right">
           <div className="text-3xl font-light text-gray-900 mb-1">#{data.estimateNumber}</div>
           {data.validUntil && (
@@ -239,11 +254,11 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         <div>
           <div className="text-sm text-gray-500 mb-2">FROM</div>
           <div className="text-gray-900">
-            <div className="font-medium">Your Construction Company</div>
+            <div className="font-medium">{companyData.name}</div>
             <div className="text-sm text-gray-600 mt-1">
-              <div>123 Business Street</div>
-              <div>City, State 12345</div>
-              <div>(555) 123-4567</div>
+              <div>{companyData.address}</div>
+              <div>{companyData.city}</div>
+              <div>{companyData.phone}</div>
             </div>
           </div>
         </div>
