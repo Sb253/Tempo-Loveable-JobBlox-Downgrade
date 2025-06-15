@@ -85,39 +85,41 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
               attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {jobs.map((job) => (
-              <Marker
-                key={job.id}
-                position={[job.coordinates[1], job.coordinates[0]]}
-                icon={createCustomIcon(job.status)}
-              >
-                <Popup>
-                  <div style={{ padding: '8px', maxWidth: '200px' }}>
-                    <h3 style={{ fontWeight: 'bold', margin: '0 0 8px 0' }}>
-                      {job.title}
-                    </h3>
-                    <p style={{ margin: '4px 0', color: '#666', fontSize: '14px' }}>
-                      {job.customer}
-                    </p>
-                    <p style={{ margin: '4px 0', fontSize: '14px' }}>
-                      {job.address}
-                    </p>
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        padding: '2px 8px',
-                        fontSize: '12px',
-                        borderRadius: '4px',
-                        backgroundColor: `${getMarkerColor(job.status)}20`,
-                        color: getMarkerColor(job.status),
-                      }}
-                    >
-                      {job.status.replace('-', ' ')}
-                    </span>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
+            <>
+              {jobs.map((job) => (
+                <Marker
+                  key={job.id}
+                  position={[job.coordinates[1], job.coordinates[0]]}
+                  icon={createCustomIcon(job.status)}
+                >
+                  <Popup>
+                    <div style={{ padding: '8px', maxWidth: '200px' }}>
+                      <h3 style={{ fontWeight: 'bold', margin: '0 0 8px 0' }}>
+                        {job.title}
+                      </h3>
+                      <p style={{ margin: '4px 0', color: '#666', fontSize: '14px' }}>
+                        {job.customer}
+                      </p>
+                      <p style={{ margin: '4px 0', fontSize: '14px' }}>
+                        {job.address}
+                      </p>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '2px 8px',
+                          fontSize: '12px',
+                          borderRadius: '4px',
+                          backgroundColor: `${getMarkerColor(job.status)}20`,
+                          color: getMarkerColor(job.status),
+                        }}
+                      >
+                        {job.status.replace('-', ' ')}
+                      </span>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </>
           </MapContainer>
         </div>
       </CardContent>
