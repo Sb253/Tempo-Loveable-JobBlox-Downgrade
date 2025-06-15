@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,8 @@ interface CustomWidget {
 
 export const CustomWidgetList = () => {
   const { toast } = useToast();
+  
+  // Enhanced demo data with more widgets
   const [widgets, setWidgets] = useState<CustomWidget[]>([
     {
       id: '1',
@@ -56,6 +57,56 @@ export const CustomWidgetList = () => {
       order: 2,
       icon: 'Users',
       color: 'purple'
+    },
+    {
+      id: '4',
+      title: 'Monthly Revenue',
+      type: 'stat',
+      enabled: true,
+      size: 'medium',
+      order: 3,
+      icon: 'DollarSign',
+      color: 'green'
+    },
+    {
+      id: '5',
+      title: 'Time Tracking',
+      type: 'metric',
+      enabled: true,
+      size: 'small',
+      order: 4,
+      icon: 'Clock',
+      color: 'orange'
+    },
+    {
+      id: '6',
+      title: 'Recent Documents',
+      type: 'list',
+      enabled: false,
+      size: 'large',
+      order: 5,
+      icon: 'FileText',
+      color: 'blue'
+    },
+    {
+      id: '7',
+      title: 'Team Schedule',
+      type: 'calendar',
+      enabled: true,
+      size: 'full-width',
+      order: 6,
+      icon: 'Calendar',
+      color: 'purple'
+    },
+    {
+      id: '8',
+      title: 'Performance Metrics',
+      type: 'chart',
+      enabled: true,
+      size: 'large',
+      order: 7,
+      icon: 'BarChart3',
+      color: 'red'
     }
   ]);
 

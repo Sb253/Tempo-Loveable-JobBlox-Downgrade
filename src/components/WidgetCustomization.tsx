@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -22,12 +22,82 @@ interface WidgetConfig {
 }
 
 interface WidgetCustomizationProps {
-  widgets: WidgetConfig[];
-  onWidgetsChange: (widgets: WidgetConfig[]) => void;
+  widgets?: WidgetConfig[];
+  onWidgetsChange?: (widgets: WidgetConfig[]) => void;
 }
 
-export const WidgetCustomization = ({ widgets, onWidgetsChange }: WidgetCustomizationProps) => {
-  const [localWidgets, setLocalWidgets] = useState<WidgetConfig[]>(widgets);
+export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: WidgetCustomizationProps) => {
+  // Local demo data if no widgets are provided
+  const defaultWidgets: WidgetConfig[] = [
+    {
+      id: '1',
+      title: 'Statistics Cards',
+      enabled: true,
+      order: 0,
+      size: 'large',
+      refreshInterval: 30,
+      style: 'gradient',
+      color: 'blue'
+    },
+    {
+      id: '2',
+      title: 'Recent Jobs',
+      enabled: true,
+      order: 1,
+      size: 'full-width',
+      refreshInterval: 60,
+      style: 'default',
+      color: 'green'
+    },
+    {
+      id: '3',
+      title: 'Quick Actions',
+      enabled: true,
+      order: 2,
+      size: 'medium',
+      refreshInterval: 120,
+      style: 'bordered',
+      color: 'purple'
+    },
+    {
+      id: '4',
+      title: 'Revenue Chart',
+      enabled: false,
+      order: 3,
+      size: 'large',
+      refreshInterval: 180,
+      style: 'minimal',
+      color: 'orange'
+    },
+    {
+      id: '5',
+      title: 'Team Schedule',
+      enabled: true,
+      order: 4,
+      size: 'medium',
+      refreshInterval: 45,
+      style: 'gradient',
+      color: 'red'
+    },
+    {
+      id: '6',
+      title: 'Performance Metrics',
+      enabled: false,
+      order: 5,
+      size: 'small',
+      refreshInterval: 90,
+      style: 'default',
+      color: 'pink'
+    }
+  ];
+
+  const [localWidgets, setLocalWidgets] = useState<WidgetConfig[]>(propWidgets || defaultWidgets);
+
+  useEffect(() => {
+    if (propWidgets) {
+      setLocalWidgets(propWidgets);
+    }
+  }, [propWidgets]);
 
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -42,7 +112,9 @@ export const WidgetCustomization = ({ widgets, onWidgetsChange }: WidgetCustomiz
     }));
 
     setLocalWidgets(updatedItems);
-    onWidgetsChange(updatedItems);
+    if (onWidgetsChange) {
+      onWidgetsChange(updatedItems);
+    }
   };
 
   const updateWidget = (id: string, updates: Partial<WidgetConfig>) => {
@@ -50,7 +122,9 @@ export const WidgetCustomization = ({ widgets, onWidgetsChange }: WidgetCustomiz
       widget.id === id ? { ...widget, ...updates } : widget
     );
     setLocalWidgets(updated);
-    onWidgetsChange(updated);
+    if (onWidgetsChange) {
+      onWidgetsChange(updated);
+    }
   };
 
   const colorOptions = [

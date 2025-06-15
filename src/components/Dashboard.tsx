@@ -35,7 +35,7 @@ export const Dashboard = () => {
     { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
   ]);
 
-  // Sample job data with coordinates for map display
+  // Sample job data with coordinates for map display - added 'type' property to fix TypeScript error
   const recentJobs = [
     {
       id: '1',
@@ -44,6 +44,7 @@ export const Dashboard = () => {
       address: '123 Main St, Anytown, USA',
       coordinates: [-74.006, 40.7128] as [number, number],
       status: 'scheduled' as const,
+      type: 'job' as const,
       time: 'Today 2:00 PM'
     },
     {
@@ -53,7 +54,28 @@ export const Dashboard = () => {
       address: '456 Business Ave, City, USA',
       coordinates: [-74.0, 40.72] as [number, number],
       status: 'in-progress' as const,
+      type: 'job' as const,
       time: 'Tomorrow 9:00 AM'
+    },
+    {
+      id: '3',
+      title: 'Consultation Appointment',
+      customer: 'Sarah Johnson',
+      address: '789 Oak Street, Downtown',
+      coordinates: [-74.01, 40.71] as [number, number],
+      status: 'scheduled' as const,
+      type: 'appointment' as const,
+      time: 'Friday 3:00 PM'
+    },
+    {
+      id: '4',
+      title: 'Follow-up Meeting',
+      customer: 'Mike Wilson',
+      address: '321 Pine Ave, Uptown',
+      coordinates: [-73.99, 40.73] as [number, number],
+      status: 'completed' as const,
+      type: 'appointment' as const,
+      time: 'Yesterday 1:00 PM'
     }
   ];
 
@@ -161,7 +183,8 @@ export const Dashboard = () => {
                     {recentJobs.map((job, index) => {
                       const statusColors = {
                         'scheduled': 'from-blue-500 to-indigo-500',
-                        'in-progress': 'from-orange-500 to-red-500'
+                        'in-progress': 'from-orange-500 to-red-500',
+                        'completed': 'from-green-500 to-emerald-500'
                       };
                       return (
                         <div key={job.id} className="flex justify-between items-center p-3 border rounded-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
@@ -170,7 +193,7 @@ export const Dashboard = () => {
                             <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
                           </div>
                           <span className={`text-xs px-3 py-1 rounded-full bg-gradient-to-r ${statusColors[job.status]} text-white font-medium`}>
-                            {job.status === 'scheduled' ? 'Scheduled' : 'In Progress'}
+                            {job.status === 'scheduled' ? 'Scheduled' : job.status === 'in-progress' ? 'In Progress' : 'Completed'}
                           </span>
                         </div>
                       );
