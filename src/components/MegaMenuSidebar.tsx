@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'quickbooks-integration')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['quickbooks-integration', 'accounting-integration'].includes(s.id)
+        ['quickbooks-integration', 'accounting-integration', 'sales-crm-lead', 'project-field', 'communication-reviews', 'document-storage', 'automation', 'miscellaneous'].includes(s.id)
       )
     },
     {
@@ -100,7 +101,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'settings')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['company-settings', 'settings', 'mobile-settings', 'branch-management'].includes(s.id)
+        ['company-settings', 'settings', 'mobile-settings', 'branch-management', 'backend-settings'].includes(s.id)
       )
     }
   ];

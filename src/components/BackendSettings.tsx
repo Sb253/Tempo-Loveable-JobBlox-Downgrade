@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,11 +27,150 @@ import {
   Key,
   Server,
   CreditCard,
-  FileText
+  FileText,
+  GripVertical,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  MessageSquare,
+  Star,
+  FolderOpen,
+  Camera,
+  Map,
+  Calendar,
+  Phone,
+  FileCheck
 } from "lucide-react";
+
+interface IntegrationItem {
+  id: string;
+  name: string;
+  description: string;
+  icon: any;
+  connected: boolean;
+}
+
+interface IntegrationCategory {
+  id: string;
+  title: string;
+  icon: any;
+  items: IntegrationItem[];
+  order: number;
+}
 
 export const BackendSettings = () => {
   const { currentRole, permissions, changeRole } = useRolePermissions();
+
+  const [integrationCategories, setIntegrationCategories] = useState<IntegrationCategory[]>([
+    {
+      id: 'sales-crm-lead',
+      title: 'Sales, CRM & Lead Management',
+      icon: Users,
+      order: 1,
+      items: [
+        { id: 'salesrabbit', name: 'SalesRabbit', description: 'Door-to-door sales management platform', icon: Users, connected: false },
+        { id: 'thumbtack', name: 'Thumbtack', description: 'Professional services marketplace', icon: Star, connected: false },
+        { id: 'hover', name: 'Hover', description: '3D home exterior measurements', icon: Camera, connected: false },
+        { id: 'roofr', name: 'Roofr', description: 'Roofing sales and proposal platform', icon: Building2, connected: false },
+        { id: 'angi', name: 'Angi', description: 'Home services marketplace', icon: Star, connected: false },
+        { id: 'hubspot', name: 'HubSpot', description: 'CRM and marketing automation', icon: Database, connected: false },
+        { id: 'mailchimp', name: 'Mailchimp', description: 'Email marketing platform', icon: Mail, connected: false },
+        { id: 'facebook-leads', name: 'Facebook Lead Ads', description: 'Social media lead generation', icon: Users, connected: false },
+        { id: 'forms', name: 'Form Builders', description: 'Jotform, Gravity Forms, WPForms, Google Forms, etc.', icon: FileText, connected: false },
+        { id: 'calendly', name: 'Calendly', description: 'Appointment scheduling platform', icon: Calendar, connected: false }
+      ]
+    },
+    {
+      id: 'project-field',
+      title: 'Project & Field Management',
+      icon: Camera,
+      order: 2,
+      items: [
+        { id: 'companycam', name: 'CompanyCam', description: 'Photo documentation and project tracking', icon: Camera, connected: false },
+        { id: 'eagleview', name: 'EagleView', description: 'Aerial imagery and measurements', icon: Map, connected: false },
+        { id: 'photo-id', name: 'PHOTO iD by U Scope', description: 'Roofing photo documentation', icon: Camera, connected: false },
+        { id: 'beacon-pro', name: 'Beacon PRO+', description: 'Building materials platform', icon: Package, connected: false },
+        { id: 'qxo', name: 'QXO (formerly Beacon)', description: 'Building materials distribution', icon: Package, connected: false },
+        { id: 'roof-hub', name: 'Roof Hub by SRS Distribution', description: 'Roofing materials and tools', icon: Building2, connected: false },
+        { id: 'roofle', name: 'Roofle', description: 'Roofing project management', icon: Building2, connected: false },
+        { id: 'google-calendar', name: 'Google Calendar', description: 'Calendar and scheduling integration', icon: Calendar, connected: false },
+        { id: 'google-maps', name: 'Google Maps', description: 'Location and mapping services', icon: Map, connected: false }
+      ]
+    },
+    {
+      id: 'communication-reviews',
+      title: 'Communication & Reviews',
+      icon: MessageSquare,
+      order: 3,
+      items: [
+        { id: 'gmail', name: 'Gmail', description: 'Email communication platform', icon: Mail, connected: false },
+        { id: 'microsoft-outlook', name: 'Microsoft Outlook', description: 'Email and calendar platform', icon: Mail, connected: false },
+        { id: 'openphone', name: 'OpenPhone', description: 'Business phone system', icon: Phone, connected: false }
+      ]
+    },
+    {
+      id: 'document-storage',
+      title: 'Document Management & Storage',
+      icon: FolderOpen,
+      order: 4,
+      items: [
+        { id: 'dropbox', name: 'Dropbox', description: 'Cloud storage and file sharing', icon: FolderOpen, connected: false },
+        { id: 'google-drive', name: 'Google Drive', description: 'Cloud storage and collaboration', icon: FolderOpen, connected: false },
+        { id: 'docusign', name: 'DocuSign', description: 'Digital signature platform', icon: FileCheck, connected: false }
+      ]
+    },
+    {
+      id: 'automation',
+      title: 'Automation Platforms',
+      icon: Zap,
+      order: 5,
+      items: [
+        { id: 'zapier', name: 'Zapier', description: 'Workflow automation platform', icon: Zap, connected: false },
+        { id: 'leadsbridge', name: 'LeadsBridge', description: 'Lead data synchronization', icon: Users, connected: false }
+      ]
+    },
+    {
+      id: 'miscellaneous',
+      title: 'Other / Miscellaneous',
+      icon: Settings,
+      order: 6,
+      items: [
+        { id: 'hailtrace', name: 'HailTrace', description: 'Hail damage tracking and reports', icon: Database, connected: false },
+        { id: 'mysalesman', name: 'mySalesman', description: 'Sales management platform', icon: Users, connected: false },
+        { id: 'xero', name: 'Xero', description: 'Accounting and bookkeeping', icon: Calculator, connected: false },
+        { id: 'google-lsa', name: 'Google Local Services Ads', description: 'Local advertising platform', icon: Star, connected: false },
+        { id: 'google-contacts', name: 'Google Contacts', description: 'Contact management', icon: Users, connected: false }
+      ]
+    }
+  ]);
+
+  const moveCategory = (fromIndex: number, toIndex: number) => {
+    const updatedCategories = [...integrationCategories];
+    const [movedCategory] = updatedCategories.splice(fromIndex, 1);
+    updatedCategories.splice(toIndex, 0, movedCategory);
+    
+    // Update order numbers
+    updatedCategories.forEach((category, index) => {
+      category.order = index + 1;
+    });
+    
+    setIntegrationCategories(updatedCategories);
+  };
+
+  const toggleConnection = (categoryId: string, itemId: string) => {
+    setIntegrationCategories(prev =>
+      prev.map(category =>
+        category.id === categoryId
+          ? {
+              ...category,
+              items: category.items.map(item =>
+                item.id === itemId ? { ...item, connected: !item.connected } : item
+              )
+            }
+          : category
+      )
+    );
+  };
 
   const renderRoleSelector = () => (
     <Card className="mb-6">
@@ -237,69 +375,98 @@ export const BackendSettings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="h-5 w-5" />
-              Accounting Integration
+              Available Integrations
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="accounting-system">Accounting System</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select accounting system" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="quickbooks">QuickBooks</SelectItem>
-                  <SelectItem value="xero">Xero</SelectItem>
-                  <SelectItem value="sage">Sage</SelectItem>
-                  <SelectItem value="manual">Manual Entry</SelectItem>
-                </SelectContent>
-              </Select>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-6">
+              Drag and drop to reorder integration categories. Click to configure individual integrations.
+            </p>
+            
+            <div className="space-y-4">
+              {integrationCategories
+                .sort((a, b) => a.order - b.order)
+                .map((category, categoryIndex) => {
+                  const CategoryIcon = category.icon;
+                  
+                  return (
+                    <Card key={category.id} className="border-2 border-dashed border-muted hover:border-border transition-colors">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center gap-2 text-lg">
+                            <div 
+                              className="cursor-grab active:cursor-grabbing flex items-center gap-2"
+                              draggable
+                              onDragStart={(e) => {
+                                e.dataTransfer.setData('text/plain', categoryIndex.toString());
+                              }}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={(e) => {
+                                e.preventDefault();
+                                const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                                if (fromIndex !== categoryIndex) {
+                                  moveCategory(fromIndex, categoryIndex);
+                                }
+                              }}
+                            >
+                              <GripVertical className="h-4 w-4 text-muted-foreground" />
+                              <CategoryIcon className="h-5 w-5" />
+                              {category.title}
+                            </div>
+                          </CardTitle>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => moveCategory(categoryIndex, Math.max(0, categoryIndex - 1))}
+                              disabled={categoryIndex === 0}
+                            >
+                              <ChevronUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => moveCategory(categoryIndex, Math.min(integrationCategories.length - 1, categoryIndex + 1))}
+                              disabled={categoryIndex === integrationCategories.length - 1}
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {category.items.map((item) => {
+                            const ItemIcon = item.icon;
+                            return (
+                              <div
+                                key={item.id}
+                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                              >
+                                <div className="flex items-center gap-3 min-w-0 flex-1">
+                                  <ItemIcon className="h-4 w-4 flex-shrink-0" />
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-medium text-sm truncate">{item.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                                  </div>
+                                </div>
+                                <Switch
+                                  checked={item.connected}
+                                  onCheckedChange={() => toggleConnection(category.id, item.id)}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="sync-frequency">Sync Frequency</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Daily" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="real-time">Real-time</SelectItem>
-                  <SelectItem value="hourly">Hourly</SelectItem>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                </SelectContent>
-              </Select>
+            
+            <div className="mt-6 pt-6 border-t">
+              <Button className="w-full">Save Integration Settings</Button>
             </div>
-            <Button>Configure Integration</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Payment Processing
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="payment-processor">Payment Processor</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select processor" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="stripe">Stripe</SelectItem>
-                  <SelectItem value="square">Square</SelectItem>
-                  <SelectItem value="paypal">PayPal</SelectItem>
-                  <SelectItem value="authorize">Authorize.net</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch id="auto-payment-reminders" />
-              <Label htmlFor="auto-payment-reminders">Automatic Payment Reminders</Label>
-            </div>
-            <Button>Configure Payment Settings</Button>
           </CardContent>
         </Card>
       </div>
@@ -428,7 +595,7 @@ export const BackendSettings = () => {
       
       {renderRoleSelector()}
       
-      <Tabs defaultValue="company" className="w-full">
+      <Tabs defaultValue="integrations" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="company">Company</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>

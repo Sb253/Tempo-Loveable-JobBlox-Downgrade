@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
+import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Camera, FolderOpen, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dashboard } from "./Dashboard";
@@ -33,6 +33,7 @@ import { TimeTracking } from "./TimeTracking";
 import { AppHeader } from "./AppHeader";
 import { ServicesManagement } from "./ServicesManagement";
 import { ImportExportHub } from "./ImportExportHub";
+import { BackendSettings } from "./BackendSettings";
 
 interface SidebarSection {
   id: string;
