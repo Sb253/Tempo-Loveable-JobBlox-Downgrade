@@ -23,6 +23,14 @@ interface Review {
   response?: string;
 }
 
+interface AutomationSettings {
+  autoRequestEnabled: boolean;
+  requestDelay: number;
+  reminderEnabled: boolean;
+  reminderInterval: number;
+  maxReminders: number;
+}
+
 const mockReviews: Review[] = [
   {
     id: '1',
@@ -74,12 +82,34 @@ const reputationStats = {
 
 export const ReviewManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [reviews] = useState<Review[]>(mockReviews);
+  const [reviews, setReviews] = useState<Review[]>(mockReviews);
+  const [automationSettings, setAutomationSettings] = useState<AutomationSettings>({
+    autoRequestEnabled: true,
+    requestDelay: 3,
+    reminderEnabled: true,
+    reminderInterval: 7,
+    maxReminders: 2
+  });
 
   const filteredReviews = reviews.filter(review =>
     review.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
     review.text.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleSendResponse = (reviewId: string) => {
+    setReviews(prev => prev.map(review => 
+      review.id === reviewId 
+        ? { ...review, status: 'responded' as const }
+        : review
+    ));
+  };
+
+  const handleToggleAutomation = (setting: string) => {
+    setAutomationSettings(prev => ({
+      ...prev,
+      [setting]: !prev[setting as keyof AutomationSettings]
+    }));
+  };
 
   const stats = [
     { title: "Average Rating", value: "4.7", icon: Star, color: "text-yellow-600" },
@@ -141,7 +171,11 @@ export const ReviewManagement = () => {
           
           <div className="grid gap-4">
             {filteredReviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
+              <ReviewCard 
+                key={review.id} 
+                review={review} 
+                onSendResponse={handleSendResponse}
+              />
             ))}
           </div>
         </TabsContent>
@@ -155,7 +189,11 @@ export const ReviewManagement = () => {
         </TabsContent>
 
         <TabsContent value="automation">
-          <ReviewAutomationSettings />
+          <ReviewAutomationSettings 
+            settings={automationSettings}
+            onSettingsChange={setAutomationSettings}
+            onToggleAutomation={handleToggleAutomation}
+          />
         </TabsContent>
       </Tabs>
     </div>
