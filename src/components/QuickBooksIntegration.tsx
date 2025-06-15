@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle, DollarSign, FileText, Sync, Settings } from "lucide-react";
+import { AlertCircle, CheckCircle, DollarSign, FileText, RefreshCw, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export const QuickBooksIntegration = () => {
@@ -128,7 +128,7 @@ export const QuickBooksIntegration = () => {
                 </Button>
               </div>
               <Button onClick={handleSync} disabled={isLoading} className="w-full">
-                <Sync className="h-4 w-4 mr-2" />
+                <RefreshCw className="h-4 w-4 mr-2" />
                 {isLoading ? "Syncing..." : "Sync Now"}
               </Button>
             </div>
