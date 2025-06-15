@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { TopMenuNavigation } from "./TopMenuNavigation";
 import { Dashboard } from "./Dashboard";
 import { CustomWidgetList } from "./CustomWidgetList";
 import { CustomCardList } from "./CustomCardList";
@@ -12,6 +11,8 @@ import { NavigationSettings } from "./NavigationSettings";
 import { TeamManagement } from "./TeamManagement";
 import { SubcontractorManagement } from "./SubcontractorManagement";
 import { MapView } from "./MapView";
+import { ClientAppointment } from "./ClientAppointment";
+import { Sidebar } from "./Sidebar";
 
 interface SidebarSection {
   id: string;
@@ -21,6 +22,7 @@ interface SidebarSection {
 
 const sections: SidebarSection[] = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'customers', label: 'Customers', icon: Users },
   { id: 'jobs', label: 'Jobs', icon: Wrench },
@@ -97,7 +99,7 @@ const jobsAndAppointments = [
 ];
 
 export const AppLayout = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState('client-appointment');
   const [showNavigationSettings, setShowNavigationSettings] = useState(false);
 
   const handleNavigationSettings = () => {
@@ -108,6 +110,8 @@ export const AppLayout = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard />;
+      case 'client-appointment':
+        return <ClientAppointment />;
       case 'pipeline':
         return <Pipeline />;
       case 'customers':
@@ -190,23 +194,22 @@ export const AppLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background w-full">
-      <TopMenuNavigation
+    <div className="min-h-screen bg-background flex">
+      <Sidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}
         sections={sections}
-        onNavigationSettings={handleNavigationSettings}
         isVisible={true}
       />
 
-      <main className="pt-16">
+      <main className="flex-1 ml-64">
         {renderSection()}
       </main>
 
       <NavigationSettings
         open={showNavigationSettings}
         onOpenChange={setShowNavigationSettings}
-        currentLayout="menu"
+        currentLayout="sidebar"
         onLayoutChange={() => {}}
       />
     </div>
