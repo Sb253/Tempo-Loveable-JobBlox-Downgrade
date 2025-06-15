@@ -38,11 +38,16 @@ import { CustomerPortal } from "@/components/CustomerPortal";
 import { OnlineBooking } from "@/components/OnlineBooking";
 import { AutomatedFollowUp } from "@/components/AutomatedFollowUp";
 import { MobileJobDocumentation } from "@/components/MobileJobDocumentation";
+import { AdvancedInvoiceForm } from "@/components/AdvancedInvoiceForm";
+import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
+import { TaxReporting } from "@/components/TaxReporting";
+import { AccountingIntegration } from "@/components/AccountingIntegration";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
+  const [showAdvancedInvoiceForm, setShowAdvancedInvoiceForm] = useState(false);
 
   const stats = [
     { title: "Total Customers", value: "156", icon: Users, color: "text-blue-600" },
@@ -86,7 +91,11 @@ const Index = () => {
     { label: 'Schedule', value: 'schedule' },
     { label: 'Estimates', value: 'estimates' },
     { label: 'Invoices', value: 'invoices' },
+    { label: 'Advanced Invoicing', value: 'advanced-invoicing' },
     { label: 'Expenses', value: 'expenses' },
+    { label: 'Profit Analysis', value: 'profit-analysis' },
+    { label: 'Tax Reporting', value: 'tax-reporting' },
+    { label: 'Accounting Integration', value: 'accounting-integration' },
     { label: 'Payments', value: 'payments' },
     { label: 'Team', value: 'team' },
     { label: 'Notifications', value: 'notifications' },
@@ -125,8 +134,26 @@ const Index = () => {
         return <EstimateList />;
       case 'invoices':
         return <InvoiceList />;
+      case 'advanced-invoicing':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Advanced Invoicing</h2>
+              <Button onClick={() => setShowAdvancedInvoiceForm(true)}>
+                Create Advanced Invoice
+              </Button>
+            </div>
+            <InvoiceList />
+          </div>
+        );
       case 'expenses':
         return <ExpenseList />;
+      case 'profit-analysis':
+        return <ProfitMarginAnalysis />;
+      case 'tax-reporting':
+        return <TaxReporting />;
+      case 'accounting-integration':
+        return <AccountingIntegration />;
       case 'payments':
         return <PaymentProcessing />;
       case 'reports':
@@ -198,9 +225,17 @@ const Index = () => {
                   <Plus className="h-4 w-4" />
                   Create Job
                 </Button>
+                <Button onClick={() => setShowAdvancedInvoiceForm(true)} className="flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  Advanced Invoice
+                </Button>
                 <Button variant="outline" onClick={() => setActiveView('schedule')}>
                   <Calendar className="h-4 w-4 mr-2" />
                   View Schedule
+                </Button>
+                <Button variant="outline" onClick={() => setActiveView('profit-analysis')}>
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Profit Analysis
                 </Button>
                 <Button variant="outline" onClick={() => setActiveView('payments')}>
                   <DollarSign className="h-4 w-4 mr-2" />
@@ -317,6 +352,9 @@ const Index = () => {
       )}
       {showJobForm && (
         <JobForm onClose={() => setShowJobForm(false)} />
+      )}
+      {showAdvancedInvoiceForm && (
+        <AdvancedInvoiceForm onClose={() => setShowAdvancedInvoiceForm(false)} />
       )}
     </div>
   );
