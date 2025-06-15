@@ -22,7 +22,12 @@ interface DashboardWidget {
   order: number;
 }
 
-export const Dashboard = () => {
+interface DashboardProps {
+  currentLayout: 'sidebar' | 'menu';
+  onLayoutChange: (layout: 'sidebar' | 'menu') => void;
+}
+
+export const Dashboard = ({ currentLayout, onLayoutChange }: DashboardProps) => {
   const { toast } = useToast();
   const [userName, setUserName] = useState('John');
   const [timezone, setTimezone] = useState('America/New_York');
@@ -30,11 +35,6 @@ export const Dashboard = () => {
   const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
-  const [currentLayout, setCurrentLayout] = useState<'sidebar' | 'menu'>(() => {
-    const saved = localStorage.getItem('navigationLayout') as 'sidebar' | 'menu';
-    console.log('Dashboard: Initial layout from localStorage:', saved);
-    return saved || 'sidebar';
-  });
 
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
     { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
@@ -108,12 +108,6 @@ export const Dashboard = () => {
       title: "Timezone Updated",
       description: `Timezone has been set to ${tempTimezone}`,
     });
-  };
-
-  const handleLayoutChange = (layout: 'sidebar' | 'menu') => {
-    console.log('Dashboard: Layout change requested to:', layout);
-    setCurrentLayout(layout);
-    localStorage.setItem('navigationLayout', layout);
   };
 
   const getWidget = (id: string) => {
@@ -243,11 +237,8 @@ export const Dashboard = () => {
     }
   ];
 
-  // Determine if main content should have left margin for sidebar
-  const contentMargin = currentLayout === 'sidebar' ? 'ml-64' : 'ml-0';
-
   return (
-    <div className={`min-h-screen transition-all duration-300 ${contentMargin}`}>
+    <div className="min-h-screen">
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-start">
           <div>
@@ -271,7 +262,7 @@ export const Dashboard = () => {
           <div className="flex items-center gap-3">
             <NavigationToggle 
               currentLayout={currentLayout} 
-              onLayoutChange={handleLayoutChange} 
+              onLayoutChange={onLayoutChange} 
             />
             <ThemeToggle />
             <Button 

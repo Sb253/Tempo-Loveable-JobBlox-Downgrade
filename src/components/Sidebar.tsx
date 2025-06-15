@@ -29,7 +29,6 @@ export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = 
   });
 
   useEffect(() => {
-    console.log('Sidebar: isVisible changed to:', isVisible);
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
       const data = JSON.parse(savedCompanyData);
@@ -38,10 +37,9 @@ export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = 
         logo: data.logo || null
       });
     }
-  }, [isVisible]);
+  }, []);
 
   if (!isVisible) {
-    console.log('Sidebar: Not visible, returning null');
     return null;
   }
 

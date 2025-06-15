@@ -39,6 +39,7 @@ export const AppLayout = () => {
   });
 
   const handleLayoutChange = (layout: 'sidebar' | 'menu') => {
+    console.log('AppLayout: Changing layout to:', layout);
     setCurrentLayout(layout);
     localStorage.setItem('navigationLayout', layout);
   };
@@ -48,31 +49,36 @@ export const AppLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background w-full">
       {/* Sidebar Navigation */}
-      <Sidebar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        sections={sections}
-        isVisible={currentLayout === 'sidebar'}
-      />
+      {currentLayout === 'sidebar' && (
+        <Sidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          isVisible={true}
+        />
+      )}
 
       {/* Top Menu Navigation */}
-      <TopMenuNavigation
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        sections={sections}
-        onNavigationSettings={handleNavigationSettings}
-        isVisible={currentLayout === 'menu'}
-      />
+      {currentLayout === 'menu' && (
+        <TopMenuNavigation
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          onNavigationSettings={handleNavigationSettings}
+          isVisible={true}
+        />
+      )}
 
       {/* Main Content */}
       <main className={`transition-all duration-300 ${currentLayout === 'sidebar' ? 'ml-64' : 'ml-0'} ${currentLayout === 'menu' ? 'pt-16' : 'pt-0'}`}>
-        {activeSection === 'dashboard' && (
-          <Dashboard />
-        )}
-        
-        {activeSection !== 'dashboard' && (
+        {activeSection === 'dashboard' ? (
+          <Dashboard 
+            currentLayout={currentLayout}
+            onLayoutChange={handleLayoutChange}
+          />
+        ) : (
           <div className="p-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold mb-4 colorful-text">
