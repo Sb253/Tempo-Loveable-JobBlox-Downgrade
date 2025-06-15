@@ -25,6 +25,7 @@ import { BranchManagement } from "./BranchManagement";
 import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
 import { Communication } from "./Communication";
+import { SafetyManagement } from "./SafetyManagement";
 
 interface SidebarSection {
   id: string;
@@ -121,6 +122,12 @@ const jobsAndAppointments = [
   }
 ];
 
+const SafetyManagementComponent = () => (
+  <div className="p-6">
+    <SafetyManagement />
+  </div>
+);
+
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('client-appointment');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -178,7 +185,7 @@ export const AppLayout = () => {
       case 'reviews':
         return <ReviewManagement />;
       case 'safety':
-        return <SaftyManagement />;
+        return <SafetyManagementComponent />;
       case 'quality':
         return <QualityControl />;
       case 'goals':
@@ -396,12 +403,6 @@ const VehicleManagement = () => (
         <p>Vehicle tracking and management system will be implemented here.</p>
       </CardContent>
     </Card>
-  </div>
-);
-
-const SaftyManagement = () => (
-  <div className="p-6">
-    <SafetyManagement />
   </div>
 );
 

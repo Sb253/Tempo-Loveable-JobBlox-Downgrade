@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Users, Calendar, Clock, MapPin, Wrench, Truck, FileText, Import, Export } from "lucide-react";
+import { Users, Calendar, Clock, MapPin, Wrench, Truck, FileText, Import, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Resource {
@@ -174,7 +174,7 @@ export const ResourceAllocation = () => {
     window.URL.revokeObjectURL(url);
 
     toast({
-      title: "Export Successful",
+      title: "Download Successful",
       description: "Materials data has been exported to CSV."
     });
   };
@@ -194,7 +194,7 @@ export const ResourceAllocation = () => {
     window.URL.revokeObjectURL(url);
 
     toast({
-      title: "Export Successful",
+      title: "Download Successful",
       description: "Services data has been exported to CSV."
     });
   };
@@ -463,8 +463,8 @@ export const ResourceAllocation = () => {
                     Import CSV
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleExportMaterials}>
-                    <Export className="h-4 w-4 mr-2" />
-                    Export CSV
+                    <Download className="h-4 w-4 mr-2" />
+                    Download CSV
                   </Button>
                 </div>
               </CardTitle>
@@ -530,8 +530,8 @@ export const ResourceAllocation = () => {
                     Import CSV
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleExportServices}>
-                    <Export className="h-4 w-4 mr-2" />
-                    Export CSV
+                    <Download className="h-4 w-4 mr-2" />
+                    Download CSV
                   </Button>
                 </div>
               </CardTitle>
