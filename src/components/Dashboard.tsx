@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuickActions } from "./QuickActions";
 import { FinancialSummaryCard } from "./FinancialSummaryCard";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp, 
   Users, 
@@ -11,7 +12,10 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle,
-  Star
+  Star,
+  MapPin,
+  Navigation,
+  User
 } from "lucide-react";
 
 interface DashboardProps {
@@ -114,7 +118,9 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
       customer: "John Smith",
       time: "9:00 AM",
       location: "123 Main St",
-      status: "confirmed"
+      status: "confirmed",
+      employee: "Mike Johnson",
+      coordinates: [-74.006, 40.7128] as [number, number]
     },
     {
       id: 2,
@@ -122,7 +128,9 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
       customer: "Mary Wilson",
       time: "1:00 PM",
       location: "456 Oak Ave",
-      status: "pending"
+      status: "pending",
+      employee: "Sarah Davis",
+      coordinates: [-74.0, 40.72] as [number, number]
     },
     {
       id: 3,
@@ -130,9 +138,57 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
       customer: "Robert Brown",
       time: "3:30 PM",
       location: "789 Pine Rd",
-      status: "confirmed"
+      status: "confirmed",
+      employee: "Tom Wilson",
+      coordinates: [-73.99, 40.71] as [number, number]
     }
   ];
+
+  const employeeSchedules = [
+    {
+      id: 1,
+      name: "Mike Johnson",
+      position: "Lead Technician",
+      status: "active",
+      currentLocation: "123 Main St",
+      nextJob: "Bathroom Remodel - 9:00 AM",
+      coordinates: [-74.006, 40.7128] as [number, number]
+    },
+    {
+      id: 2,
+      name: "Sarah Davis",
+      position: "Project Manager",
+      status: "driving",
+      currentLocation: "En route to 456 Oak Ave",
+      nextJob: "Kitchen Installation - 1:00 PM",
+      coordinates: [-74.0, 40.72] as [number, number]
+    },
+    {
+      id: 3,
+      name: "Tom Wilson",
+      position: "Electrician",
+      status: "break",
+      currentLocation: "Office",
+      nextJob: "Home Inspection - 3:30 PM",
+      coordinates: [-73.99, 40.71] as [number, number]
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': 
+      case 'active': 
+        return 'bg-green-100 text-green-800';
+      case 'pending': 
+        return 'bg-yellow-100 text-yellow-800';
+      case 'driving': 
+        return 'bg-blue-100 text-blue-800';
+      case 'break': 
+        return 'bg-orange-100 text-orange-800';
+      default: 
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -190,7 +246,99 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
         onProjectProposal={() => onSectionChange?.('estimates')}
       />
 
-      {/* Activity and Jobs Grid */}
+      {/* Map Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Live Map - Jobs & Employee Locations
+            </div>
+            <div className="flex gap-2">
+              <Badge variant="outline">
+                {upcomingJobs.length} jobs
+              </Badge>
+              <Badge variant="outline">
+                {employeeSchedules.filter(emp => emp.status === 'active').length} active employees
+              </Badge>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="relative">
+            {/* Map Placeholder */}
+            <div className="w-full h-64 bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950 rounded-lg flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden">
+              <div className="text-center space-y-2">
+                <MapPin className="h-12 w-12 mx-auto text-muted-foreground" />
+                <p className="text-muted-foreground">Interactive Map View</p>
+                <p className="text-sm text-muted-foreground">
+                  Showing job locations and employee positions
+                </p>
+              </div>
+              
+              {/* Mock job markers */}
+              {upcomingJobs.map((job, index) => (
+                <div 
+                  key={job.id}
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse"
+                  style={{
+                    top: `${20 + index * 20}%`,
+                    left: `${25 + index * 25}%`,
+                  }}
+                  title={job.title}
+                >
+                  J
+                </div>
+              ))}
+              
+              {/* Mock employee markers */}
+              {employeeSchedules.map((employee, index) => (
+                <div 
+                  key={employee.id}
+                  className={`absolute w-6 h-6 rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg ${
+                    employee.status === 'active' ? 'bg-green-500' : 
+                    employee.status === 'driving' ? 'bg-orange-500' : 'bg-gray-500'
+                  }`}
+                  style={{
+                    top: `${30 + index * 15}%`,
+                    right: `${20 + index * 20}%`,
+                  }}
+                  title={employee.name}
+                >
+                  E
+                </div>
+              ))}
+            </div>
+            
+            {/* Map Controls */}
+            <div className="flex justify-between items-center mt-4">
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Jobs</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>Active Employees</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <span>En Route</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => onSectionChange?.('map-view')}
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+              >
+                <Navigation className="h-4 w-4" />
+                View Full Map
+              </button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Activity and Enhanced Schedule Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
         <Card>
@@ -225,29 +373,67 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
           </CardContent>
         </Card>
 
-        {/* Today's Jobs */}
+        {/* Enhanced Today's Schedule */}
         <Card>
           <CardHeader>
             <CardTitle>Today's Schedule</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {upcomingJobs.map((job) => (
-                <div key={job.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                  <div>
-                    <p className="font-medium">{job.title}</p>
-                    <p className="text-sm text-muted-foreground">{job.customer}</p>
-                    <p className="text-xs text-muted-foreground">{job.location}</p>
+            <Tabs defaultValue="jobs" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="jobs">Jobs Schedule</TabsTrigger>
+                <TabsTrigger value="employees">Employee Schedule</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="jobs" className="space-y-4 mt-4">
+                {upcomingJobs.map((job) => (
+                  <div key={job.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div>
+                      <p className="font-medium">{job.title}</p>
+                      <p className="text-sm text-muted-foreground">{job.customer}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {job.location}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <User className="h-3 w-3" />
+                        {job.employee}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">{job.time}</p>
+                      <Badge variant={job.status === 'confirmed' ? 'default' : 'outline'}>
+                        {job.status}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-medium">{job.time}</p>
-                    <Badge variant={job.status === 'confirmed' ? 'default' : 'outline'}>
-                      {job.status}
-                    </Badge>
+                ))}
+              </TabsContent>
+              
+              <TabsContent value="employees" className="space-y-4 mt-4">
+                {employeeSchedules.map((employee) => (
+                  <div key={employee.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                    <div>
+                      <p className="font-medium">{employee.name}</p>
+                      <p className="text-sm text-muted-foreground">{employee.position}</p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {employee.currentLocation}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        {employee.nextJob}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <Badge className={getStatusColor(employee.status)}>
+                        {employee.status}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
