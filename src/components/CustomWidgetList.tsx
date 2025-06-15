@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, Calendar, Users, DollarSign, Clock, FileText, Settings } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, EyeOff, BarChart3, Calendar, Users, DollarSign, Clock, FileText, Settings, TrendingUp, CreditCard, PiggyBank, Receipt } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CustomWidget {
@@ -25,7 +25,7 @@ interface CustomWidget {
 export const CustomWidgetList = () => {
   const { toast } = useToast();
   
-  // Enhanced demo data with more widgets
+  // Enhanced demo data with financial widgets
   const [widgets, setWidgets] = useState<CustomWidget[]>([
     {
       id: '1',
@@ -107,6 +107,72 @@ export const CustomWidgetList = () => {
       order: 7,
       icon: 'BarChart3',
       color: 'red'
+    },
+    {
+      id: '9',
+      title: 'Profit Margins',
+      type: 'stat',
+      enabled: true,
+      size: 'medium',
+      order: 8,
+      icon: 'TrendingUp',
+      color: 'green',
+      dataSource: 'financial'
+    },
+    {
+      id: '10',
+      title: 'Outstanding Invoices',
+      type: 'list',
+      enabled: true,
+      size: 'large',
+      order: 9,
+      icon: 'Receipt',
+      color: 'orange',
+      dataSource: 'financial'
+    },
+    {
+      id: '11',
+      title: 'Payment Status',
+      type: 'chart',
+      enabled: false,
+      size: 'medium',
+      order: 10,
+      icon: 'CreditCard',
+      color: 'blue',
+      dataSource: 'financial'
+    },
+    {
+      id: '12',
+      title: 'Cash Flow',
+      type: 'chart',
+      enabled: true,
+      size: 'large',
+      order: 11,
+      icon: 'TrendingUp',
+      color: 'green',
+      dataSource: 'financial'
+    },
+    {
+      id: '13',
+      title: 'Expense Tracking',
+      type: 'stat',
+      enabled: true,
+      size: 'medium',
+      order: 12,
+      icon: 'PiggyBank',
+      color: 'red',
+      dataSource: 'financial'
+    },
+    {
+      id: '14',
+      title: 'Budget Overview',
+      type: 'metric',
+      enabled: false,
+      size: 'small',
+      order: 13,
+      icon: 'DollarSign',
+      color: 'purple',
+      dataSource: 'financial'
     }
   ]);
 
@@ -135,7 +201,11 @@ export const CustomWidgetList = () => {
     { value: 'Users', label: 'Users', icon: Users },
     { value: 'DollarSign', label: 'Dollar Sign', icon: DollarSign },
     { value: 'Clock', label: 'Clock', icon: Clock },
-    { value: 'FileText', label: 'File Text', icon: FileText }
+    { value: 'FileText', label: 'File Text', icon: FileText },
+    { value: 'TrendingUp', label: 'Trending Up', icon: TrendingUp },
+    { value: 'CreditCard', label: 'Credit Card', icon: CreditCard },
+    { value: 'PiggyBank', label: 'Piggy Bank', icon: PiggyBank },
+    { value: 'Receipt', label: 'Receipt', icon: Receipt }
   ];
 
   const colorOptions = [
@@ -239,7 +309,7 @@ export const CustomWidgetList = () => {
 
   const getIconComponent = (iconName: string) => {
     const iconMap: Record<string, any> = {
-      BarChart3, Calendar, Users, DollarSign, Clock, FileText
+      BarChart3, Calendar, Users, DollarSign, Clock, FileText, TrendingUp, CreditCard, PiggyBank, Receipt
     };
     return iconMap[iconName] || BarChart3;
   };
@@ -249,7 +319,7 @@ export const CustomWidgetList = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Custom Dashboard Widgets</h2>
-          <p className="text-muted-foreground">Manage and configure your dashboard widgets</p>
+          <p className="text-muted-foreground">Manage and configure your dashboard widgets including financial metrics</p>
         </div>
         <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -275,6 +345,9 @@ export const CustomWidgetList = () => {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Badge variant="secondary">{widget.type}</Badge>
                         <Badge variant="outline">{widget.size}</Badge>
+                        {widget.dataSource === 'financial' && (
+                          <Badge className="bg-green-100 text-green-800">Financial</Badge>
+                        )}
                         {widget.enabled ? (
                           <Badge className="bg-green-100 text-green-800">Active</Badge>
                         ) : (
