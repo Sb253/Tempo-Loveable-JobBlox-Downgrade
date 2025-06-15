@@ -19,6 +19,7 @@ import { PhotoDocumentation } from "./PhotoDocumentation";
 import { MobileFeaturesDashboard } from "./MobileFeaturesDashboard";
 import { RealTimeChat } from "./RealTimeChat";
 import { AdvancedInventorySystem } from "./AdvancedInventorySystem";
+import { EquipmentManagement } from "./EquipmentManagement";
 import { FinancialAnalyticsDashboard } from "./FinancialAnalyticsDashboard";
 import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
 import { BranchManagement } from "./BranchManagement";
@@ -173,6 +174,24 @@ export const AppLayout = () => {
         return <SchedulingDashboard />;
       case 'time-tracking':
         return <TimeTracking />;
+      case 'photos':
+        return (
+          <div className="p-6">
+            <PhotoDocumentation />
+          </div>
+        );
+      case 'inventory':
+        return (
+          <div className="p-6">
+            <AdvancedInventorySystem />
+          </div>
+        );
+      case 'equipment':
+        return (
+          <div className="p-6">
+            <EquipmentManagement />
+          </div>
+        );
       case 'safety':
         return <SafetyManagementComponent />;
       case 'quality':
