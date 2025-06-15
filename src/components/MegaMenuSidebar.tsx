@@ -3,7 +3,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X, Hammer, Settings } from "lucide-react";
+import { useRolePermissions } from "@/hooks/useRolePermissions";
 
 interface SidebarSection {
   id: string;
@@ -41,17 +42,18 @@ export const MegaMenuSidebar = ({
   onToggleCollapse
 }: MegaMenuSidebarProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
-    name: 'Construction CRM',
+    name: 'Your Company',
     logo: null
   });
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const { permissions } = useRolePermissions();
 
   useEffect(() => {
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
       const data = JSON.parse(savedCompanyData);
       setCompanyData({
-        name: data.name || 'Construction CRM',
+        name: data.companyName || 'Your Company',
         logo: data.logo || null
       });
     }
@@ -168,30 +170,55 @@ export const MegaMenuSidebar = ({
       "fixed left-0 top-0 h-full bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
       collapsed ? "w-20" : "w-80"
     )}>
-      {/* Header */}
-      <div className="p-4 md:p-6 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {companyData.logo ? (
-            <img 
-              src={companyData.logo} 
-              alt="Company Logo" 
-              className="h-6 w-6 md:h-8 md:w-8 object-contain"
-            />
-          ) : (
-            <Building2 className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-          )}
+      {/* Fixed App Header */}
+      <div className="p-4 md:p-6 border-b border-border">
+        <div className="flex items-center gap-3 mb-3">
+          <Hammer className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
           {!collapsed && (
-            <h1 className="text-lg md:text-xl font-bold text-primary truncate">{companyData.name}</h1>
+            <h1 className="text-lg md:text-xl font-bold text-orange-600">Build Connect</h1>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleToggleCollapse}
-          className="h-6 w-6 md:h-8 md:w-8"
-        >
-          {collapsed ? <Menu className="h-3 w-3 md:h-4 md:w-4" /> : <X className="h-3 w-3 md:h-4 md:w-4" />}
-        </Button>
+        
+        {/* User Company Info - Only visible when not collapsed */}
+        {!collapsed && (
+          <div className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+            <div className="flex items-center gap-2 min-w-0">
+              {companyData.logo ? (
+                <img 
+                  src={companyData.logo} 
+                  alt="Company Logo" 
+                  className="h-5 w-5 object-contain flex-shrink-0"
+                />
+              ) : (
+                <Building2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              )}
+              <span className="text-sm font-medium text-muted-foreground truncate">{companyData.name}</span>
+            </div>
+            {permissions.canManageCompany && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => handleSectionClick('company-settings')}
+                title="Manage Company Settings"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        )}
+        
+        {/* Collapse Toggle */}
+        <div className="flex justify-end mt-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleCollapse}
+            className="h-6 w-6 md:h-8 md:w-8"
+          >
+            {collapsed ? <Menu className="h-3 w-3 md:h-4 md:w-4" /> : <X className="h-3 w-3 md:h-4 md:w-4" />}
+          </Button>
+        </div>
       </div>
       
       {/* Navigation */}
@@ -236,7 +263,6 @@ export const MegaMenuSidebar = ({
             const GroupIcon = group.icon;
             
             if (collapsed) {
-              // In collapsed mode, show only icons for groups that have active items
               const hasActiveItem = group.items.some(item => item.id === activeSection);
               if (!hasActiveItem) return null;
               
