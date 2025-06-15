@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,9 @@ import { JobList } from "@/components/JobList";
 import { ScheduleView } from "@/components/ScheduleView";
 import { CustomerForm } from "@/components/CustomerForm";
 import { JobForm } from "@/components/JobForm";
+import { EstimateList } from "@/components/EstimateList";
+import { InvoiceList } from "@/components/InvoiceList";
+import { EnhancedScheduleView } from "@/components/EnhancedScheduleView";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -28,7 +30,11 @@ const Index = () => {
       case 'jobs':
         return <JobList />;
       case 'schedule':
-        return <ScheduleView />;
+        return <EnhancedScheduleView />;
+      case 'estimates':
+        return <EstimateList />;
+      case 'invoices':
+        return <InvoiceList />;
       default:
         return (
           <div className="space-y-6">
@@ -152,6 +158,18 @@ const Index = () => {
                   onClick={() => setActiveView('schedule')}
                 >
                   Schedule
+                </Button>
+                <Button
+                  variant={activeView === 'estimates' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('estimates')}
+                >
+                  Estimates
+                </Button>
+                <Button
+                  variant={activeView === 'invoices' ? 'default' : 'ghost'}
+                  onClick={() => setActiveView('invoices')}
+                >
+                  Invoices
                 </Button>
               </nav>
             </div>
