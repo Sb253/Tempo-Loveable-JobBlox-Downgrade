@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { SubcontractorManagement } from "./SubcontractorManagement";
 import { MapView } from "./MapView";
 import { ClientAppointment } from "./ClientAppointment";
 import { Sidebar } from "./Sidebar";
+import { MobileSettings } from "./MobileSettings";
 
 interface SidebarSection {
   id: string;
@@ -48,6 +48,7 @@ const sections: SidebarSection[] = [
   { id: 'map-view', label: 'Map View', icon: Map },
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
+  { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'widgets', label: 'Dashboard Widgets', icon: Palette },
   { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
@@ -112,6 +113,8 @@ export const AppLayout = () => {
         return <Dashboard />;
       case 'client-appointment':
         return <ClientAppointment />;
+      case 'mobile-settings':
+        return <MobileSettings />;
       case 'pipeline':
         return <Pipeline />;
       case 'customers':
