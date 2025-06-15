@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, User, Bell, Shield } from "lucide-react";
+import { Settings, User, Bell, Shield, Layout } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CustomWidgetList } from "@/components/CustomWidgetList";
 
 export const SettingsDashboard = () => {
   return (
@@ -13,9 +14,10 @@ export const SettingsDashboard = () => {
       <h1 className="text-3xl font-bold">Settings</h1>
       
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="widgets">Widgets</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
@@ -67,6 +69,20 @@ export const SettingsDashboard = () => {
                 <Input id="email" type="email" placeholder="john@company.com" />
               </div>
               <Button>Update Profile</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="widgets">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layout className="h-5 w-5" />
+                Dashboard Widgets
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CustomWidgetList />
             </CardContent>
           </Card>
         </TabsContent>
