@@ -60,7 +60,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'team-management')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
+        ['team-management', 'subcontractor-management', 'services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'import-export', 'employee-locations', 'radius-assignment'].includes(s.id)
       )
     },
     {

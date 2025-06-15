@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Building2, Settings } from "lucide-react";
+import { Building2, Settings, Sun, Moon } from "lucide-react";
 import { useRolePermissions } from "@/hooks/useRolePermissions";
+import { useTheme } from "./ThemeProvider";
 
 interface CompanyData {
   name: string;
@@ -19,6 +20,7 @@ export const AppHeader = ({ onCompanySettingsClick }: AppHeaderProps) => {
     logo: null
   });
   const { permissions } = useRolePermissions();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const savedCompanyData = localStorage.getItem('companySettings');
@@ -31,9 +33,13 @@ export const AppHeader = ({ onCompanySettingsClick }: AppHeaderProps) => {
     }
   }, []);
 
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   return (
-    <header className="bg-white border-b border-border shadow-sm z-30">
-      <div className="flex items-center justify-end px-6 py-3">
+    <header className="bg-white dark:bg-slate-900 border-b border-border shadow-sm z-30">
+      <div className="flex items-center justify-between px-6 py-3">
         <div className="flex items-center gap-2">
           {companyData.logo ? (
             <img 
@@ -56,6 +62,22 @@ export const AppHeader = ({ onCompanySettingsClick }: AppHeaderProps) => {
               <Settings className="h-4 w-4" />
             </Button>
           )}
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-8 w-8"
+            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          >
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </Button>
         </div>
       </div>
     </header>

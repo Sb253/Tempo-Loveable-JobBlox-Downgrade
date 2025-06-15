@@ -31,6 +31,8 @@ import { QualityControl as QualityControlComponent } from "./QualityControl";
 import { AddJobSection } from "./AddJobSection";
 import { TimeTracking } from "./TimeTracking";
 import { AppHeader } from "./AppHeader";
+import { ServicesManagement } from "./ServicesManagement";
+import { ImportExportHub } from "./ImportExportHub";
 
 interface SidebarSection {
   id: string;
@@ -66,6 +68,8 @@ const sections: SidebarSection[] = [
   { id: 'map-view', label: 'Map View', icon: Map },
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
+  { id: 'services', label: 'Services', icon: Briefcase },
+  { id: 'import-export', label: 'Import/Export', icon: Activity },
   { id: 'resource-allocation', label: 'Resource Allocation', icon: Package },
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
@@ -272,6 +276,10 @@ export const AppLayout = () => {
         return <TeamManagement />;
       case 'subcontractor-management':
         return <SubcontractorManagement />;
+      case 'services':
+        return <ServicesManagement />;
+      case 'import-export':
+        return <ImportExportHub />;
       case 'settings':
         return (
           <div className="p-6 space-y-6">
