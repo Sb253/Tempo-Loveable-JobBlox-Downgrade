@@ -16,7 +16,14 @@ import {
   Square,
   CheckCircle,
   AlertCircle,
-  XCircle
+  XCircle,
+  Edit,
+  MessageCircle,
+  Truck,
+  FileText,
+  Tag,
+  Paperclip,
+  Plus
 } from "lucide-react";
 
 interface Appointment {
@@ -144,21 +151,6 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
     return `${mins}m`;
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'in-progress':
-        return <Play className="h-4 w-4 text-blue-600" />;
-      case 'cancelled':
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      case 'no-show':
-        return <AlertCircle className="h-4 w-4 text-orange-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
@@ -177,131 +169,244 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">{appointment.title}</h1>
-          <p className="text-muted-foreground">Detailed appointment management with time tracking</p>
+    <div className="max-w-md mx-auto bg-white min-h-screen">
+      {/* Header Actions */}
+      <div className="bg-white border-b px-4 py-3">
+        <div className="flex justify-between items-center text-blue-600">
+          <div className="flex items-center gap-2">
+            <Edit className="h-5 w-5" />
+            <span className="text-sm font-medium">Edit</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5" />
+            <span className="text-sm font-medium">Estimate</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5" />
+            <span className="text-sm font-medium">Copy to Job</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">⋯</span>
+            <span className="text-sm font-medium">More</span>
+          </div>
         </div>
       </div>
 
-      {/* Main Appointment Card */}
-      <Card className="hover:shadow-md transition-shadow">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-4">
-                <h3 className="text-2xl font-semibold">{appointment.title}</h3>
-                <Badge className={getStatusColor(appointment.status)}>
-                  <div className="flex items-center gap-1">
-                    {getStatusIcon(appointment.status)}
-                    {appointment.status.replace('-', ' ')}
-                  </div>
-                </Badge>
-                <Badge variant="outline" className="capitalize">
-                  {appointment.appointmentType}
-                </Badge>
+      {/* Status Section */}
+      <Card className="mx-4 mt-4 shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
+              <span className="font-semibold text-gray-700">Status</span>
+            </div>
+            <Badge className={getStatusColor(appointment.status)}>
+              {appointment.status.toUpperCase().replace('-', ' ')}
+            </Badge>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                <Truck className="h-6 w-6 text-gray-400" />
               </div>
+              <span className="text-xs text-gray-500 font-medium">ON MY WAY</span>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm mb-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <User className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium text-base">{appointment.customer}</p>
-                      <p className="text-muted-foreground">Assigned to: {appointment.technician}</p>
-                    </div>
-                  </div>
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                onClick={appointment.status === 'scheduled' ? startTimeTracking : 
+                         appointment.timeTracking?.isActive ? pauseTimeTracking : startTimeTracking}
+                className="w-12 h-12 rounded-full p-0"
+              >
+                {appointment.timeTracking?.isActive ? 
+                  <Pause className="h-6 w-6" /> : 
+                  <Play className="h-6 w-6" />
+                }
+              </Button>
+              <span className="text-xs text-blue-600 font-medium">
+                {appointment.timeTracking?.isActive ? 'PAUSE' : 'START'}
+              </span>
+            </div>
 
-                  <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{appointment.phone}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{appointment.email}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium text-base">{appointment.scheduledDate}</p>
-                      <p className="text-muted-foreground">{appointment.scheduledTime} ({appointment.duration})</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{appointment.address}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium text-base">Time: {formatDuration(getActiveTime())}</p>
-                      {appointment.timeTracking?.isActive && (
-                        <p className="text-sm text-green-600 font-medium">● Recording</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                {appointment.status === 'scheduled' && (
-                  <Button onClick={startTimeTracking}>
-                    <Play className="h-4 w-4 mr-2" />
-                    Start Appointment
-                  </Button>
-                )}
-
-                {appointment.status === 'in-progress' && appointment.timeTracking?.isActive && (
-                  <>
-                    <Button variant="outline" onClick={pauseTimeTracking}>
-                      <Pause className="h-4 w-4 mr-2" />
-                      Pause Timer
-                    </Button>
-                    <Button onClick={completeAppointment}>
-                      <Square className="h-4 w-4 mr-2" />
-                      Complete Appointment
-                    </Button>
-                  </>
-                )}
-
-                {appointment.status === 'in-progress' && !appointment.timeTracking?.isActive && (
-                  <>
-                    <Button variant="outline" onClick={startTimeTracking}>
-                      <Play className="h-4 w-4 mr-2" />
-                      Resume Timer
-                    </Button>
-                    <Button onClick={completeAppointment}>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Complete Appointment
-                    </Button>
-                  </>
-                )}
-              </div>
+            <div className="flex flex-col items-center gap-2">
+              <Button
+                onClick={completeAppointment}
+                variant={appointment.status === 'completed' ? 'default' : 'outline'}
+                className="w-12 h-12 rounded-full p-0"
+              >
+                <Square className="h-6 w-6" />
+              </Button>
+              <span className="text-xs text-blue-600 font-medium">FINISH</span>
             </div>
           </div>
 
-          {appointment.notes && (
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Notes:</p>
-              <p className="text-sm text-muted-foreground">{appointment.notes}</p>
+          {/* Time Display */}
+          {getActiveTime() > 0 && (
+            <div className="mt-4 text-center">
+              <div className="text-lg font-semibold text-gray-700">
+                Time: {formatDuration(getActiveTime())}
+              </div>
+              {appointment.timeTracking?.isActive && (
+                <div className="text-sm text-green-600 font-medium">● Recording</div>
+              )}
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Customer Section */}
+      <Card className="mx-4 mt-4 shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <User className="h-5 w-5 text-gray-600" />
+            <span className="font-semibold text-gray-700">Customer</span>
+          </div>
+
+          {/* Customer Photo Placeholder */}
+          <div className="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+            <MapPin className="h-12 w-12 text-gray-400" />
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-gray-800">{appointment.customer}</h3>
+          </div>
+
+          <div className="space-y-2 mb-4">
+            <div className="text-gray-600">{appointment.address}</div>
+          </div>
+
+          {/* Contact Actions */}
+          <div className="flex justify-end gap-4">
+            <Button size="sm" variant="outline" className="rounded-full w-10 h-10 p-0">
+              <User className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant="outline" className="rounded-full w-10 h-10 p-0">
+              <MessageCircle className="h-4 w-4" />
+            </Button>
+            <Button size="sm" variant="outline" className="rounded-full w-10 h-10 p-0">
+              <Phone className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Schedule Section */}
+      <Card className="mx-4 mt-4 shadow-sm">
+        <CardContent className="p-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-gray-600" />
+              <span className="font-semibold text-gray-700">Schedule</span>
+            </div>
+            <Edit className="h-4 w-4 text-blue-600" />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-gray-600">From:</span>
+              <div className="text-right">
+                <div className="font-medium">{appointment.scheduledDate}</div>
+                <div className="text-sm text-gray-500">{appointment.scheduledTime}</div>
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <span className="text-gray-600">To:</span>
+              <div className="text-right">
+                <div className="font-medium">{appointment.scheduledDate}</div>
+                <div className="text-sm text-gray-500">
+                  {appointment.scheduledTime.split(':').map((part, i) => 
+                    i === 1 ? String(parseInt(part) + parseInt(appointment.duration.replace(/[^\d]/g, '')) || 60).padStart(2, '0') : part
+                  ).join(':')}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 mt-4">
+            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+              <User className="h-4 w-4 text-gray-600" />
+            </div>
+            <span className="font-medium text-gray-700">{appointment.technician}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Notes Section */}
+      {appointment.notes && (
+        <Card className="mx-4 mt-4 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-700">Notes</span>
+              </div>
+              <div className="flex gap-2">
+                <button className="text-blue-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                </button>
+                <Plus className="h-4 w-4 text-blue-600" />
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-500 mb-2">
+              {new Date().toLocaleDateString()}, {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+            </div>
+
+            <p className="text-gray-700 mb-4">{appointment.notes}</p>
+
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <User className="h-4 w-4 text-gray-600" />
+              </div>
+              <span className="font-medium text-gray-700">{appointment.technician}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Additional Sections */}
+      <div className="mx-4 mt-4 space-y-4 pb-8">
+        <Card className="shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-700">Estimate Fields</span>
+              </div>
+              <Plus className="h-5 w-5 text-gray-400" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Tag className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-700">Job Tags</span>
+              </div>
+              <Plus className="h-5 w-5 text-gray-400" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Paperclip className="h-5 w-5 text-gray-600" />
+                <span className="font-semibold text-gray-700">Attachments</span>
+              </div>
+              <Plus className="h-5 w-5 text-gray-400" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
