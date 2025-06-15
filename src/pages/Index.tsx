@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Sidebar } from "@/components/Sidebar";
 import { Dashboard } from "@/components/Dashboard";
@@ -22,7 +21,10 @@ import { APIIntegrations } from "@/components/APIIntegrations";
 import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
 import { JobCosting } from "@/components/JobCosting";
 import { BusinessIntegrations } from "@/components/BusinessIntegrations";
-import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug } from "lucide-react";
+import { JobChecklists } from "@/components/JobChecklists";
+import { DocumentManagement } from "@/components/DocumentManagement";
+import { JobList } from "@/components/JobList";
+import { CheckSquare, FileText, MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown, Cloud, Plug } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -71,6 +73,12 @@ const Index = () => {
         return <RealTimeDispatch />;
       case 'notifications':
         return <OnMyWayNotifications />;
+      case 'job-list':
+        return <JobList />;
+      case 'job-checklists':
+        return <JobChecklists />;
+      case 'documents':
+        return <DocumentManagement />;
       default:
         return <div>Select a section from the sidebar.</div>;
     }
@@ -84,6 +92,8 @@ const Index = () => {
         sections={[
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
           { id: 'scheduling', label: 'Scheduling', icon: Calendar },
+          { id: 'job-list', label: 'Job Management', icon: CheckSquare },
+          { id: 'job-checklists', label: 'Job Checklists', icon: CheckSquare },
           { id: 'customers', label: 'Customer Management', icon: Users },
           { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
           { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
@@ -95,6 +105,7 @@ const Index = () => {
           { id: 'profit-analysis', label: 'Profit Analysis', icon: TrendingDown },
           { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
           { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
+          { id: 'documents', label: 'Document Management', icon: FileText },
           { id: 'api-integrations', label: 'API Integrations', icon: Cloud },
           { id: 'business-integrations', label: 'Business Tools', icon: Plug },
           { id: 'quickbooks', label: 'QuickBooks', icon: Cloud },
