@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useCompanyData } from "@/hooks/useCompanyData";
 
@@ -29,7 +28,7 @@ interface EstimateData {
 
 interface EstimateTemplateProps {
   data: EstimateData;
-  template?: 'modern' | 'classic' | 'contemporary';
+  template?: 'modern' | 'classic' | 'minimal';
 }
 
 export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({ 
@@ -256,7 +255,7 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     </div>
   );
 
-  const renderContemporaryTemplate = () => (
+  const renderMinimalTemplate = () => (
     <div className="bg-white p-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-start mb-12 pb-6 border-b border-gray-200">
@@ -369,8 +368,8 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
   switch (template) {
     case 'classic':
       return renderClassicTemplate();
-    case 'contemporary':
-      return renderContemporaryTemplate();
+    case 'minimal':
+      return renderMinimalTemplate();
     default:
       return renderModernTemplate();
   }
