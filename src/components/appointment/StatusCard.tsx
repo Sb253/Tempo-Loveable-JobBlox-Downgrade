@@ -45,6 +45,49 @@ export const StatusCard = ({
   const hasPhone = appointment.phone && appointment.phone.length > 0;
   const canText = hasPhone; // Assume all phones can receive texts
 
+  const getStatusIndicator = () => {
+    switch (status) {
+      case 'scheduled':
+        return {
+          color: 'bg-blue-500',
+          text: 'Scheduled',
+          textColor: 'text-blue-700'
+        };
+      case 'in-progress':
+        return {
+          color: 'bg-yellow-500',
+          text: 'In Progress',
+          textColor: 'text-yellow-700'
+        };
+      case 'completed':
+        return {
+          color: 'bg-green-500',
+          text: 'Completed',
+          textColor: 'text-green-700'
+        };
+      case 'cancelled':
+        return {
+          color: 'bg-red-500',
+          text: 'Cancelled',
+          textColor: 'text-red-700'
+        };
+      case 'no-show':
+        return {
+          color: 'bg-gray-500',
+          text: 'No Show',
+          textColor: 'text-gray-700'
+        };
+      default:
+        return {
+          color: 'bg-gray-400',
+          text: 'Unknown',
+          textColor: 'text-gray-700'
+        };
+    }
+  };
+
+  const statusInfo = getStatusIndicator();
+
   const sendOnMyWayNotification = async () => {
     try {
       const eta = new Date(Date.now() + 15 * 60 * 1000);
@@ -80,8 +123,10 @@ export const StatusCard = ({
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-muted rounded-full"></div>
-            <span className="font-medium text-foreground">Status</span>
+            <div className={`w-6 h-6 ${statusInfo.color} rounded-full flex items-center justify-center`}>
+              <div className="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+            <span className={`font-medium ${statusInfo.textColor}`}>{statusInfo.text}</span>
           </div>
           <Badge variant="destructive">EXPIRED</Badge>
         </div>
