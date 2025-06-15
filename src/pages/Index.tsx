@@ -24,6 +24,10 @@ import { CompanyInfoSettings } from "@/components/CompanyInfoSettings";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
+  const [showEstimateForm, setShowEstimateForm] = useState(false);
+  const [showInvoiceForm, setShowInvoiceForm] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -97,13 +101,10 @@ const Index = () => {
                 <Tabs defaultValue="list" className="w-full">
                   <TabsList>
                     <TabsTrigger value="list">Customer List</TabsTrigger>
-                    <TabsTrigger value="add">Add Customer</TabsTrigger>
+                    <TabsTrigger value="add" onClick={() => setShowCustomerForm(true)}>Add Customer</TabsTrigger>
                   </TabsList>
                   <TabsContent value="list">
                     <CustomerList />
-                  </TabsContent>
-                  <TabsContent value="add">
-                    <CustomerForm />
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -119,13 +120,10 @@ const Index = () => {
                 <Tabs defaultValue="list" className="w-full">
                   <TabsList>
                     <TabsTrigger value="list">Job List</TabsTrigger>
-                    <TabsTrigger value="add">Add Job</TabsTrigger>
+                    <TabsTrigger value="add" onClick={() => setShowJobForm(true)}>Add Job</TabsTrigger>
                   </TabsList>
                   <TabsContent value="list">
                     <JobList />
-                  </TabsContent>
-                  <TabsContent value="add">
-                    <JobForm />
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -141,13 +139,10 @@ const Index = () => {
                 <Tabs defaultValue="list" className="w-full">
                   <TabsList>
                     <TabsTrigger value="list">Estimate List</TabsTrigger>
-                    <TabsTrigger value="add">Create Estimate</TabsTrigger>
+                    <TabsTrigger value="add" onClick={() => setShowEstimateForm(true)}>Create Estimate</TabsTrigger>
                   </TabsList>
                   <TabsContent value="list">
                     <EstimateList />
-                  </TabsContent>
-                  <TabsContent value="add">
-                    <EstimateForm />
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -163,13 +158,10 @@ const Index = () => {
                 <Tabs defaultValue="list" className="w-full">
                   <TabsList>
                     <TabsTrigger value="list">Invoice List</TabsTrigger>
-                    <TabsTrigger value="add">Create Invoice</TabsTrigger>
+                    <TabsTrigger value="add" onClick={() => setShowInvoiceForm(true)}>Create Invoice</TabsTrigger>
                   </TabsList>
                   <TabsContent value="list">
                     <InvoiceList />
-                  </TabsContent>
-                  <TabsContent value="add">
-                    <InvoiceForm />
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -200,6 +192,20 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Form Dialogs */}
+      {showCustomerForm && (
+        <CustomerForm onClose={() => setShowCustomerForm(false)} />
+      )}
+      {showJobForm && (
+        <JobForm onClose={() => setShowJobForm(false)} />
+      )}
+      {showEstimateForm && (
+        <EstimateForm onClose={() => setShowEstimateForm(false)} />
+      )}
+      {showInvoiceForm && (
+        <InvoiceForm onClose={() => setShowInvoiceForm(false)} />
+      )}
     </div>
   );
 };
