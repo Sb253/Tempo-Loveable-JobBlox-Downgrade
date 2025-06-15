@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useCompanyData } from "@/hooks/useCompanyData";
+import { ExternalLink } from "lucide-react";
 
 interface LineItem {
   id: string;
@@ -51,6 +51,23 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
     }
   };
 
+  const renderClientPortalLink = () => (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold text-blue-900 mb-1">Access Your Project Portal</h4>
+          <p className="text-blue-800 text-sm">
+            View project updates, photos, and documents in your personalized client portal.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-blue-600 font-medium">
+          <ExternalLink className="h-4 w-4" />
+          <span>Client Portal</span>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderModernTemplate = () => (
     <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header */}
@@ -73,6 +90,9 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
           )}
         </div>
       </div>
+
+      {/* Client Portal Link */}
+      {renderClientPortalLink()}
 
       {/* Company & Customer Info */}
       <div className="grid grid-cols-2 gap-8 mb-8">
@@ -183,6 +203,22 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
         )}
         <h1 className="text-3xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
         <div className="text-xl text-gray-700">#{data.quoteNumber}</div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="border-2 border-blue-600 bg-blue-50 p-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-blue-900 mb-1">CLIENT PORTAL ACCESS</h4>
+            <p className="text-blue-800 text-sm">
+              Access your project portal for updates, photos, and documents.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-blue-600 font-bold">
+            <ExternalLink className="h-4 w-4" />
+            <span>PORTAL</span>
+          </div>
+        </div>
       </div>
 
       {/* Company & Customer Info */}
@@ -309,6 +345,22 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
               Valid until {new Date(data.validUntil).toLocaleDateString()}
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="bg-gray-50 border-l-4 border-gray-400 p-4 mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500 mb-1">CLIENT PORTAL</div>
+            <p className="text-gray-700 text-sm">
+              Access your personalized project portal for real-time updates
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <ExternalLink className="h-4 w-4" />
+            <span className="text-sm">Portal Access</span>
+          </div>
         </div>
       </div>
 

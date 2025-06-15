@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { ExternalLink } from "lucide-react";
 
 interface LineItem {
   id: string;
@@ -89,6 +89,23 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
     );
   };
 
+  const renderClientPortalLink = () => (
+    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold text-green-900 mb-1">Client Portal Access</h4>
+          <p className="text-green-800 text-sm">
+            View your project details, payment history, and documents in your client portal.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-green-600 font-medium">
+          <ExternalLink className="h-4 w-4" />
+          <span>Access Portal</span>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderModernTemplate = () => (
     <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header */}
@@ -110,6 +127,9 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Client Portal Link */}
+      {renderClientPortalLink()}
 
       {/* Company & Customer Info */}
       <div className="grid grid-cols-2 gap-8 mb-8">
@@ -206,6 +226,22 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
         )}
         <h1 className="text-3xl font-bold text-gray-900 mb-2">INVOICE</h1>
         <div className="text-xl text-gray-700">#{data.invoiceNumber}</div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="border-2 border-green-600 bg-green-50 p-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-green-900 mb-1">CLIENT PORTAL</h4>
+            <p className="text-green-800 text-sm">
+              Access your project portal and payment history.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-green-600 font-bold">
+            <ExternalLink className="h-4 w-4" />
+            <span>PORTAL</span>
+          </div>
+        </div>
       </div>
 
       {/* Company & Customer Info */}
@@ -315,6 +351,22 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
           <div className="text-3xl font-light text-gray-900 mb-1">#{data.invoiceNumber}</div>
           <div className="text-sm text-gray-500">
             {new Date(data.issueDate).toLocaleDateString()} - {new Date(data.dueDate).toLocaleDateString()}
+          </div>
+        </div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="bg-gray-50 border-l-4 border-gray-400 p-4 mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500 mb-1">CLIENT PORTAL</div>
+            <p className="text-gray-700 text-sm">
+              Access your project portal and account information
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <ExternalLink className="h-4 w-4" />
+            <span className="text-sm">Portal</span>
           </div>
         </div>
       </div>
@@ -430,6 +482,25 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({
           <div className="text-gray-600 space-y-2 text-sm">
             <div>Issued: {new Date(data.issueDate).toLocaleDateString()}</div>
             <div>Due: {new Date(data.dueDate).toLocaleDateString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="rounded-xl p-6 mb-8 border-l-4" style={{ 
+        borderLeftColor: companySettings.accentColor,
+        backgroundColor: `${companySettings.accentColor}08`
+      }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-semibold mb-2" style={{ color: companySettings.primaryColor }}>Client Portal Access</h4>
+            <p className="text-gray-700 text-sm">
+              Access your personalized client portal for project updates and account information.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 font-medium" style={{ color: companySettings.secondaryColor }}>
+            <ExternalLink className="h-5 w-5" />
+            <span>Access Portal</span>
           </div>
         </div>
       </div>

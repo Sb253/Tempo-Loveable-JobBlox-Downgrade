@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { ExternalLink } from "lucide-react";
 
 interface EstimateLineItem {
   id: string;
@@ -89,6 +89,23 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
     );
   };
 
+  const renderClientPortalLink = () => (
+    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-semibold text-purple-900 mb-1">Client Portal Preview</h4>
+          <p className="text-purple-800 text-sm">
+            Once approved, access your project portal for real-time updates and communication.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-purple-600 font-medium">
+          <ExternalLink className="h-4 w-4" />
+          <span>Portal Info</span>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderModernTemplate = () => (
     <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header with gradient */}
@@ -111,6 +128,9 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Client Portal Link */}
+      {renderClientPortalLink()}
 
       {/* Company & Customer Info */}
       <div className="grid grid-cols-2 gap-8 mb-8">
@@ -209,6 +229,22 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         )}
         <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-wide">ESTIMATE</h1>
         <div className="text-xl text-gray-700 font-semibold">#{data.estimateNumber}</div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="border-2 border-purple-600 bg-purple-50 p-4 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-bold text-purple-900 mb-1">CLIENT PORTAL</h4>
+            <p className="text-purple-800 text-sm">
+              Project portal access available upon approval.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-purple-600 font-bold">
+            <ExternalLink className="h-4 w-4" />
+            <span>PORTAL</span>
+          </div>
+        </div>
       </div>
 
       {/* Company & Customer Info */}
@@ -317,6 +353,22 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
           <div className="text-sm text-gray-500 space-y-1">
             <div>{new Date(data.issueDate).toLocaleDateString()}</div>
             <div>Valid until {new Date(data.validUntil).toLocaleDateString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Client Portal Link */}
+      <div className="bg-gray-50 border-l-4 border-gray-400 p-4 mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500 mb-1">CLIENT PORTAL</div>
+            <p className="text-gray-700 text-sm">
+              Project portal access available upon estimate approval
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <ExternalLink className="h-4 w-4" />
+            <span className="text-sm">Portal Access</span>
           </div>
         </div>
       </div>
@@ -438,6 +490,25 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
         </div>
       </div>
 
+      {/* Client Portal Link */}
+      <div className="rounded-xl p-6 mb-8 border-l-4" style={{ 
+        borderLeftColor: companySettings.accentColor,
+        backgroundColor: `${companySettings.accentColor}08`
+      }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-semibold mb-2" style={{ color: companySettings.primaryColor }}>Client Portal Access</h4>
+            <p className="text-gray-700 text-sm">
+              Upon approval, you'll receive access to your personalized project portal.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 font-medium" style={{ color: companySettings.secondaryColor }}>
+            <ExternalLink className="h-5 w-5" />
+            <span>Portal Info</span>
+          </div>
+        </div>
+      </div>
+
       {/* Company & Customer Info */}
       <div className="grid grid-cols-2 gap-12 mb-12">
         <div className="relative p-6 rounded-lg border-l-4" style={{ 
@@ -479,7 +550,7 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
                 <td className="py-5 px-6 text-gray-800 font-medium">{item.description}</td>
                 <td className="py-5 px-6 text-right text-gray-600">{item.quantity}</td>
                 <td className="py-5 px-6 text-right text-gray-600">${item.rate.toFixed(2)}</td>
-                <td className="py-5 px-6 text-right text-gray-800 font-semibold">${item.amount.toFixed(2)}</td>
+                <td className="py-5 px-6 text-right text-gray-900 font-medium">${item.amount.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
