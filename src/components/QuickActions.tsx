@@ -98,7 +98,7 @@ export const QuickActions = ({
       description: 'Create proposal',
       icon: FileCheck,
       color: 'from-orange-500 to-orange-600',
-      onClick: onProjectProposal || (() => {})
+      onClick: () => onSectionChange?.('estimates')
     }
   ];
 
@@ -109,7 +109,7 @@ export const QuickActions = ({
       description: 'Book new appointment',
       icon: Calendar,
       color: 'from-blue-500 to-blue-600',
-      onClick: onScheduleJob || (() => {})
+      onClick: () => onSectionChange?.('schedule')
     },
     {
       id: 'customer',
@@ -125,7 +125,7 @@ export const QuickActions = ({
       description: 'New project quote',
       icon: Calculator,
       color: 'from-purple-500 to-purple-600',
-      onClick: onCreateEstimate || (() => {})
+      onClick: () => onSectionChange?.('estimates')
     },
     {
       id: 'invoice',
@@ -133,7 +133,7 @@ export const QuickActions = ({
       description: 'Bill for services',
       icon: FileText,
       color: 'from-orange-500 to-orange-600',
-      onClick: onCreateInvoice || (() => {})
+      onClick: () => onSectionChange?.('invoices')
     },
     {
       id: 'payment',
@@ -141,7 +141,7 @@ export const QuickActions = ({
       description: 'Accept payment',
       icon: CreditCard,
       color: 'from-emerald-500 to-emerald-600',
-      onClick: onProcessPayment || (() => {})
+      onClick: () => onSectionChange?.('payment-integration')
     },
     {
       id: 'map',
@@ -149,7 +149,7 @@ export const QuickActions = ({
       description: 'Job locations',
       icon: MapPin,
       color: 'from-red-500 to-red-600',
-      onClick: onViewMap || (() => {})
+      onClick: () => onSectionChange?.('map-view')
     },
     {
       id: 'quote',
@@ -157,7 +157,7 @@ export const QuickActions = ({
       description: 'Project proposal',
       icon: ClipboardList,
       color: 'from-indigo-500 to-indigo-600',
-      onClick: onCreateQuote || (() => {})
+      onClick: () => onSectionChange?.('estimates')
     },
     {
       id: 'jobs',
@@ -165,7 +165,7 @@ export const QuickActions = ({
       description: 'View all projects',
       icon: Wrench,
       color: 'from-cyan-500 to-cyan-600',
-      onClick: onManageJobs || (() => {})
+      onClick: () => onSectionChange?.('jobs')
     }
   ];
 

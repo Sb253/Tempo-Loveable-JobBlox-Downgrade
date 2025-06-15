@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QuickActions } from "./QuickActions";
 import { FinancialSummaryCard } from "./FinancialSummaryCard";
@@ -181,8 +180,14 @@ export const Dashboard = ({ onSectionChange }: DashboardProps) => {
         onAddCustomer={() => onSectionChange?.('customer-form')}
         onCreateEstimate={() => onSectionChange?.('estimates')}
         onCreateInvoice={() => onSectionChange?.('invoices')}
+        onProcessPayment={() => onSectionChange?.('payment-integration')}
         onViewMap={() => onSectionChange?.('map-view')}
+        onCreateQuote={() => onSectionChange?.('estimates')}
         onManageJobs={() => onSectionChange?.('jobs')}
+        onInitialConsultation={() => onSectionChange?.('client-appointment')}
+        onSiteAssessment={() => onSectionChange?.('client-appointment')}
+        onClientInformation={() => onSectionChange?.('customer-form')}
+        onProjectProposal={() => onSectionChange?.('estimates')}
       />
 
       {/* Activity and Jobs Grid */}
