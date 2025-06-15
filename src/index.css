@@ -29,8 +29,8 @@
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --chart-4: 27 87% 67%;
+    --chart-5: 340 75% 55%;
   }
 
   .dark {
@@ -70,7 +70,7 @@
   }
 }
 
-/* Enhanced colorful UI styles - no more yellow */
+/* Enhanced colorful UI styles - yellow removed */
 .colorful-text {
   background: linear-gradient(135deg, #8B5CF6, #EC4899, #3B82F6, #10B981);
   -webkit-background-clip: text;
