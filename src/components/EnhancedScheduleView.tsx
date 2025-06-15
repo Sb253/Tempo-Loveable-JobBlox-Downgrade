@@ -149,7 +149,7 @@ export const EnhancedScheduleView = () => {
                                       <div className="mt-1">
                                         <div className="text-sm font-medium">{jobInSlot.title}</div>
                                         <div className="text-xs text-muted-foreground">{jobInSlot.customer}</div>
-                                        <Badge className={`${getStatusColor(jobInSlot.status)} mt-1`} size="sm">
+                                        <Badge className={`${getStatusColor(jobInSlot.status)} mt-1 text-xs`}>
                                           {jobInSlot.status}
                                         </Badge>
                                       </div>
