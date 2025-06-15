@@ -26,6 +26,7 @@ import { RadiusAssignment } from "./RadiusAssignment";
 import { EmployeeLocationManager } from "./EmployeeLocationManager";
 import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
+import { Communication } from "./Communication";
 
 interface SidebarSection {
   id: string;
@@ -175,7 +176,7 @@ export const AppLayout = () => {
       case 'photos':
         return <PhotoDocumentation />;
       case 'communication':
-        return <EmployeeChat />;
+        return <Communication />;
       case 'reviews':
         return <ReviewManagement />;
       case 'safety':
