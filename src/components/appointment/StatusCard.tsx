@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Truck, Play, Square, Mail, MessageCircle } from "lucide-react";
+import { Truck, Play, Square, Mail, MessageCircle, Phone } from "lucide-react";
 
 interface StatusCardProps {
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled' | 'no-show';
@@ -40,6 +40,11 @@ export const StatusCard = ({
 }: StatusCardProps) => {
   const { toast } = useToast();
 
+  // Determine available communication methods
+  const hasEmail = appointment.email && appointment.email.includes('@');
+  const hasPhone = appointment.phone && appointment.phone.length > 0;
+  const canText = hasPhone; // Assume all phones can receive texts
+
   const sendOnMyWayNotification = async () => {
     try {
       const eta = new Date(Date.now() + 15 * 60 * 1000);
@@ -47,12 +52,19 @@ export const StatusCard = ({
       
       const message = `Hi ${appointment.customer}, this is ${appointment.technician} from Construction CRM. I'm on my way to your location for your ${appointment.scheduledTime} appointment. I should arrive around ${etaString}. Please text back if you have any questions!`;
 
-      console.log(`Sending SMS to ${appointment.phone}: ${message}`);
-      console.log(`Sending email to ${appointment.email}: ${message}`);
+      const methods = [];
+      if (canText) {
+        console.log(`Sending SMS to ${appointment.phone}: ${message}`);
+        methods.push('SMS');
+      }
+      if (hasEmail) {
+        console.log(`Sending email to ${appointment.email}: ${message}`);
+        methods.push('Email');
+      }
 
       toast({
         title: "Notification Sent",
-        description: `"On My Way" message sent to ${appointment.customer} via SMS and email`,
+        description: `"On My Way" message sent to ${appointment.customer} via ${methods.join(' and ')}`,
       });
     } catch (error) {
       toast({
@@ -79,15 +91,18 @@ export const StatusCard = ({
             <Button
               onClick={sendOnMyWayNotification}
               variant="outline"
-              className="w-full h-12 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-950/40 flex flex-col gap-1"
+              className="w-full h-16 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-950/40 flex flex-col items-center justify-center gap-1"
               disabled={status === 'completed'}
             >
-              <div className="flex items-center gap-1">
-                <Truck className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                <Mail className="h-3 w-3 text-orange-600 dark:text-orange-400" />
-                <MessageCircle className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+              <div className="flex items-center gap-2">
+                <Truck className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">ON MY WAY</span>
               </div>
-              <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">ON MY WAY</span>
+              <div className="flex gap-2">
+                {canText && <MessageCircle className="h-3 w-3 text-orange-500 dark:text-orange-300" />}
+                {hasEmail && <Mail className="h-3 w-3 text-orange-500 dark:text-orange-300" />}
+                {hasPhone && <Phone className="h-3 w-3 text-orange-500 dark:text-orange-300" />}
+              </div>
             </Button>
           </div>
           
@@ -95,7 +110,7 @@ export const StatusCard = ({
             <Button
               onClick={status === 'scheduled' ? onStartTimeTracking : 
                        timeTracking?.isActive ? onPauseTimeTracking : onStartTimeTracking}
-              className={`w-full h-12 ${
+              className={`w-full h-16 ${
                 timeTracking?.isActive 
                   ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700' 
                   : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700'
@@ -112,7 +127,7 @@ export const StatusCard = ({
             <Button
               onClick={onCompleteAppointment}
               variant="outline"
-              className="w-full h-12 bg-muted/50 border-border hover:bg-muted flex flex-col gap-1"
+              className="w-full h-16 bg-muted/50 border-border hover:bg-muted flex flex-col gap-1"
               disabled={status === 'completed'}
             >
               <Square className="h-4 w-4 text-muted-foreground" />

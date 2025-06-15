@@ -22,18 +22,18 @@ export const CustomerCard = ({ customer, address, phone, email }: CustomerCardPr
       <CardContent>
         <div className="relative mb-4 rounded-lg overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=400&h=200&fit=crop" 
-            alt="Property at 1234 Maple Street" 
+            src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=200&fit=crop" 
+            alt={`Property at ${address}`} 
             className="w-full h-40 object-cover"
           />
           <div className="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm">
-            $1,755,773
+            $485,000
           </div>
           <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
-            Built in 1926
+            Built in 1985
           </div>
           <div className="absolute bottom-2 left-2 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-xs">
-            4 Beds | 2.0 Baths | 2710 Sq. ft.
+            3 Beds | 2.5 Baths | 1850 Sq. ft.
           </div>
         </div>
         
