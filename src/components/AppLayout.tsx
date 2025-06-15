@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,12 +6,10 @@ import { Dashboard } from "./Dashboard";
 import { CustomWidgetList } from "./CustomWidgetList";
 import { CustomCardList } from "./CustomCardList";
 import { CompanySettings } from "./CompanySettings";
-import { NavigationSettings } from "./NavigationSettings";
 import { TeamManagement } from "./TeamManagement";
 import { SubcontractorManagement } from "./SubcontractorManagement";
 import { MapView } from "./MapView";
 import { ClientAppointment } from "./ClientAppointment";
-import { Sidebar } from "./Sidebar";
 import { MegaMenuSidebar } from "./MegaMenuSidebar";
 import { MobileSettings } from "./MobileSettings";
 import { CustomerList } from "./CustomerList";
@@ -27,6 +24,8 @@ import { AdvancedInventorySystem } from "./AdvancedInventorySystem";
 import { FinancialAnalyticsDashboard } from "./FinancialAnalyticsDashboard";
 import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
 import { BranchManagement } from "./BranchManagement";
+import { RadiusAssignment } from "./RadiusAssignment";
+import { EmployeeLocationManager } from "./EmployeeLocationManager";
 
 interface SidebarSection {
   id: string;
@@ -76,7 +75,9 @@ const sections: SidebarSection[] = [
   { id: 'predictive-analytics', label: 'Predictive Analytics', icon: Target },
   { id: 'advanced-reporting', label: 'Advanced Reports', icon: BarChart3 },
   { id: 'quickbooks-integration', label: 'QuickBooks', icon: Database },
-  { id: 'accounting-integration', label: 'Accounting', icon: Calculator }
+  { id: 'accounting-integration', label: 'Accounting', icon: Calculator },
+  { id: 'radius-assignment', label: 'Radius Assignment', icon: Map },
+  { id: 'employee-locations', label: 'Employee Locations', icon: Users }
 ];
 
 // Sample job data with appointments and jobs
@@ -125,18 +126,18 @@ const jobsAndAppointments = [
 
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('client-appointment');
-  const [showNavigationSettings, setShowNavigationSettings] = useState(false);
-  const [useMegaMenu, setUseMegaMenu] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    const savedLayout = localStorage.getItem('sidebarLayout');
-    if (savedLayout === 'mega-menu') {
-      setUseMegaMenu(true);
+    const savedCollapsedState = localStorage.getItem('sidebarCollapsed');
+    if (savedCollapsedState) {
+      setSidebarCollapsed(JSON.parse(savedCollapsedState));
     }
   }, []);
 
-  const handleNavigationSettings = () => {
-    setShowNavigationSettings(true);
+  const handleSidebarToggle = (collapsed: boolean) => {
+    setSidebarCollapsed(collapsed);
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
   };
 
   const renderSection = () => {
@@ -225,6 +226,10 @@ export const AppLayout = () => {
         return <QuickBooksIntegration />;
       case 'accounting-integration':
         return <AccountingIntegration />;
+      case 'radius-assignment':
+        return <RadiusAssignment />;
+      case 'employee-locations':
+        return <EmployeeLocationManager />;
       default:
         return (
           <div className="p-6">
@@ -248,36 +253,22 @@ export const AppLayout = () => {
     }
   };
 
-  const sidebarWidth = useMegaMenu ? 320 : 256;
+  const sidebarWidth = sidebarCollapsed ? 80 : 320;
 
   return (
     <div className="min-h-screen bg-background flex">
-      {useMegaMenu ? (
-        <MegaMenuSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          sections={sections}
-          isVisible={true}
-        />
-      ) : (
-        <Sidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          sections={sections}
-          isVisible={true}
-        />
-      )}
+      <MegaMenuSidebar
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        sections={sections}
+        isVisible={true}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={handleSidebarToggle}
+      />
 
-      <main className="flex-1" style={{ marginLeft: `${sidebarWidth}px` }}>
+      <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
         {renderSection()}
       </main>
-
-      <NavigationSettings
-        open={showNavigationSettings}
-        onOpenChange={setShowNavigationSettings}
-        currentLayout="sidebar"
-        onLayoutChange={() => {}}
-      />
     </div>
   );
 };
@@ -589,6 +580,28 @@ const AccountingIntegration = () => (
     <Card>
       <CardContent className="p-6">
         <p>Accounting and financial management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const RadiusAssignment = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Radius Assignment</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Radius assignment and geofencing system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EmployeeLocationManager = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Employee Locations</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Employee location tracking and management system will be implemented here.</p>
       </CardContent>
     </Card>
   </div>

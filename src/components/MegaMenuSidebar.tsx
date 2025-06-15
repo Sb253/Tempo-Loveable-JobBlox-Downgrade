@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LucideIcon, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
 
 interface SidebarSection {
   id: string;
@@ -24,6 +24,8 @@ interface MegaMenuSidebarProps {
   onSectionChange: (section: string) => void;
   sections: SidebarSection[];
   isVisible?: boolean;
+  collapsed?: boolean;
+  onToggleCollapse?: (collapsed: boolean) => void;
 }
 
 interface CompanyData {
@@ -35,7 +37,9 @@ export const MegaMenuSidebar = ({
   activeSection, 
   onSectionChange, 
   sections, 
-  isVisible = true 
+  isVisible = true,
+  collapsed = false,
+  onToggleCollapse
 }: MegaMenuSidebarProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'Construction CRM',
@@ -83,7 +87,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'team-management')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles', 'advanced-inventory'].includes(s.id)
+        ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
       )
     },
     {
@@ -139,11 +143,19 @@ export const MegaMenuSidebar = ({
   }, [activeSection]);
 
   const toggleGroup = (groupLabel: string) => {
-    setOpenGroups(prev => 
-      prev.includes(groupLabel) 
-        ? prev.filter(g => g !== groupLabel)
-        : [...prev, groupLabel]
-    );
+    if (!collapsed) {
+      setOpenGroups(prev => 
+        prev.includes(groupLabel) 
+          ? prev.filter(g => g !== groupLabel)
+          : [...prev, groupLabel]
+      );
+    }
+  };
+
+  const handleToggleCollapse = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse(!collapsed);
+    }
   };
 
   if (!isVisible) {
@@ -151,9 +163,12 @@ export const MegaMenuSidebar = ({
   }
 
   return (
-    <div className="fixed left-0 top-0 h-full w-80 bg-card border-r border-border z-40 flex flex-col">
+    <div className={cn(
+      "fixed left-0 top-0 h-full bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
+      collapsed ? "w-20" : "w-80"
+    )}>
       {/* Header */}
-      <div className="p-6 border-b border-border">
+      <div className="p-6 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
           {companyData.logo ? (
             <img 
@@ -164,8 +179,18 @@ export const MegaMenuSidebar = ({
           ) : (
             <Building2 className="h-8 w-8 text-primary" />
           )}
-          <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
+          {!collapsed && (
+            <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
+          )}
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleToggleCollapse}
+          className="h-8 w-8"
+        >
+          {collapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+        </Button>
       </div>
       
       {/* Navigation */}
@@ -174,8 +199,31 @@ export const MegaMenuSidebar = ({
           {menuGroups.map((group) => {
             if (group.items.length === 0) return null;
             
-            const isOpen = openGroups.includes(group.label) || group.defaultOpen;
+            const isOpen = (!collapsed && openGroups.includes(group.label)) || group.defaultOpen;
             const GroupIcon = group.icon;
+            
+            if (collapsed) {
+              // In collapsed mode, show only icons for groups that have active items
+              const hasActiveItem = group.items.some(item => item.id === activeSection);
+              if (!hasActiveItem) return null;
+              
+              const activeItem = group.items.find(item => item.id === activeSection);
+              if (!activeItem) return null;
+              
+              const ActiveIcon = activeItem.icon;
+              return (
+                <div key={group.label} className="flex justify-center py-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 bg-primary text-primary-foreground"
+                    title={activeItem.label}
+                  >
+                    <ActiveIcon className="h-5 w-5" />
+                  </Button>
+                </div>
+              );
+            }
             
             return (
               <Collapsible key={group.label} open={isOpen} onOpenChange={() => toggleGroup(group.label)}>
