@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Receipt, Save, Upload } from "lucide-react";
+import { FileText, Receipt, Save, Upload, Hash } from "lucide-react";
 
 interface CustomizationSettings {
   // Estimate Settings
@@ -21,6 +21,12 @@ interface CustomizationSettings {
   showEstimateDate: boolean;
   showValidUntil: boolean;
   
+  // Estimate Numbering
+  estimateNumberPrefix: string;
+  estimateNumberFormat: 'sequential' | 'date-based' | 'custom';
+  estimateStartNumber: number;
+  estimateNumberLength: number;
+  
   // Invoice Settings
   invoiceTitle: string;
   invoiceSubtitle: string;
@@ -31,6 +37,12 @@ interface CustomizationSettings {
   showInvoiceDate: boolean;
   showDueDate: boolean;
   showPaymentTerms: boolean;
+  
+  // Invoice Numbering
+  invoiceNumberPrefix: string;
+  invoiceNumberFormat: 'sequential' | 'date-based' | 'custom';
+  invoiceStartNumber: number;
+  invoiceNumberLength: number;
   
   // Shared Settings
   headerLogo: string;
@@ -54,6 +66,12 @@ export const EstimateInvoiceCustomization = () => {
     showEstimateDate: true,
     showValidUntil: true,
     
+    // Estimate Numbering
+    estimateNumberPrefix: 'EST',
+    estimateNumberFormat: 'sequential',
+    estimateStartNumber: 1000,
+    estimateNumberLength: 4,
+    
     invoiceTitle: 'Invoice',
     invoiceSubtitle: 'Professional Construction Invoice',
     invoiceTerms: 'Payment is due within 30 days of invoice date.',
@@ -63,6 +81,12 @@ export const EstimateInvoiceCustomization = () => {
     showInvoiceDate: true,
     showDueDate: true,
     showPaymentTerms: true,
+    
+    // Invoice Numbering
+    invoiceNumberPrefix: 'INV',
+    invoiceNumberFormat: 'sequential',
+    invoiceStartNumber: 1000,
+    invoiceNumberLength: 4,
     
     headerLogo: '',
     footerText: '',
@@ -78,6 +102,27 @@ export const EstimateInvoiceCustomization = () => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const generatePreviewNumber = (type: 'estimate' | 'invoice') => {
+    const prefix = type === 'estimate' ? settings.estimateNumberPrefix : settings.invoiceNumberPrefix;
+    const format = type === 'estimate' ? settings.estimateNumberFormat : settings.invoiceNumberFormat;
+    const startNumber = type === 'estimate' ? settings.estimateStartNumber : settings.invoiceStartNumber;
+    const length = type === 'estimate' ? settings.estimateNumberLength : settings.invoiceNumberLength;
+
+    switch (format) {
+      case 'sequential':
+        return `${prefix}-${startNumber.toString().padStart(length, '0')}`;
+      case 'date-based':
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        return `${prefix}-${year}${month}-${startNumber.toString().padStart(length, '0')}`;
+      case 'custom':
+        return `${prefix}-${startNumber.toString().padStart(length, '0')}`;
+      default:
+        return `${prefix}-${startNumber}`;
+    }
   };
 
   const handleSave = () => {
@@ -113,9 +158,10 @@ export const EstimateInvoiceCustomization = () => {
       </div>
 
       <Tabs defaultValue="estimates" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="estimates">Estimates</TabsTrigger>
           <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          <TabsTrigger value="numbering">Numbering</TabsTrigger>
           <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
 
@@ -307,6 +353,146 @@ export const EstimateInvoiceCustomization = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="numbering" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Estimate Numbering */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="h-5 w-5" />
+                  Estimate Numbering
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="estimateNumberPrefix">Number Prefix</Label>
+                  <Input
+                    id="estimateNumberPrefix"
+                    value={settings.estimateNumberPrefix}
+                    onChange={(e) => handleInputChange('estimateNumberPrefix', e.target.value)}
+                    placeholder="EST"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="estimateNumberFormat">Numbering Format</Label>
+                  <Select 
+                    value={settings.estimateNumberFormat} 
+                    onValueChange={(value) => handleInputChange('estimateNumberFormat', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sequential">Sequential (EST-0001)</SelectItem>
+                      <SelectItem value="date-based">Date-based (EST-202412-0001)</SelectItem>
+                      <SelectItem value="custom">Custom Format</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="estimateStartNumber">Starting Number</Label>
+                    <Input
+                      id="estimateStartNumber"
+                      type="number"
+                      value={settings.estimateStartNumber}
+                      onChange={(e) => handleInputChange('estimateStartNumber', parseInt(e.target.value) || 1000)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="estimateNumberLength">Number Length</Label>
+                    <Input
+                      id="estimateNumberLength"
+                      type="number"
+                      min="3"
+                      max="8"
+                      value={settings.estimateNumberLength}
+                      onChange={(e) => handleInputChange('estimateNumberLength', parseInt(e.target.value) || 4)}
+                    />
+                  </div>
+                </div>
+
+                <div className="p-4 bg-muted rounded-lg">
+                  <Label className="text-sm font-medium">Preview:</Label>
+                  <div className="text-lg font-mono mt-1">
+                    {generatePreviewNumber('estimate')}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Invoice Numbering */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="h-5 w-5" />
+                  Invoice Numbering
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="invoiceNumberPrefix">Number Prefix</Label>
+                  <Input
+                    id="invoiceNumberPrefix"
+                    value={settings.invoiceNumberPrefix}
+                    onChange={(e) => handleInputChange('invoiceNumberPrefix', e.target.value)}
+                    placeholder="INV"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="invoiceNumberFormat">Numbering Format</Label>
+                  <Select 
+                    value={settings.invoiceNumberFormat} 
+                    onValueChange={(value) => handleInputChange('invoiceNumberFormat', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sequential">Sequential (INV-0001)</SelectItem>
+                      <SelectItem value="date-based">Date-based (INV-202412-0001)</SelectItem>
+                      <SelectItem value="custom">Custom Format</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceStartNumber">Starting Number</Label>
+                    <Input
+                      id="invoiceStartNumber"
+                      type="number"
+                      value={settings.invoiceStartNumber}
+                      onChange={(e) => handleInputChange('invoiceStartNumber', parseInt(e.target.value) || 1000)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceNumberLength">Number Length</Label>
+                    <Input
+                      id="invoiceNumberLength"
+                      type="number"
+                      min="3"
+                      max="8"
+                      value={settings.invoiceNumberLength}
+                      onChange={(e) => handleInputChange('invoiceNumberLength', parseInt(e.target.value) || 4)}
+                    />
+                  </div>
+                </div>
+
+                <div className="p-4 bg-muted rounded-lg">
+                  <Label className="text-sm font-medium">Preview:</Label>
+                  <div className="text-lg font-mono mt-1">
+                    {generatePreviewNumber('invoice')}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="general" className="space-y-4">
