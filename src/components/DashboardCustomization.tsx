@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,10 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { GripVertical, Eye, EyeOff, Palette, Layout, Grid3X3, Settings } from "lucide-react";
+import { WidgetCustomization } from "./WidgetCustomization";
+import { Palette, Layout, Grid3X3, Settings } from "lucide-react";
 
 interface DashboardWidget {
   id: string;
@@ -18,6 +16,8 @@ interface DashboardWidget {
   order: number;
   size?: 'small' | 'medium' | 'large' | 'full-width';
   refreshInterval?: number;
+  style?: 'default' | 'gradient' | 'minimal' | 'bordered';
+  color?: string;
 }
 
 interface DashboardTheme {
@@ -43,56 +43,18 @@ export const DashboardCustomization = ({
   theme = { primaryColor: 'blue', backgroundColor: 'white', cardStyle: 'default' },
   onThemeChange
 }: DashboardCustomizationProps) => {
-  const [localWidgets, setLocalWidgets] = useState<DashboardWidget[]>(widgets);
   const [localTheme, setLocalTheme] = useState<DashboardTheme>(theme);
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-
-    const items = Array.from(localWidgets);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    const updatedItems = items.map((item, index) => ({
-      ...item,
-      order: index
-    }));
-
-    setLocalWidgets(updatedItems);
-  };
-
-  const toggleWidget = (id: string) => {
-    setLocalWidgets(prev => 
-      prev.map(widget => 
-        widget.id === id 
-          ? { ...widget, enabled: !widget.enabled }
-          : widget
-      )
-    );
-  };
-
-  const updateWidgetSize = (id: string, size: 'small' | 'medium' | 'large' | 'full-width') => {
-    setLocalWidgets(prev => 
-      prev.map(widget => 
-        widget.id === id 
-          ? { ...widget, size }
-          : widget
-      )
-    );
-  };
-
-  const updateRefreshInterval = (id: string, interval: number) => {
-    setLocalWidgets(prev => 
-      prev.map(widget => 
-        widget.id === id 
-          ? { ...widget, refreshInterval: interval }
-          : widget
-      )
-    );
-  };
+  // Convert widgets to the new format with defaults
+  const enhancedWidgets = widgets.map(widget => ({
+    ...widget,
+    size: widget.size || 'medium' as const,
+    refreshInterval: widget.refreshInterval || 30,
+    style: widget.style || 'default' as const,
+    color: widget.color || 'blue'
+  }));
 
   const handleSave = () => {
-    onWidgetsChange(localWidgets);
     if (onThemeChange) {
       onThemeChange(localTheme);
       localStorage.setItem('dashboardTheme', JSON.stringify(localTheme));
@@ -106,24 +68,26 @@ export const DashboardCustomization = ({
       enabled: true,
       order: index,
       size: 'medium' as const,
-      refreshInterval: 30
+      refreshInterval: 30,
+      style: 'default' as const,
+      color: 'blue'
     }));
-    setLocalWidgets(defaultWidgets);
+    onWidgetsChange(defaultWidgets);
     setLocalTheme({ primaryColor: 'blue', backgroundColor: 'white', cardStyle: 'default' });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-background to-primary/5">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Palette className="h-5 w-5" />
+          <DialogTitle className="flex items-center gap-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <Palette className="h-5 w-5 text-primary" />
             Customize Dashboard
           </DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="widgets" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-primary/10 to-primary/5">
             <TabsTrigger value="widgets" className="flex items-center gap-2">
               <Grid3X3 className="h-4 w-4" />
               Widgets
@@ -139,97 +103,10 @@ export const DashboardCustomization = ({
           </TabsList>
 
           <TabsContent value="widgets" className="space-y-4">
-            <div>
-              <Label className="text-base font-medium">Dashboard Widgets</Label>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag to reorder, toggle visibility, and configure widget settings
-              </p>
-            </div>
-
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="widgets">
-                {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
-                    {localWidgets
-                      .sort((a, b) => a.order - b.order)
-                      .map((widget, index) => (
-                      <Draggable key={widget.id} draggableId={widget.id} index={index}>
-                        {(provided, snapshot) => (
-                          <Card
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`transition-shadow ${
-                              snapshot.isDragging ? 'shadow-lg' : ''
-                            }`}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  <div
-                                    {...provided.dragHandleProps}
-                                    className="cursor-grab hover:text-primary"
-                                  >
-                                    <GripVertical className="h-5 w-5" />
-                                  </div>
-                                  <span className="font-medium">{widget.title}</span>
-                                </div>
-                                
-                                <div className="flex items-center space-x-4">
-                                  <div className="flex items-center space-x-2">
-                                    <Label className="text-xs">Size:</Label>
-                                    <Select
-                                      value={widget.size || 'medium'}
-                                      onValueChange={(value: 'small' | 'medium' | 'large' | 'full-width') => 
-                                        updateWidgetSize(widget.id, value)
-                                      }
-                                    >
-                                      <SelectTrigger className="w-24 h-8">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="small">Small</SelectItem>
-                                        <SelectItem value="medium">Medium</SelectItem>
-                                        <SelectItem value="large">Large</SelectItem>
-                                        <SelectItem value="full-width">Full</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  <div className="flex items-center space-x-2">
-                                    <Label className="text-xs">Refresh (s):</Label>
-                                    <Input
-                                      type="number"
-                                      value={widget.refreshInterval || 30}
-                                      onChange={(e) => updateRefreshInterval(widget.id, parseInt(e.target.value))}
-                                      className="w-16 h-8"
-                                      min="5"
-                                      max="300"
-                                    />
-                                  </div>
-
-                                  <div className="flex items-center space-x-2">
-                                    {widget.enabled ? (
-                                      <Eye className="h-4 w-4 text-green-600" />
-                                    ) : (
-                                      <EyeOff className="h-4 w-4 text-gray-400" />
-                                    )}
-                                    <Switch
-                                      checked={widget.enabled}
-                                      onCheckedChange={() => toggleWidget(widget.id)}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <WidgetCustomization 
+              widgets={enhancedWidgets}
+              onWidgetsChange={onWidgetsChange}
+            />
           </TabsContent>
 
           <TabsContent value="layout" className="space-y-4">
@@ -363,7 +240,7 @@ export const DashboardCustomization = ({
         </Tabs>
 
         <div className="flex justify-between pt-4">
-          <Button variant="outline" onClick={resetToDefaults}>
+          <Button variant="outline" onClick={resetToDefaults} className="border-primary/20">
             <Settings className="h-4 w-4 mr-2" />
             Reset to Defaults
           </Button>
@@ -372,7 +249,7 @@ export const DashboardCustomization = ({
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>
+            <Button onClick={handleSave} className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
               Save Changes
             </Button>
           </div>
