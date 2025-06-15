@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Building, Users, FileText, Calendar, Settings, DollarSign, User } from "lucide-react";
+import { Building, Users, FileText, Calendar, Settings, DollarSign, User, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Import components
 import { Dashboard } from "@/components/Dashboard";
+import { Pipeline } from "@/components/Pipeline";
 import { CustomerForm } from "@/components/CustomerForm";
 import { CustomerList } from "@/components/CustomerList";
 import { JobForm } from "@/components/JobForm";
