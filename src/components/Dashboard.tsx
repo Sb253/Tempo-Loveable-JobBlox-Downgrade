@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DashboardCustomization } from "./DashboardCustomization";
-import { NavigationToggle } from "./NavigationToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { QuickActions } from "./QuickActions";
 import { MapView } from "./MapView";
@@ -22,12 +20,7 @@ interface DashboardWidget {
   order: number;
 }
 
-interface DashboardProps {
-  currentLayout: 'sidebar' | 'menu';
-  onLayoutChange: (layout: 'sidebar' | 'menu') => void;
-}
-
-export const Dashboard = ({ currentLayout, onLayoutChange }: DashboardProps) => {
+export const Dashboard = () => {
   const { toast } = useToast();
   const [userName, setUserName] = useState('John');
   const [timezone, setTimezone] = useState('America/New_York');
@@ -67,7 +60,7 @@ export const Dashboard = ({ currentLayout, onLayoutChange }: DashboardProps) => 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
 
     return () => clearInterval(timer);
   }, []);
@@ -260,10 +253,6 @@ export const Dashboard = ({ currentLayout, onLayoutChange }: DashboardProps) => 
           </div>
           
           <div className="flex items-center gap-3">
-            <NavigationToggle 
-              currentLayout={currentLayout} 
-              onLayoutChange={onLayoutChange} 
-            />
             <ThemeToggle />
             <Button 
               variant="outline" 

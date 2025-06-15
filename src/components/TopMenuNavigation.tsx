@@ -57,13 +57,15 @@ export const TopMenuNavigation = ({
     return null;
   }
 
-  // Group sections into logical categories
+  // Group sections into logical categories with more complete organization
   const menuGroups = {
-    'Core': sections.slice(0, 4),
-    'Customer Management': sections.slice(4, 9),
-    'Financial': sections.slice(9, 16),
-    'Operations': sections.slice(16, -1),
-    'Settings': [sections[sections.length - 1]]
+    'Dashboard': sections.filter(s => ['dashboard', 'widgets', 'cards'].includes(s.id)),
+    'Customer Management': sections.filter(s => ['customers', 'customer-form', 'pipeline', 'communication', 'reviews'].includes(s.id)),
+    'Job Management': sections.filter(s => ['jobs', 'job-form', 'schedule', 'time-tracking', 'photos', 'safety', 'quality'].includes(s.id)),
+    'Financial': sections.filter(s => ['estimates', 'invoices', 'expenses', 'goals'].includes(s.id)),
+    'Resources': sections.filter(s => ['inventory', 'equipment', 'vehicles'].includes(s.id)),
+    'Reports & Analytics': sections.filter(s => ['reports', 'analytics', 'map-view'].includes(s.id)),
+    'System': sections.filter(s => ['notifications', 'company-settings', 'settings'].includes(s.id))
   };
 
   return (
@@ -84,11 +86,11 @@ export const TopMenuNavigation = ({
         </div>
 
         {/* Navigation Menu */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {Object.entries(menuGroups).map(([groupName, groupSections]) => (
             <DropdownMenu key={groupName}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1">
+                <Button variant="ghost" className="flex items-center gap-1 text-sm">
                   {groupName}
                   <ChevronDown className="h-3 w-3" />
                 </Button>
@@ -112,7 +114,7 @@ export const TopMenuNavigation = ({
                     </DropdownMenuItem>
                   );
                 })}
-                {groupName === 'Settings' && (
+                {groupName === 'System' && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
