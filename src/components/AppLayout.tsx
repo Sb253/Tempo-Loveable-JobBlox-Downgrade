@@ -124,42 +124,42 @@ const SettingsView = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Custom Integrations</h3>
           <div className="space-y-4">
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-lg bg-card">
               <h4 className="font-medium mb-2">QuickBooks Integration</h4>
               <p className="text-sm text-muted-foreground mb-3">Connect with QuickBooks for accounting sync</p>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+              <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
                 Configure QuickBooks
               </button>
             </div>
             
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-lg bg-card">
               <h4 className="font-medium mb-2">Zapier Integration</h4>
               <p className="text-sm text-muted-foreground mb-3">Automate workflows with 5000+ apps</p>
-              <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">
+              <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
                 Setup Zapier
               </button>
             </div>
 
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-lg bg-card">
               <h4 className="font-medium mb-2">Stripe Payment Processing</h4>
               <p className="text-sm text-muted-foreground mb-3">Accept online payments from customers</p>
-              <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600">
+              <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors">
                 Connect Stripe
               </button>
             </div>
 
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-lg bg-card">
               <h4 className="font-medium mb-2">Email Marketing</h4>
               <p className="text-sm text-muted-foreground mb-3">Connect with Mailchimp or Constant Contact</p>
-              <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+              <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
                 Setup Email Marketing
               </button>
             </div>
 
-            <div className="p-4 border rounded-lg">
+            <div className="p-4 border rounded-lg bg-card">
               <h4 className="font-medium mb-2">Custom API Integration</h4>
               <p className="text-sm text-muted-foreground mb-3">Connect with your custom systems via API</p>
-              <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+              <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
                 Add Custom API
               </button>
             </div>

@@ -45,11 +45,15 @@ export const TopMenuNavigation = ({
   useEffect(() => {
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
-      const data = JSON.parse(savedCompanyData);
-      setCompanyData({
-        name: data.name || 'Construction CRM',
-        logo: data.logo || null
-      });
+      try {
+        const data = JSON.parse(savedCompanyData);
+        setCompanyData({
+          name: data.name || 'Construction CRM',
+          logo: data.logo || null
+        });
+      } catch (error) {
+        console.error('Error parsing company data:', error);
+      }
     }
   }, []);
 
@@ -57,7 +61,7 @@ export const TopMenuNavigation = ({
     return null;
   }
 
-  // Group sections into logical categories with more complete organization
+  // Group sections into logical categories with complete organization
   const menuGroups = {
     'Dashboard': sections.filter(s => ['dashboard', 'widgets', 'cards'].includes(s.id)),
     'Customer Management': sections.filter(s => ['customers', 'customer-form', 'pipeline', 'communication', 'reviews'].includes(s.id)),
@@ -69,7 +73,7 @@ export const TopMenuNavigation = ({
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full border-b bg-background z-40">
+    <div className="fixed top-0 left-0 right-0 w-full border-b bg-background z-50">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Company Logo/Name */}
         <div className="flex items-center gap-3">
@@ -95,7 +99,11 @@ export const TopMenuNavigation = ({
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 bg-background border z-50">
+              <DropdownMenuContent 
+                align="start" 
+                className="w-56 bg-background border border-border shadow-lg z-[9999]"
+                sideOffset={4}
+              >
                 {groupSections.map((section) => {
                   const Icon = section.icon;
                   return (
@@ -105,12 +113,12 @@ export const TopMenuNavigation = ({
                         console.log('TopMenuNavigation: Section clicked:', section.id);
                         onSectionChange(section.id);
                       }}
-                      className={`flex items-center gap-3 cursor-pointer ${
-                        activeSection === section.id ? 'bg-accent' : ''
+                      className={`flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground ${
+                        activeSection === section.id ? 'bg-accent text-accent-foreground' : ''
                       }`}
                     >
                       <Icon className="h-4 w-4" />
-                      {section.label}
+                      <span>{section.label}</span>
                     </DropdownMenuItem>
                   );
                 })}
@@ -119,10 +127,10 @@ export const TopMenuNavigation = ({
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={onNavigationSettings}
-                      className="flex items-center gap-3 cursor-pointer"
+                      className="flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
                     >
                       <Settings className="h-4 w-4" />
-                      Navigation Settings
+                      <span>Navigation Settings</span>
                     </DropdownMenuItem>
                   </>
                 )}
