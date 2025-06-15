@@ -18,6 +18,8 @@ import { JobList } from "./JobList";
 import { InvoiceList } from "./InvoiceList";
 import { SchedulingDashboard } from "./SchedulingDashboard";
 import { EstimateList } from "./EstimateList";
+import { PhotoDocumentation } from "./PhotoDocumentation";
+import { MobileFeaturesDashboard } from "./MobileFeaturesDashboard";
 
 interface SidebarSection {
   id: string;
@@ -119,7 +121,7 @@ export const AppLayout = () => {
       case 'client-appointment':
         return <ClientAppointment />;
       case 'mobile-settings':
-        return <MobileSettings />;
+        return <MobileFeaturesDashboard />;
       case 'pipeline':
         return <Pipeline />;
       case 'customers':
