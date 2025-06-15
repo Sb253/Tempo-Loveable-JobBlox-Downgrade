@@ -1,513 +1,57 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, Users, Calendar, Briefcase, DollarSign, TrendingUp, Receipt, Menu, Zap, Wrench, Settings, Building2, FileText, CreditCard, UserCheck, BarChart3, MessageSquare, Calculator } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { CompanySettings } from "@/components/CompanySettings";
-import { CustomerList } from "@/components/CustomerList";
-import { JobList } from "@/components/JobList";
-import { ScheduleView } from "@/components/ScheduleView";
-import { CustomerForm } from "@/components/CustomerForm";
-import { JobForm } from "@/components/JobForm";
-import { EstimateList } from "@/components/EstimateList";
-import { InvoiceList } from "@/components/InvoiceList";
-import { EnhancedScheduleView } from "@/components/EnhancedScheduleView";
-import { ExpenseList } from "@/components/ExpenseList";
-import { PaymentProcessing } from "@/components/PaymentProcessing";
-import { ReportsView } from "@/components/ReportsView";
-import { TeamManagement } from "@/components/TeamManagement";
-import { NotificationCenter } from "@/components/NotificationCenter";
-import { ReviewManagement } from "@/components/ReviewManagement";
-import { MarketingTools } from "@/components/MarketingTools";
-import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
-import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
-import { MobileOptimizations } from "@/components/MobileOptimizations";
-import { APIIntegrations } from "@/components/APIIntegrations";
-import { AdvancedReporting } from "@/components/AdvancedReporting";
-import { WorkflowAutomation } from "@/components/WorkflowAutomation";
-import { DocumentManagement } from "@/components/DocumentManagement";
-import { ResourceAllocation } from "@/components/ResourceAllocation";
-import { GanttChart } from "@/components/GanttChart";
+import { Sidebar } from "@/components/Sidebar";
+import { Dashboard } from "@/components/Dashboard";
 import { MapView } from "@/components/MapView";
-import { CustomerPortal } from "@/components/CustomerPortal";
-import { OnlineBooking } from "@/components/OnlineBooking";
-import { AutomatedFollowUp } from "@/components/AutomatedFollowUp";
-import { MobileJobDocumentation } from "@/components/MobileJobDocumentation";
-import { AdvancedInvoiceForm } from "@/components/AdvancedInvoiceForm";
-import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
-import { TaxReporting } from "@/components/TaxReporting";
-import { AccountingIntegration } from "@/components/AccountingIntegration";
+import { SettingsDashboard } from "@/components/SettingsDashboard";
+import { SchedulingDashboard } from "@/components/SchedulingDashboard";
 import { GPSTracking } from "@/components/GPSTracking";
-import { PhotoDocumentation } from "@/components/PhotoDocumentation";
-import { WeatherAlerts } from "@/components/WeatherAlerts";
-import { EquipmentTracking } from "@/components/EquipmentTracking";
-import { MaterialInventory } from "@/components/MaterialInventory";
-import { PredictiveAnalytics } from "@/components/PredictiveAnalytics";
-import { CustomerLifetimeValue } from "@/components/CustomerLifetimeValue";
-import { KPIDashboard } from "@/components/KPIDashboard";
-import { AutomatedInsights } from "@/components/AutomatedInsights";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { JobTemplates } from "@/components/JobTemplates";
 import { RealTimeDispatch } from "@/components/RealTimeDispatch";
 import { OnMyWayNotifications } from "@/components/OnMyWayNotifications";
-import { TimeTracking } from "@/components/TimeTracking";
-import { EmployeeChat } from "@/components/EmployeeChat";
-import { JobChecklists } from "@/components/JobChecklists";
-import { useCompanyData } from "@/hooks/useCompanyData";
-import { FinancingOptions } from "@/components/FinancingOptions";
-import { LeadGeneration } from "@/components/LeadGeneration";
-import { QuoteManagement } from "@/components/QuoteManagement";
-import { SchedulingDashboard } from "@/components/SchedulingDashboard";
+import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings } from "lucide-react";
 
 const Index = () => {
-  const [activeView, setActiveView] = useState('dashboard');
-  const [showCustomerForm, setShowCustomerForm] = useState(false);
-  const [showJobForm, setShowJobForm] = useState(false);
-  const [showAdvancedInvoiceForm, setShowAdvancedInvoiceForm] = useState(false);
-  const companyData = useCompanyData();
-
-  const stats = [
-    { title: "Total Customers", value: "156", icon: Users, color: "text-blue-600" },
-    { title: "Active Jobs", value: "23", icon: Briefcase, color: "text-green-600" },
-    { title: "Scheduled Today", value: "8", icon: Calendar, color: "text-orange-600" },
-    { title: "Monthly Revenue", value: "$67,230", icon: DollarSign, color: "text-purple-600" }
-  ];
-
-  // Enhanced financial data with more vibrant colors
-  const financialData = [
-    { name: 'Won Jobs', value: 45, color: '#10b981', darkColor: '#34d399' },
-    { name: 'Lost Jobs', value: 12, color: '#ef4444', darkColor: '#f87171' },
-    { name: 'Pending', value: 18, color: '#f59e0b', darkColor: '#fbbf24' },
-    { name: 'In Progress', value: 23, color: '#3b82f6', darkColor: '#60a5fa' }
-  ];
-
-  // Mock job locations for the dashboard map
-  const dashboardJobLocations = [
-    {
-      id: '1',
-      title: 'Kitchen Renovation',
-      customer: 'John Smith',
-      address: '123 Main St, Anytown',
-      coordinates: [-74.006, 40.7128] as [number, number],
-      status: 'scheduled' as const
-    },
-    {
-      id: '2',
-      title: 'Bathroom Repair',
-      customer: 'ABC Construction Inc.',
-      address: '456 Business Ave, City',
-      coordinates: [-74.0, 40.72] as [number, number],
-      status: 'in-progress' as const
-    },
-    {
-      id: '3',
-      title: 'Deck Installation',
-      customer: 'Sarah Johnson',
-      address: '789 Oak Drive, Hometown',
-      coordinates: [-73.99, 40.71] as [number, number],
-      status: 'scheduled' as const
-    }
-  ];
-
-  const navigationSections = [
-    {
-      title: "Core Operations",
-      items: [
-        { label: 'Dashboard', value: 'dashboard', icon: BarChart3 },
-        { label: 'Customers', value: 'customers', icon: Users },
-        { label: 'Jobs', value: 'jobs', icon: Briefcase },
-        { label: 'Schedule', value: 'schedule', icon: Calendar },
-        { label: 'Real-Time Dispatch', value: 'real-time-dispatch', icon: Zap },
-      ]
-    },
-    {
-      title: "Lead Generation",
-      items: [
-        { label: 'Lead Pipeline', value: 'lead-generation', icon: TrendingUp },
-        { label: 'Marketing Tools', value: 'marketing', icon: MessageSquare },
-        { label: 'Reviews', value: 'reviews', icon: Users },
-      ]
-    },
-    {
-      title: "Sales & Quoting",
-      items: [
-        { label: 'Quote Management', value: 'quotes', icon: FileText },
-        { label: 'Estimates', value: 'estimates', icon: FileText },
-        { label: 'Invoices', value: 'invoices', icon: Receipt },
-        { label: 'Advanced Invoicing', value: 'advanced-invoicing', icon: CreditCard },
-        { label: 'Financing Options', value: 'financing', icon: Calculator },
-      ]
-    },
-    {
-      title: "Financial",
-      items: [
-        { label: 'Payments', value: 'payments', icon: DollarSign },
-        { label: 'Profit Analysis', value: 'profit-analysis', icon: TrendingUp },
-      ]
-    },
-    {
-      title: "Team & Communication",
-      items: [
-        { label: 'Team Management', value: 'team', icon: Users },
-        { label: 'Time Tracking', value: 'time-tracking', icon: UserCheck },
-        { label: 'Employee Chat', value: 'employee-chat', icon: MessageSquare },
-        { label: 'Job Checklists', value: 'job-checklists', icon: Wrench },
-      ]
-    }
-  ];
-
-  const getCurrentLabel = () => {
-    for (const section of navigationSections) {
-      const found = section.items.find(item => item.value === activeView);
-      if (found) return found.label;
-    }
-    return activeView === 'settings' ? 'Settings' : 'Dashboard';
-  };
+  const [activeSection, setActiveSection] = useState('dashboard');
 
   const renderContent = () => {
-    switch (activeView) {
-      case 'customers':
-        return <CustomerList />;
-      case 'jobs':
-        return <JobList />;
-      case 'job-templates':
-        return <JobTemplates />;
-      case 'schedule':
-        return <EnhancedScheduleView />;
-      case 'real-time-dispatch':
-        return <RealTimeDispatch />;
-      case 'on-my-way':
-        return <OnMyWayNotifications />;
-      case 'lead-generation':
-        return <LeadGeneration />;
-      case 'marketing':
-        return <MarketingTools />;
-      case 'reviews':
-        return <ReviewManagement />;
-      case 'estimates':
-        return <EstimateList />;
-      case 'invoices':
-        return <InvoiceList />;
-      case 'advanced-invoicing':
-        return (
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Advanced Invoicing</h2>
-              <Button onClick={() => setShowAdvancedInvoiceForm(true)}>
-                Create Advanced Invoice
-              </Button>
-            </div>
-            <InvoiceList />
-          </div>
-        );
-      case 'expenses':
-        return <ExpenseList />;
-      case 'profit-analysis':
-        return <ProfitMarginAnalysis />;
-      case 'tax-reporting':
-        return <TaxReporting />;
-      case 'accounting-integration':
-        return <AccountingIntegration />;
-      case 'payments':
-        return <PaymentProcessing />;
-      case 'reports':
-        return <ReportsView />;
-      case 'team':
-        return <TeamManagement />;
-      case 'time-tracking':
-        return <TimeTracking />;
-      case 'employee-chat':
-        return <EmployeeChat />;
-      case 'job-checklists':
-        return <JobChecklists />;
-      case 'notifications':
-        return <NotificationCenter />;
+    switch (activeSection) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'scheduling':
+        return <SchedulingDashboard />;
+      case 'map':
+        return <MapView jobs={[]} />;
       case 'settings':
-        return <CompanySettings />;
-      case 'financing':
-        return <FinancingOptions />;
-      case 'quotes':
-        return <QuoteManagement />;
+        return <SettingsDashboard />;
+      case 'gps-tracking':
+        return <GPSTracking />;
+      case 'dispatch':
+        return <RealTimeDispatch />;
+      case 'notifications':
+        return <OnMyWayNotifications />;
       default:
-        return (
-          <div className="space-y-6">
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <Card key={index}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Common tasks to get you started</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-4">
-                <Button onClick={() => setShowCustomerForm(true)} className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Customer
-                </Button>
-                <Button onClick={() => setShowJobForm(true)} className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Create Job
-                </Button>
-                <Button onClick={() => setShowAdvancedInvoiceForm(true)} className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Advanced Invoice
-                </Button>
-                <Button variant="outline" onClick={() => setActiveView('schedule')}>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Schedule
-                </Button>
-                <Button variant="outline" onClick={() => setActiveView('real-time-dispatch')}>
-                  <Zap className="h-4 w-4 mr-2" />
-                  Dispatch Center
-                </Button>
-                <Button variant="outline" onClick={() => setActiveView('job-templates')}>
-                  <Wrench className="h-4 w-4 mr-2" />
-                  Job Templates
-                </Button>
-                <Button variant="outline" onClick={() => setActiveView('profit-analysis')}>
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Profit Analysis
-                </Button>
-                <Button variant="outline" onClick={() => setActiveView('payments')}>
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Process Payment
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Schedule Map */}
-            <MapView jobs={dashboardJobLocations} />
-
-            {/* Recent Activity and Financial Chart */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Customers</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span>John Smith</span>
-                      <span className="text-sm text-muted-foreground">2 hours ago</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>ABC Construction</span>
-                      <span className="text-sm text-muted-foreground">1 day ago</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Sarah Johnson</span>
-                      <span className="text-sm text-muted-foreground">3 days ago</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Jobs Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={financialData}>
-                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                      <XAxis 
-                        dataKey="name" 
-                        tick={{ fontSize: 12 }}
-                        className="text-muted-foreground"
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12 }}
-                        className="text-muted-foreground"
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--card))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          color: 'hsl(var(--card-foreground))'
-                        }}
-                      />
-                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                        {financialData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={`var(--color-${entry.name.toLowerCase().replace(' ', '-')})`}
-                            className="hover:opacity-80 transition-opacity"
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500"></div>
-                        Won Jobs This Month
-                      </span>
-                      <span className="font-semibold text-green-600 dark:text-green-400">45</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-red-500 to-rose-500"></div>
-                        Lost Jobs
-                      </span>
-                      <span className="font-semibold text-red-600 dark:text-red-400">12</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-yellow-500 to-amber-500"></div>
-                        Pending Jobs
-                      </span>
-                      <span className="font-semibold text-yellow-600 dark:text-yellow-400">18</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-                        In Progress
-                      </span>
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">23</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <span className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                        Conversion Rate
-                      </span>
-                      <span className="font-semibold text-purple-600 dark:text-purple-400">78.9%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* CSS Variables for Chart Colors */}
-            <style>
-              {`:root {
-                --color-won-jobs: #10b981;
-                --color-lost-jobs: #ef4444;
-                --color-pending: #f59e0b;
-                --color-in-progress: #3b82f6;
-              }
-              .dark {
-                --color-won-jobs: #34d399;
-                --color-lost-jobs: #f87171;
-                --color-pending: #fbbf24;
-                --color-in-progress: #60a5fa;
-              }`}
-            </style>
-          </div>
-        );
+        return <div>Select a section from the sidebar.</div>;
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
-      <header className="bg-card shadow-sm border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center gap-3">
-                {companyData.logo && (
-                  <img 
-                    src={companyData.logo} 
-                    alt="Company Logo" 
-                    className="h-10 w-auto object-contain"
-                  />
-                )}
-                <h1 className="text-xl font-semibold text-foreground">
-                  {companyData.logo ? companyData.name : 'Construction CRM'}
-                </h1>
-              </div>
-              
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {navigationSections.map((section) => (
-                    <NavigationMenuItem key={section.title}>
-                      <NavigationMenuTrigger className="text-sm">
-                        {section.title}
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="grid w-[400px] gap-3 p-4">
-                          <div className="row-span-3">
-                            <h4 className="mb-2 text-sm font-medium leading-none">{section.title}</h4>
-                            <div className="grid gap-2">
-                              {section.items.map((item) => (
-                                <button
-                                  key={item.value}
-                                  onClick={() => setActiveView(item.value)}
-                                  className={`flex items-center gap-2 p-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors text-left ${
-                                    activeView === item.value ? "bg-accent text-accent-foreground" : ""
-                                  }`}
-                                >
-                                  <item.icon className="h-4 w-4" />
-                                  {item.label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </NavigationMenuContent>
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
-
-              <span className="text-sm text-muted-foreground">
-                Current: {getCurrentLabel()}
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setActiveView('settings')}
-                className={activeView === 'settings' ? "bg-accent" : ""}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Sidebar 
+        activeSection={activeSection} 
+        onSectionChange={setActiveSection}
+        sections={[
+          { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+          { id: 'scheduling', label: 'Scheduling', icon: Calendar },
+          { id: 'map', label: 'Map View', icon: MapPin },
+          { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
+          { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
+          { id: 'notifications', label: 'Customer Notifications', icon: MessageSquare },
+          { id: 'settings', label: 'Settings', icon: Settings }
+        ]}
+      />
+      
+      <main className="ml-64 p-8">
         {renderContent()}
       </main>
-
-      {/* Modals */}
-      {showCustomerForm && (
-        <CustomerForm onClose={() => setShowCustomerForm(false)} />
-      )}
-      {showJobForm && (
-        <JobForm onClose={() => setShowJobForm(false)} />
-      )}
-      {showAdvancedInvoiceForm && (
-        <AdvancedInvoiceForm onClose={() => setShowAdvancedInvoiceForm(false)} />
-      )}
     </div>
   );
 };
