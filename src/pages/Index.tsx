@@ -63,6 +63,7 @@ import { JobChecklists } from "@/components/JobChecklists";
 import { useCompanyData } from "@/hooks/useCompanyData";
 import { FinancingOptions } from "@/components/FinancingOptions";
 import { LeadGeneration } from "@/components/LeadGeneration";
+import { QuoteManagement } from "@/components/QuoteManagement";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -134,13 +135,19 @@ const Index = () => {
       ]
     },
     {
-      title: "Financial",
+      title: "Sales & Quoting",
       items: [
+        { label: 'Quote Management', value: 'quotes', icon: FileText },
         { label: 'Estimates', value: 'estimates', icon: FileText },
         { label: 'Invoices', value: 'invoices', icon: Receipt },
         { label: 'Advanced Invoicing', value: 'advanced-invoicing', icon: CreditCard },
-        { label: 'Payments', value: 'payments', icon: DollarSign },
         { label: 'Financing Options', value: 'financing', icon: Calculator },
+      ]
+    },
+    {
+      title: "Financial",
+      items: [
+        { label: 'Payments', value: 'payments', icon: DollarSign },
         { label: 'Profit Analysis', value: 'profit-analysis', icon: TrendingUp },
       ]
     },
@@ -225,6 +232,8 @@ const Index = () => {
         return <CompanySettings />;
       case 'financing':
         return <FinancingOptions />;
+      case 'quotes':
+        return <QuoteManagement />;
       default:
         return (
           <div className="space-y-6">
