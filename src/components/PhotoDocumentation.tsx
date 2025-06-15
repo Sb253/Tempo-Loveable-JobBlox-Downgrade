@@ -1,25 +1,30 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, Upload, Eye, Calendar, ArrowLeftRight, Download, Share2 } from "lucide-react";
+import { Camera, Eye, Calendar, ArrowLeftRight, Download, Share2 } from "lucide-react";
+import { PhotoUpload } from "./PhotoUpload";
 
 interface PhotoEntry {
   id: string;
   jobId: string;
   jobName: string;
-  type: 'before' | 'during' | 'after';
+  type: 'before' | 'during' | 'after' | 'progress' | 'safety' | 'quality' | 'issue';
   imageUrl: string;
   description: string;
   timestamp: string;
   location: string;
   tags: string[];
+}
+
+interface UploadedPhoto {
+  id: string;
+  file: File;
+  url: string;
+  caption: string;
+  category: string;
 }
 
 export const PhotoDocumentation = () => {
@@ -66,15 +71,33 @@ export const PhotoDocumentation = () => {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'before': return 'bg-red-100 text-red-800';
-      case 'during': return 'bg-yellow-100 text-yellow-800';
+      case 'during': 
+      case 'progress': return 'bg-blue-100 text-blue-800';
       case 'after': return 'bg-green-100 text-green-800';
+      case 'safety': return 'bg-orange-100 text-orange-800';
+      case 'quality': return 'bg-purple-100 text-purple-800';
+      case 'issue': return 'bg-coral-100 text-coral-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const handlePhotoUpload = () => {
+  const handlePhotoUpload = (uploadedPhoto: UploadedPhoto) => {
+    const newPhoto: PhotoEntry = {
+      id: uploadedPhoto.id,
+      jobId: selectedJob,
+      jobName: 'Kitchen Renovation - Smith Residence',
+      type: uploadedPhoto.category as PhotoEntry['type'],
+      imageUrl: uploadedPhoto.url,
+      description: uploadedPhoto.caption,
+      timestamp: new Date().toLocaleString('sv-SE', { timeZoneName: 'short' }).slice(0, 16),
+      location: '123 Main St',
+      tags: [uploadedPhoto.category, 'uploaded']
+    };
+
+    setPhotos(prev => [newPhoto, ...prev]);
+
     toast({
-      title: "Photo Uploaded",
+      title: "Photo Added",
       description: "Photo has been added to the project documentation.",
     });
   };
@@ -95,10 +118,6 @@ export const PhotoDocumentation = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Photo Documentation</h2>
         <div className="flex gap-2">
-          <Button onClick={handlePhotoUpload}>
-            <Camera className="h-4 w-4 mr-2" />
-            Take Photo
-          </Button>
           <Button variant="outline" onClick={() => setComparisonMode(!comparisonMode)}>
             <ArrowLeftRight className="h-4 w-4 mr-2" />
             {comparisonMode ? 'Gallery View' : 'Compare View'}
@@ -117,8 +136,11 @@ export const PhotoDocumentation = () => {
           {/* Photo Categories */}
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className="bg-red-100 text-red-800">Before</Badge>
-            <Badge variant="outline" className="bg-yellow-100 text-yellow-800">During</Badge>
+            <Badge variant="outline" className="bg-blue-100 text-blue-800">Progress</Badge>
             <Badge variant="outline" className="bg-green-100 text-green-800">After</Badge>
+            <Badge variant="outline" className="bg-orange-100 text-orange-800">Safety</Badge>
+            <Badge variant="outline" className="bg-purple-100 text-purple-800">Quality</Badge>
+            <Badge variant="outline" className="bg-coral-100 text-coral-800">Issue</Badge>
           </div>
 
           {/* Photo Grid */}
@@ -229,46 +251,13 @@ export const PhotoDocumentation = () => {
         <TabsContent value="upload" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Upload New Photo</CardTitle>
+              <CardTitle>Upload New Photos</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="job-select">Job</Label>
-                  <Input id="job-select" placeholder="Select job..." />
-                </div>
-                <div>
-                  <Label htmlFor="photo-type">Photo Type</Label>
-                  <Input id="photo-type" placeholder="Before/During/After" />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea 
-                  id="description"
-                  placeholder="Describe what this photo shows..."
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="tags">Tags</Label>
-                <Input id="tags" placeholder="kitchen, plumbing, electrical..." />
-              </div>
-
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-lg font-medium mb-2">Drop photos here or click to upload</p>
-                <p className="text-sm text-muted-foreground">Support for JPG, PNG files</p>
-                <Button className="mt-4">
-                  Choose Files
-                </Button>
-              </div>
-
-              <Button onClick={handlePhotoUpload} className="w-full">
-                Upload Photos
-              </Button>
+            <CardContent>
+              <PhotoUpload 
+                onUpload={handlePhotoUpload}
+                maxFiles={10}
+              />
             </CardContent>
           </Card>
         </TabsContent>

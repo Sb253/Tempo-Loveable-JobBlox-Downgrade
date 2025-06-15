@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, Upload, MapPin, Clock, CheckSquare, AlertTriangle, FileText, Share2, Download } from "lucide-react";
+import { PhotoUpload } from "./PhotoUpload";
+
+interface UploadedPhoto {
+  id: string;
+  file: File;
+  url: string;
+  caption: string;
+  category: string;
+}
 
 export const MobileJobDocumentation = () => {
   const { toast } = useToast();
@@ -71,8 +79,19 @@ export const MobileJobDocumentation = () => {
 
   const currentJob = jobs.find(job => job.id === activeJob);
 
-  const handlePhotoUpload = () => {
-    // Simulate photo upload
+  const handlePhotoUpload = (uploadedPhoto: UploadedPhoto) => {
+    const newPhoto = {
+      id: uploadedPhoto.id,
+      url: uploadedPhoto.url,
+      caption: uploadedPhoto.caption,
+      timestamp: new Date().toLocaleString('sv-SE', { timeZoneName: 'short' }).slice(0, 16),
+      location: currentJob?.address || '123 Main St',
+      jobId: activeJob,
+      category: uploadedPhoto.category
+    };
+
+    setPhotos(prev => [newPhoto, ...prev]);
+
     toast({
       title: "Photo Uploaded",
       description: "Job site photo has been saved successfully.",
@@ -91,7 +110,9 @@ export const MobileJobDocumentation = () => {
     { id: 'safety', label: 'Safety', color: 'bg-red-100 text-red-800' },
     { id: 'quality', label: 'Quality', color: 'bg-green-100 text-green-800' },
     { id: 'issue', label: 'Issue', color: 'bg-orange-100 text-orange-800' },
-    { id: 'completed', label: 'Completed', color: 'bg-purple-100 text-purple-800' }
+    { id: 'completed', label: 'Completed', color: 'bg-purple-100 text-purple-800' },
+    { id: 'before', label: 'Before', color: 'bg-red-100 text-red-800' },
+    { id: 'after', label: 'After', color: 'bg-green-100 text-green-800' }
   ];
 
   return (
@@ -133,17 +154,14 @@ export const MobileJobDocumentation = () => {
         <TabsContent value="photos" className="space-y-4">
           {/* Photo Upload */}
           <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button className="flex-1" onClick={handlePhotoUpload}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Take Photo
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              </div>
+            <CardHeader>
+              <CardTitle>Upload Photos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PhotoUpload 
+                onUpload={handlePhotoUpload}
+                maxFiles={5}
+              />
             </CardContent>
           </Card>
 
