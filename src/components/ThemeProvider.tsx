@@ -45,17 +45,39 @@ export function ThemeProvider({
     root.classList.add(theme)
     body.classList.add(theme)
 
-    // Set CSS custom properties for full page coverage
+    // Apply comprehensive dark mode styling
     if (theme === "dark") {
-      root.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)')
-      root.style.setProperty('--card-gradient', 'linear-gradient(135deg, #1e293b 0%, #334155 100%)')
+      // Set dark background for entire page
+      root.style.backgroundColor = '#0f172a'
+      root.style.color = '#f8fafc'
       body.style.backgroundColor = '#0f172a'
       body.style.color = '#f8fafc'
+      body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
+      body.style.minHeight = '100vh'
+      
+      // Ensure all containers inherit dark styling
+      root.style.setProperty('--background', '15 23 42') // slate-900
+      root.style.setProperty('--foreground', '248 250 252') // slate-50
+      root.style.setProperty('--card', '30 41 59') // slate-800
+      root.style.setProperty('--card-foreground', '248 250 252') // slate-50
+      root.style.setProperty('--muted', '30 41 59') // slate-800
+      root.style.setProperty('--muted-foreground', '148 163 184') // slate-400
     } else {
-      root.style.setProperty('--bg-gradient', 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)')
-      root.style.setProperty('--card-gradient', 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)')
+      // Set light background for entire page
+      root.style.backgroundColor = '#ffffff'
+      root.style.color = '#0f172a'
       body.style.backgroundColor = '#ffffff'
       body.style.color = '#0f172a'
+      body.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
+      body.style.minHeight = '100vh'
+      
+      // Ensure all containers inherit light styling
+      root.style.setProperty('--background', '240 100 99') // near white
+      root.style.setProperty('--foreground', '15 23 42') // slate-900
+      root.style.setProperty('--card', '0 0 100') // white
+      root.style.setProperty('--card-foreground', '15 23 42') // slate-900
+      root.style.setProperty('--muted', '241 245 249') // slate-100
+      root.style.setProperty('--muted-foreground', '100 116 139') // slate-500
     }
   }, [theme])
 
