@@ -2,14 +2,55 @@
 import { useState, useEffect } from "react";
 import { Dashboard } from "@/components/Dashboard";
 import { MegaMenuSidebar } from "@/components/MegaMenuSidebar";
-import { NavigationSettings } from "@/components/NavigationSettings";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Settings, Home, Users, Briefcase, MessageSquare, Star, Truck, Calendar, DollarSign, BarChart3, Building2, Bell, Cog, UserPlus, FileText, TrendingUp, CreditCard, Clock, Database, Package, FileImage, AlertTriangle, CheckCircle, Target, PieChart, Map, UserCheck, Hammer, Activity, Calculator } from "lucide-react";
 
+// Import all the components we need for different sections
+import { Communication } from "@/components/Communication";
+import { ReviewManagement } from "@/components/ReviewManagement";
+import { VehicleManagement } from "@/components/VehicleManagement";
+import { CustomerList } from "@/components/CustomerList";
+import { JobList } from "@/components/JobList";
+import { EstimateList } from "@/components/EstimateList";
+import { InvoiceList } from "@/components/InvoiceList";
+import { ScheduleView } from "@/components/ScheduleView";
+import { TimeTracking } from "@/components/TimeTracking";
+import { ExpenseList } from "@/components/ExpenseList";
+import { MaterialInventory } from "@/components/MaterialInventory";
+import { EquipmentManagement } from "@/components/EquipmentManagement";
+import { PhotoDocumentation } from "@/components/PhotoDocumentation";
+import { SafetyManagement } from "@/components/SafetyManagement";
+import { QualityControl } from "@/components/QualityControl";
+import { KPIDashboard } from "@/components/KPIDashboard";
+import { ReportsView } from "@/components/ReportsView";
+import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
+import { MapView } from "@/components/MapView";
+import { TeamManagement } from "@/components/TeamManagement";
+import { SubcontractorManagement } from "@/components/SubcontractorManagement";
+import { AdvancedInventorySystem } from "@/components/AdvancedInventorySystem";
+import { FinancialAnalyticsDashboard } from "@/components/FinancialAnalyticsDashboard";
+import { PaymentIntegrationHub } from "@/components/PaymentIntegrationHub";
+import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
+import { PredictiveAnalytics } from "@/components/PredictiveAnalytics";
+import { AdvancedReporting } from "@/components/AdvancedReporting";
+import { QuickBooksIntegration } from "@/components/QuickBooksIntegration";
+import { AccountingIntegration } from "@/components/AccountingIntegration";
+import { RadiusAssignment } from "@/components/RadiusAssignment";
+import { EmployeeLocationManager } from "@/components/EmployeeLocationManager";
+import { RealTimeChat } from "@/components/RealTimeChat";
+import { MobileSettings } from "@/components/MobileSettings";
+import { BranchManagement } from "@/components/BranchManagement";
+import { CompanySettings } from "@/components/CompanySettings";
+import { NotificationCenter } from "@/components/NotificationCenter";
+import { SettingsDashboard } from "@/components/SettingsDashboard";
+import { CustomerForm } from "@/components/CustomerForm";
+import { JobForm } from "@/components/JobForm";
+import { ClientAppointment } from "@/components/ClientAppointment";
+import { Pipeline } from "@/components/Pipeline";
+
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Complete sidebar sections configuration
@@ -70,29 +111,105 @@ const Index = () => {
     setActiveSection(section);
   };
 
-  const handleNavigationSettings = () => {
-    setIsSettingsOpen(true);
-  };
-
   const handleSidebarToggle = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed);
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
   };
 
+  // Function to render the appropriate component based on active section
+  const renderActiveComponent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'client-appointment':
+        return <ClientAppointment />;
+      case 'pipeline':
+        return <Pipeline />;
+      case 'customers':
+        return <CustomerList />;
+      case 'customer-form':
+        return <CustomerForm />;
+      case 'jobs':
+        return <JobList />;
+      case 'job-form':
+        return <JobForm />;
+      case 'estimates':
+        return <EstimateList />;
+      case 'invoices':
+        return <InvoiceList />;
+      case 'schedule':
+        return <ScheduleView />;
+      case 'time-tracking':
+        return <TimeTracking />;
+      case 'expenses':
+        return <ExpenseList />;
+      case 'inventory':
+        return <MaterialInventory />;
+      case 'equipment':
+        return <EquipmentManagement />;
+      case 'vehicles':
+        return <VehicleManagement />;
+      case 'photos':
+        return <PhotoDocumentation />;
+      case 'communication':
+        return <Communication />;
+      case 'reviews':
+        return <ReviewManagement />;
+      case 'safety':
+        return <SafetyManagement />;
+      case 'quality':
+        return <QualityControl />;
+      case 'goals':
+        return <KPIDashboard />;
+      case 'reports':
+        return <ReportsView />;
+      case 'analytics':
+        return <AdvancedAnalytics />;
+      case 'map-view':
+        return <MapView />;
+      case 'team-management':
+        return <TeamManagement />;
+      case 'subcontractor-management':
+        return <SubcontractorManagement />;
+      case 'advanced-inventory':
+        return <AdvancedInventorySystem />;
+      case 'financial-analytics':
+        return <FinancialAnalyticsDashboard />;
+      case 'payment-integration':
+        return <PaymentIntegrationHub />;
+      case 'profit-analysis':
+        return <ProfitMarginAnalysis />;
+      case 'predictive-analytics':
+        return <PredictiveAnalytics />;
+      case 'advanced-reporting':
+        return <AdvancedReporting />;
+      case 'quickbooks-integration':
+        return <QuickBooksIntegration />;
+      case 'accounting-integration':
+        return <AccountingIntegration />;
+      case 'radius-assignment':
+        return <RadiusAssignment />;
+      case 'employee-locations':
+        return <EmployeeLocationManager />;
+      case 'team-chat':
+        return <RealTimeChat />;
+      case 'mobile-settings':
+        return <MobileSettings />;
+      case 'branch-management':
+        return <BranchManagement />;
+      case 'company-settings':
+        return <CompanySettings />;
+      case 'notifications':
+        return <NotificationCenter />;
+      case 'settings':
+        return <SettingsDashboard />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with controls */}
-      <div className="fixed top-0 right-0 z-50 p-4 flex items-center gap-2">
-        <ThemeToggle />
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={handleNavigationSettings}
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
-      </div>
-
       {/* Sidebar */}
       <MegaMenuSidebar
         activeSection={activeSection}
@@ -109,16 +226,10 @@ const Index = () => {
           sidebarCollapsed ? 'ml-20' : 'ml-80'
         }`}
       >
-        <div className="container mx-auto p-6 pt-20">
-          <Dashboard />
+        <div className="container mx-auto p-6">
+          {renderActiveComponent()}
         </div>
       </div>
-
-      {/* Navigation Settings Dialog */}
-      <NavigationSettings 
-        open={isSettingsOpen}
-        onOpenChange={setIsSettingsOpen}
-      />
     </div>
   );
 };

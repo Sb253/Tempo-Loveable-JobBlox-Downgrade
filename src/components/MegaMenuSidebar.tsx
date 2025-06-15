@@ -155,6 +155,11 @@ export const MegaMenuSidebar = ({
     }
   };
 
+  const handleSectionClick = (sectionId: string) => {
+    console.log('MegaMenuSidebar: Section clicked:', sectionId);
+    onSectionChange(sectionId);
+  };
+
   if (!isVisible) {
     return null;
   }
@@ -203,10 +208,7 @@ export const MegaMenuSidebar = ({
                     size="icon"
                     className="h-10 w-10"
                     title={dashboardSection.label}
-                    onClick={() => {
-                      console.log('MegaMenuSidebar: Dashboard clicked:', dashboardSection.id);
-                      onSectionChange(dashboardSection.id);
-                    }}
+                    onClick={() => handleSectionClick(dashboardSection.id)}
                   >
                     <dashboardSection.icon className="h-5 w-5" />
                   </Button>
@@ -218,10 +220,7 @@ export const MegaMenuSidebar = ({
                     "w-full justify-start gap-3 text-sm h-10",
                     activeSection === 'dashboard' && "bg-primary text-primary-foreground"
                   )}
-                  onClick={() => {
-                    console.log('MegaMenuSidebar: Dashboard clicked:', dashboardSection.id);
-                    onSectionChange(dashboardSection.id);
-                  }}
+                  onClick={() => handleSectionClick(dashboardSection.id)}
                 >
                   <dashboardSection.icon className="h-5 w-5" />
                   {dashboardSection.label}
@@ -292,10 +291,7 @@ export const MegaMenuSidebar = ({
                           "w-full justify-start gap-3 text-sm h-9",
                           isActive && "bg-primary text-primary-foreground"
                         )}
-                        onClick={() => {
-                          console.log('MegaMenuSidebar: Section clicked:', section.id);
-                          onSectionChange(section.id);
-                        }}
+                        onClick={() => handleSectionClick(section.id)}
                       >
                         <Icon className="h-4 w-4" />
                         {section.label}
