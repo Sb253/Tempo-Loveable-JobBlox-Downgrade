@@ -4,193 +4,282 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, ArrowRight, Calendar, DollarSign, User, Clock } from "lucide-react";
-
-interface PipelineJob {
-  id: string;
-  title: string;
-  client: string;
-  value: number;
-  status: 'lead' | 'estimate' | 'approved' | 'in-progress' | 'completed';
-  priority: 'low' | 'medium' | 'high';
-  estimatedStart: string;
-  assignedTo: string;
-}
+import { Plus, Settings, BarChart3, PieChart, TrendingUp, Calendar } from "lucide-react";
+import { DragDropPipeline, PipelineStage, PipelineItem } from "@/components/DragDropPipeline";
+import { CustomBarChart, CustomPieChart, CustomLineChart } from "@/components/charts/ChartTypes";
 
 export const Pipeline = () => {
-  const [jobs] = useState<PipelineJob[]>([
+  const [pipelineStages, setPipelineStages] = useState<PipelineStage[]>([
     {
-      id: '1',
-      title: 'Kitchen Renovation',
-      client: 'John Smith',
-      value: 15000,
-      status: 'estimate',
-      priority: 'high',
-      estimatedStart: '2024-01-15',
-      assignedTo: 'Mike Johnson'
+      id: 'lead',
+      title: 'Leads',
+      color: '#6366f1',
+      items: [
+        {
+          id: '1',
+          title: 'Kitchen Renovation',
+          client: 'John Smith',
+          value: 15000,
+          priority: 'high',
+          estimatedStart: '2024-01-15',
+          assignedTo: 'Mike Johnson'
+        }
+      ]
     },
     {
-      id: '2',
-      title: 'Bathroom Remodel',
-      client: 'Sarah Wilson',
-      value: 8500,
-      status: 'approved',
-      priority: 'medium',
-      estimatedStart: '2024-01-20',
-      assignedTo: 'Dave Brown'
+      id: 'estimate',
+      title: 'Estimates',
+      color: '#8b5cf6',
+      items: [
+        {
+          id: '2',
+          title: 'Bathroom Remodel',
+          client: 'Sarah Wilson',
+          value: 8500,
+          priority: 'medium',
+          estimatedStart: '2024-01-20',
+          assignedTo: 'Dave Brown'
+        }
+      ]
     },
     {
-      id: '3',
-      title: 'Deck Construction',
-      client: 'ABC Company',
-      value: 12000,
-      status: 'in-progress',
-      priority: 'high',
-      estimatedStart: '2024-01-10',
-      assignedTo: 'Tom Davis'
+      id: 'approved',
+      title: 'Approved',
+      color: '#10b981',
+      items: []
+    },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      color: '#f59e0b',
+      items: [
+        {
+          id: '3',
+          title: 'Deck Construction',
+          client: 'ABC Company',
+          value: 12000,
+          priority: 'high',
+          estimatedStart: '2024-01-10',
+          assignedTo: 'Tom Davis'
+        }
+      ]
+    },
+    {
+      id: 'completed',
+      title: 'Completed',
+      color: '#6b7280',
+      items: []
     }
   ]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'lead': return 'bg-gray-100 text-gray-800';
-      case 'estimate': return 'bg-blue-100 text-blue-800';
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const [selectedItem, setSelectedItem] = useState<PipelineItem | null>(null);
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-orange-100 text-orange-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  // Sample data for charts
+  const pipelineValueData = pipelineStages.map(stage => ({
+    stage: stage.title,
+    value: stage.items.reduce((sum, item) => sum + item.value, 0),
+    count: stage.items.length
+  }));
 
-  const groupedJobs = jobs.reduce((acc, job) => {
-    if (!acc[job.status]) {
-      acc[job.status] = [];
-    }
-    acc[job.status].push(job);
-    return acc;
-  }, {} as Record<string, PipelineJob[]>);
-
-  const stages = [
-    { key: 'lead', title: 'Leads', count: groupedJobs.lead?.length || 0 },
-    { key: 'estimate', title: 'Estimates', count: groupedJobs.estimate?.length || 0 },
-    { key: 'approved', title: 'Approved', count: groupedJobs.approved?.length || 0 },
-    { key: 'in-progress', title: 'In Progress', count: groupedJobs['in-progress']?.length || 0 },
-    { key: 'completed', title: 'Completed', count: groupedJobs.completed?.length || 0 }
+  const priorityData = [
+    { name: 'High', value: pipelineStages.flatMap(s => s.items).filter(i => i.priority === 'high').length },
+    { name: 'Medium', value: pipelineStages.flatMap(s => s.items).filter(i => i.priority === 'medium').length },
+    { name: 'Low', value: pipelineStages.flatMap(s => s.items).filter(i => i.priority === 'low').length }
   ];
+
+  const monthlyTrendData = [
+    { month: 'Jan', deals: 12, value: 125000 },
+    { month: 'Feb', deals: 15, value: 150000 },
+    { month: 'Mar', deals: 18, value: 180000 },
+    { month: 'Apr', deals: 22, value: 220000 },
+    { month: 'May', deals: 19, value: 195000 },
+    { month: 'Jun', deals: 25, value: 250000 }
+  ];
+
+  const handleStagesChange = (newStages: PipelineStage[]) => {
+    setPipelineStages(newStages);
+  };
+
+  const handleItemClick = (item: PipelineItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleAddItem = (stageId: string) => {
+    console.log('Add item to stage:', stageId);
+    // Implement add item logic
+  };
+
+  const handleEditStage = (stageId: string) => {
+    console.log('Edit stage:', stageId);
+    // Implement edit stage logic
+  };
+
+  const getTotalValue = () => {
+    return pipelineStages.flatMap(stage => stage.items)
+      .reduce((sum, item) => sum + item.value, 0);
+  };
+
+  const getTotalCount = () => {
+    return pipelineStages.flatMap(stage => stage.items).length;
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Pipeline Management</h1>
-        <Button className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add New Job
-        </Button>
+        <div className="flex gap-2">
+          <Button className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add New Job
+          </Button>
+          <Button variant="outline" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            Pipeline Settings
+          </Button>
+        </div>
+      </div>
+
+      {/* Pipeline Overview Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-2xl font-bold">{getTotalCount()}</p>
+                <p className="text-sm text-muted-foreground">Total Deals</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-green-600" />
+              <div>
+                <p className="text-2xl font-bold">${getTotalValue().toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Pipeline Value</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-orange-600" />
+              <div>
+                <p className="text-2xl font-bold">{pipelineStages[3]?.items.length || 0}</p>
+                <p className="text-sm text-muted-foreground">Active Projects</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <PieChart className="h-5 w-5 text-purple-600" />
+              <div>
+                <p className="text-2xl font-bold">{pipelineStages[4]?.items.length || 0}</p>
+                <p className="text-sm text-muted-foreground">Completed</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="kanban" className="w-full">
         <TabsList>
-          <TabsTrigger value="kanban">Kanban View</TabsTrigger>
-          <TabsTrigger value="list">List View</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+          <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="trends">Trends</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="kanban">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {stages.map((stage) => (
-              <Card key={stage.key} className="min-h-[500px]">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium flex items-center justify-between">
-                    {stage.title}
-                    <Badge variant="secondary">{stage.count}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {groupedJobs[stage.key]?.map((job) => (
-                    <Card key={job.id} className="p-3 cursor-pointer hover:shadow-md transition-shadow">
-                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">{job.title}</h4>
-                        <p className="text-xs text-muted-foreground">{job.client}</p>
-                        
-                        <div className="flex items-center justify-between">
-                          <Badge className={getPriorityColor(job.priority)} variant="secondary">
-                            {job.priority}
-                          </Badge>
-                          <span className="text-sm font-medium">${job.value.toLocaleString()}</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          {job.estimatedStart}
-                        </div>
-                        
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <User className="h-3 w-3" />
-                          {job.assignedTo}
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
+        <TabsContent value="kanban" className="space-y-6">
+          <DragDropPipeline
+            stages={pipelineStages}
+            onStagesChange={handleStagesChange}
+            onItemClick={handleItemClick}
+            onAddItem={handleAddItem}
+            onEditStage={handleEditStage}
+          />
+
+          {/* Item Details Modal/Panel */}
+          {selectedItem && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deal Details - {selectedItem.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Client</label>
+                    <p className="text-sm">{selectedItem.client}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Value</label>
+                    <p className="text-sm">${selectedItem.value.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Priority</label>
+                    <Badge className={selectedItem.priority === 'high' ? 'bg-red-100 text-red-800' : 
+                                   selectedItem.priority === 'medium' ? 'bg-orange-100 text-orange-800' : 
+                                   'bg-green-100 text-green-800'}>
+                      {selectedItem.priority}
+                    </Badge>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Assigned To</label>
+                    <p className="text-sm">{selectedItem.assignedTo}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm">Edit Deal</Button>
+                  <Button size="sm" variant="outline">Create Job</Button>
+                  <Button size="sm" variant="outline" onClick={() => setSelectedItem(null)}>
+                    Close
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <CustomBarChart
+              data={pipelineValueData}
+              title="Pipeline Value by Stage"
+              xDataKey="stage"
+              yDataKey="value"
+              color="#8b5cf6"
+            />
+            <CustomPieChart
+              data={priorityData}
+              title="Deals by Priority"
+              dataKey="value"
+              nameKey="name"
+              colors={['#ef4444', '#f97316', '#22c55e']}
+            />
           </div>
         </TabsContent>
 
-        <TabsContent value="list">
-          <Card>
-            <CardHeader>
-              <CardTitle>All Jobs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {jobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-3 border rounded">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <h4 className="font-medium">{job.title}</h4>
-                        <p className="text-sm text-muted-foreground">{job.client}</p>
-                      </div>
-                      <Badge className={getStatusColor(job.status)} variant="secondary">
-                        {job.status}
-                      </Badge>
-                      <Badge className={getPriorityColor(job.priority)} variant="secondary">
-                        {job.priority}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <span className="font-medium">${job.value.toLocaleString()}</span>
-                      <span className="text-sm text-muted-foreground">{job.assignedTo}</span>
-                      <Button variant="ghost" size="sm">
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="calendar">
-          <Card>
-            <CardHeader>
-              <CardTitle>Calendar View</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Calendar view coming soon...</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="trends" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <CustomLineChart
+              data={monthlyTrendData}
+              title="Monthly Deal Count Trend"
+              xDataKey="month"
+              yDataKey="deals"
+              color="#06b6d4"
+            />
+            <CustomLineChart
+              data={monthlyTrendData}
+              title="Monthly Revenue Trend"
+              xDataKey="month"
+              yDataKey="value"
+              color="#10b981"
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
