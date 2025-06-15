@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DollarSign, TrendingUp, Calculator, FileText } from "lucide-react";
+import { DollarSign, TrendingUp, Calculator, FileText, Edit2, Save, X, Plus, Users, Award } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface WageStructure {
@@ -129,7 +128,7 @@ export const WageManagement = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Wage Management</h1>
         <Button onClick={handleCreateWage} className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4" />
+          <Plus className="h-4 w-4" />
           New Wage Structure
         </Button>
       </div>
@@ -139,7 +138,7 @@ export const WageManagement = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Employees</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -210,7 +209,7 @@ export const WageManagement = () => {
                   size="sm"
                   onClick={() => handleEditWage(wage)}
                 >
-                  <DollarSign className="h-4 w-4" />
+                  <Edit2 className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
@@ -232,7 +231,10 @@ export const WageManagement = () => {
 
               {wage.bonusStructure && (
                 <div>
-                  <Label className="text-sm font-medium">Bonus Structure</Label>
+                  <Label className="text-sm font-medium flex items-center gap-1">
+                    <Award className="h-3 w-3" />
+                    Bonus Structure
+                  </Label>
                   <div className="text-xs space-y-1">
                     <p>Performance: ${wage.bonusStructure.performanceBonus.toLocaleString()}</p>
                     <p>Completion: ${wage.bonusStructure.completionBonus.toLocaleString()}</p>
@@ -340,7 +342,10 @@ export const WageManagement = () => {
               </div>
 
               <div>
-                <Label className="text-base font-medium">Bonus Structure (Optional)</Label>
+                <Label className="text-base font-medium flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Bonus Structure (Optional)
+                </Label>
                 <div className="grid grid-cols-3 gap-4 mt-2">
                   <div>
                     <Label htmlFor="performance-bonus">Performance Bonus ($)</Label>
@@ -383,6 +388,7 @@ export const WageManagement = () => {
 
               <div className="flex justify-end space-x-2 pt-4">
                 <Button variant="outline" onClick={() => setShowWageDialog(false)}>
+                  <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
                 <Button onClick={() => {
@@ -392,6 +398,7 @@ export const WageManagement = () => {
                     description: "Wage structure has been updated successfully.",
                   });
                 }}>
+                  <Save className="h-4 w-4 mr-2" />
                   {editingWage ? 'Update' : 'Create'} Wage Structure
                 </Button>
               </div>

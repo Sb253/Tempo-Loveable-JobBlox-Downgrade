@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Send, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Eye, Edit, Send, CheckCircle, Clock, XCircle, DollarSign, Calendar } from "lucide-react";
 
 interface QuoteListProps {
   searchTerm: string;
@@ -112,15 +112,24 @@ export const QuoteList = ({ searchTerm, onSelectQuote }: QuoteListProps) => {
             <div className="flex justify-between items-center">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Amount</p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <DollarSign className="h-3 w-3" />
+                    Amount
+                  </p>
                   <p className="font-semibold">${quote.amount.toLocaleString()}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Created</p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    Created
+                  </p>
                   <p className="font-medium">{new Date(quote.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Valid Until</p>
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    Valid Until
+                  </p>
                   <p className="font-medium">{new Date(quote.validUntil).toLocaleDateString()}</p>
                 </div>
               </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Star, MessageSquare, ExternalLink } from "lucide-react";
+import { Star, MessageSquare, ExternalLink, Send, X } from "lucide-react";
 
 interface Review {
   id: string;
@@ -123,8 +123,12 @@ export const ReviewCard = ({ review, onSendResponse }: ReviewCardProps) => {
                   onChange={(e) => setResponseText(e.target.value)}
                 />
                 <div className="flex gap-2">
-                  <Button onClick={handleSendResponse}>Send Response</Button>
+                  <Button onClick={handleSendResponse}>
+                    <Send className="h-4 w-4 mr-2" />
+                    Send Response
+                  </Button>
                   <Button variant="outline" onClick={() => setShowResponseForm(false)}>
+                    <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
                 </div>
