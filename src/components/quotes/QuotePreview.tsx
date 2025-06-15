@@ -31,11 +31,11 @@ export const QuotePreview: React.FC<QuotePreviewProps> = ({
   };
 
   const handleDownload = () => {
-    console.log('Downloading quote PDF...');
+    console.log('Downloading estimate PDF...');
   };
 
   const handleSend = () => {
-    console.log('Sending quote to customer...');
+    console.log('Sending estimate to customer...');
   };
 
   return (
@@ -45,7 +45,7 @@ export const QuotePreview: React.FC<QuotePreviewProps> = ({
           <DialogTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <Eye className="h-5 w-5" />
-              Quote Preview
+              Estimate Preview
             </span>
             <div className="flex items-center gap-4">
               <Select value={currentTemplate} onValueChange={handleTemplateChange}>

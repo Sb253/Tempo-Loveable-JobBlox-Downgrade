@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCompanyData } from "@/hooks/useCompanyData";
 
@@ -24,6 +25,7 @@ interface EstimateData {
   discountType?: string;
   discountValue?: number;
   discount?: number;
+  fontFamily?: string;
 }
 
 interface EstimateTemplateProps {
@@ -37,8 +39,19 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
 }) => {
   const companyData = useCompanyData();
 
+  const getFontClass = () => {
+    switch (data.fontFamily) {
+      case 'serif': return 'font-serif';
+      case 'mono': return 'font-mono';
+      case 'playfair': return 'font-playfair';
+      case 'inter': return 'font-inter';
+      case 'roboto': return 'font-roboto';
+      default: return 'font-sans';
+    }
+  };
+
   const renderModernTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto">
+    <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header with gradient */}
       <div className="flex justify-between items-start mb-8 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg -z-10"></div>
@@ -152,7 +165,7 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
   );
 
   const renderClassicTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto border-4 border-gray-800">
+    <div className={`bg-white p-8 max-w-4xl mx-auto border-4 border-gray-800 ${getFontClass()}`}>
       {/* Header */}
       <div className="text-center mb-8 border-b-4 border-gray-800 pb-6">
         <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-wide">ESTIMATE</h1>
@@ -256,7 +269,7 @@ export const EstimateTemplate: React.FC<EstimateTemplateProps> = ({
   );
 
   const renderMinimalTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto">
+    <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header */}
       <div className="flex justify-between items-start mb-12 pb-6 border-b border-gray-200">
         <div>

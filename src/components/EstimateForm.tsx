@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -29,6 +28,7 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
   const { toast } = useToast();
   const [showPreview, setShowPreview] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('modern');
+  const [selectedFont, setSelectedFont] = useState('sans');
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const [templateName, setTemplateName] = useState('');
   
@@ -109,7 +109,8 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
     discount: calculateDiscount(),
     discountType: formData.discountType,
     discountValue: formData.discountValue,
-    total: calculateTotal()
+    total: calculateTotal(),
+    fontFamily: selectedFont
   });
 
   const handleSaveAsTemplate = () => {
@@ -160,7 +161,8 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
       subtotal: calculateSubtotal(),
       discount: calculateDiscount(),
       total: calculateTotal(),
-      template: selectedTemplate
+      template: selectedTemplate,
+      fontFamily: selectedFont
     });
     
     toast({
@@ -231,11 +233,11 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Estimate Template</Label>
-                  <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Estimate Template</Label>
                     <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-                      <SelectTrigger className="flex-1">
+                      <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -244,16 +246,37 @@ export const EstimateForm = ({ onClose, estimate }: EstimateFormProps) => {
                         <SelectItem value="minimal">Minimal</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowPreview(true)}
-                      disabled={!formData.customer || !formData.projectTitle || lineItems.every(item => !item.description)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      Preview
-                    </Button>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label>Font Family</Label>
+                    <Select value={selectedFont} onValueChange={setSelectedFont}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sans">Sans Serif</SelectItem>
+                        <SelectItem value="serif">Serif</SelectItem>
+                        <SelectItem value="mono">Monospace</SelectItem>
+                        <SelectItem value="playfair">Playfair Display</SelectItem>
+                        <SelectItem value="inter">Inter</SelectItem>
+                        <SelectItem value="roboto">Roboto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowPreview(true)}
+                    disabled={!formData.customer || !formData.projectTitle || lineItems.every(item => !item.description)}
+                    className="flex-1"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview Estimate
+                  </Button>
                 </div>
 
                 <div className="space-y-2">

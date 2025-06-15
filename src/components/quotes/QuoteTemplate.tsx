@@ -26,6 +26,7 @@ interface QuoteData {
   images?: string[];
   attachments?: string[];
   requireDigitalApproval?: boolean;
+  fontFamily?: string;
 }
 
 interface QuoteTemplateProps {
@@ -39,8 +40,19 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
 }) => {
   const companyData = useCompanyData();
 
+  const getFontClass = () => {
+    switch (data.fontFamily) {
+      case 'serif': return 'font-serif';
+      case 'mono': return 'font-mono';
+      case 'playfair': return 'font-playfair';
+      case 'inter': return 'font-inter';
+      case 'roboto': return 'font-roboto';
+      default: return 'font-sans';
+    }
+  };
+
   const renderModernTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto">
+    <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div className="flex items-center gap-4">
@@ -48,7 +60,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
             <img src={companyData.logo} alt="Company Logo" className="h-16 w-auto object-contain" />
           )}
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">QUOTE</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
             <div className="w-20 h-1 bg-blue-600"></div>
           </div>
         </div>
@@ -75,7 +87,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Quote For</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Estimate For</h3>
           <div className="text-gray-600">
             <div className="font-semibold">{data.customer}</div>
             <div className="mt-2">
@@ -126,7 +138,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
             <span className="text-gray-700">${data.markup.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-3 border-t-2 border-gray-300 font-bold text-lg">
-            <span className="text-gray-900">Total Quote:</span>
+            <span className="text-gray-900">Total Estimate:</span>
             <span className="text-blue-600">${data.total.toFixed(2)}</span>
           </div>
         </div>
@@ -137,7 +149,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
           <h4 className="font-semibold text-blue-900 mb-2">Digital Approval Required</h4>
           <p className="text-blue-800 text-sm">
-            This quote requires your digital approval. You can approve this quote through our customer portal or mobile app.
+            This estimate requires your digital approval. You can approve this estimate through our customer portal or mobile app.
           </p>
         </div>
       )}
@@ -163,13 +175,13 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
   );
 
   const renderClassicTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto border-2 border-gray-800">
+    <div className={`bg-white p-8 max-w-4xl mx-auto border-2 border-gray-800 ${getFontClass()}`}>
       {/* Header */}
       <div className="text-center mb-8 border-b-2 border-gray-800 pb-4">
         {companyData.logo && (
           <img src={companyData.logo} alt="Company Logo" className="h-12 w-auto object-contain mx-auto mb-4" />
         )}
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">QUOTE</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">ESTIMATE</h1>
         <div className="text-xl text-gray-700">#{data.quoteNumber}</div>
       </div>
 
@@ -185,7 +197,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
           </div>
         </div>
         <div className="border border-gray-400 p-4">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 border-b border-gray-400 pb-1">QUOTE FOR</h3>
+          <h3 className="text-lg font-bold text-gray-900 mb-2 border-b border-gray-400 pb-1">ESTIMATE FOR</h3>
           <div className="text-gray-700">
             <div className="font-bold">{data.customer}</div>
             <div className="mt-2">
@@ -232,7 +244,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
       {/* Total */}
       <div className="flex justify-end mb-8">
         <div className="w-64 border-2 border-gray-800">
-          <div className="bg-gray-800 text-white py-2 px-4 font-bold text-center">QUOTE TOTAL</div>
+          <div className="bg-gray-800 text-white py-2 px-4 font-bold text-center">ESTIMATE TOTAL</div>
           <div className="p-4">
             <div className="flex justify-between py-1">
               <span>SUBTOTAL:</span>
@@ -255,7 +267,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
         <div className="border-2 border-blue-600 bg-blue-50 p-4 mb-6">
           <h4 className="font-bold text-blue-900 mb-2">DIGITAL APPROVAL REQUIRED</h4>
           <p className="text-blue-800 text-sm">
-            This quote requires your digital approval through our customer portal or mobile app.
+            This estimate requires your digital approval through our customer portal or mobile app.
           </p>
         </div>
       )}
@@ -281,14 +293,14 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
   );
 
   const renderMinimalTemplate = () => (
-    <div className="bg-white p-8 max-w-4xl mx-auto">
+    <div className={`bg-white p-8 max-w-4xl mx-auto ${getFontClass()}`}>
       {/* Header */}
       <div className="flex justify-between items-center mb-12">
         <div className="flex items-center gap-4">
           {companyData.logo && (
             <img src={companyData.logo} alt="Company Logo" className="h-12 w-auto object-contain" />
           )}
-          <h1 className="text-5xl font-light text-gray-400">quote</h1>
+          <h1 className="text-5xl font-light text-gray-400">estimate</h1>
         </div>
         <div className="text-right">
           <div className="text-3xl font-light text-gray-900 mb-1">#{data.quoteNumber}</div>
@@ -314,7 +326,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
           </div>
         </div>
         <div>
-          <div className="text-sm text-gray-500 mb-2">QUOTE FOR</div>
+          <div className="text-sm text-gray-500 mb-2">ESTIMATE FOR</div>
           <div className="text-gray-900">
             <div className="font-medium">{data.customer}</div>
             <div className="text-sm text-gray-600 mt-1">
@@ -365,7 +377,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
             <span className="text-gray-900">${data.markup.toFixed(2)}</span>
           </div>
           <div className="flex justify-between py-4 border-t border-gray-200 text-xl">
-            <span className="text-gray-900">Total Quote</span>
+            <span className="text-gray-900">Total Estimate</span>
             <span className="text-gray-900 font-medium">${data.total.toFixed(2)}</span>
           </div>
         </div>
@@ -376,7 +388,7 @@ export const QuoteTemplate: React.FC<QuoteTemplateProps> = ({
         <div className="bg-gray-50 border-l-4 border-gray-400 p-4 mb-8">
           <div className="text-sm text-gray-500 mb-1">DIGITAL APPROVAL</div>
           <p className="text-gray-700 text-sm">
-            This quote requires your digital approval through our customer portal or mobile app.
+            This estimate requires your digital approval through our customer portal or mobile app.
           </p>
         </div>
       )}
