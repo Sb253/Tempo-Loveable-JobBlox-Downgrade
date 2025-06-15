@@ -14,6 +14,7 @@ interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   sections: SidebarSection[];
+  isVisible?: boolean;
 }
 
 interface CompanyData {
@@ -21,13 +22,14 @@ interface CompanyData {
   logo: string | null;
 }
 
-export const Sidebar = ({ activeSection, onSectionChange, sections }: SidebarProps) => {
+export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = true }: SidebarProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'Construction CRM',
     logo: null
   });
 
   useEffect(() => {
+    console.log('Sidebar: isVisible changed to:', isVisible);
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
       const data = JSON.parse(savedCompanyData);
@@ -36,10 +38,15 @@ export const Sidebar = ({ activeSection, onSectionChange, sections }: SidebarPro
         logo: data.logo || null
       });
     }
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) {
+    console.log('Sidebar: Not visible, returning null');
+    return null;
+  }
 
   return (
-    <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border">
+    <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40">
       <div className="p-6">
         <div className="flex items-center gap-3">
           {companyData.logo ? (
@@ -66,7 +73,10 @@ export const Sidebar = ({ activeSection, onSectionChange, sections }: SidebarPro
                 "w-full justify-start gap-3",
                 activeSection === section.id && "bg-primary text-primary-foreground"
               )}
-              onClick={() => onSectionChange(section.id)}
+              onClick={() => {
+                console.log('Sidebar: Section clicked:', section.id);
+                onSectionChange(section.id);
+              }}
             >
               <Icon className="h-5 w-5" />
               {section.label}

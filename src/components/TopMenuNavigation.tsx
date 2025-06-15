@@ -29,6 +29,7 @@ interface TopMenuNavigationProps {
   onSectionChange: (section: string) => void;
   sections: SidebarSection[];
   onNavigationSettings: () => void;
+  isVisible?: boolean;
 }
 
 interface CompanyData {
@@ -36,13 +37,20 @@ interface CompanyData {
   logo: string | null;
 }
 
-export const TopMenuNavigation = ({ activeSection, onSectionChange, sections, onNavigationSettings }: TopMenuNavigationProps) => {
+export const TopMenuNavigation = ({ 
+  activeSection, 
+  onSectionChange, 
+  sections, 
+  onNavigationSettings,
+  isVisible = true 
+}: TopMenuNavigationProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'Construction CRM',
     logo: null
   });
 
   useEffect(() => {
+    console.log('TopMenuNavigation: isVisible changed to:', isVisible);
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
       const data = JSON.parse(savedCompanyData);
@@ -51,7 +59,12 @@ export const TopMenuNavigation = ({ activeSection, onSectionChange, sections, on
         logo: data.logo || null
       });
     }
-  }, []);
+  }, [isVisible]);
+
+  if (!isVisible) {
+    console.log('TopMenuNavigation: Not visible, returning null');
+    return null;
+  }
 
   // Group sections into logical categories
   const menuGroups = {
@@ -63,7 +76,7 @@ export const TopMenuNavigation = ({ activeSection, onSectionChange, sections, on
   };
 
   return (
-    <div className="w-full border-b bg-background">
+    <div className="w-full border-b bg-background z-40">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Company Logo/Name */}
         <div className="flex items-center gap-3">
@@ -91,13 +104,16 @@ export const TopMenuNavigation = ({ activeSection, onSectionChange, sections, on
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-56 bg-background border z-50">
                     {groupSections.map((section) => {
                       const Icon = section.icon;
                       return (
                         <DropdownMenuItem
                           key={section.id}
-                          onClick={() => onSectionChange(section.id)}
+                          onClick={() => {
+                            console.log('TopMenuNavigation: Section clicked:', section.id);
+                            onSectionChange(section.id);
+                          }}
                           className={`flex items-center gap-3 cursor-pointer ${
                             activeSection === section.id ? 'bg-accent' : ''
                           }`}

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,9 @@ export const Dashboard = () => {
   const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
   const [currentLayout, setCurrentLayout] = useState<'sidebar' | 'menu'>(() => {
-    return (localStorage.getItem('navigationLayout') as 'sidebar' | 'menu') || 'sidebar';
+    const saved = localStorage.getItem('navigationLayout') as 'sidebar' | 'menu';
+    console.log('Dashboard: Initial layout from localStorage:', saved);
+    return saved || 'sidebar';
   });
 
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
@@ -108,7 +111,9 @@ export const Dashboard = () => {
   };
 
   const handleLayoutChange = (layout: 'sidebar' | 'menu') => {
+    console.log('Dashboard: Layout change requested to:', layout);
     setCurrentLayout(layout);
+    localStorage.setItem('navigationLayout', layout);
   };
 
   const getWidget = (id: string) => {
@@ -238,126 +243,131 @@ export const Dashboard = () => {
     }
   ];
 
+  // Determine if main content should have left margin for sidebar
+  const contentMargin = currentLayout === 'sidebar' ? 'ml-64' : 'ml-0';
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">
-            {getGreeting()}, {userName}!
-          </h1>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="h-4 w-4" />
-            <span>{getFormattedTime()}</span>
+    <div className={`min-h-screen transition-all duration-300 ${contentMargin}`}>
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              {getGreeting()}, {userName}!
+            </h1>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>{getFormattedTime()}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowTimezoneDialog(true)}
+                className="ml-2"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <NavigationToggle 
+              currentLayout={currentLayout} 
+              onLayoutChange={handleLayoutChange} 
+            />
+            <ThemeToggle />
             <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowTimezoneDialog(true)}
-              className="ml-2"
+              variant="outline" 
+              onClick={() => setShowCustomization(true)}
+              className="flex items-center gap-2"
             >
-              <Settings className="h-3 w-3" />
+              <Palette className="h-4 w-4" />
+              Customize Dashboard
             </Button>
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
-          <NavigationToggle 
-            currentLayout={currentLayout} 
-            onLayoutChange={handleLayoutChange} 
-          />
-          <ThemeToggle />
-          <Button 
-            variant="outline" 
-            onClick={() => setShowCustomization(true)}
-            className="flex items-center gap-2"
-          >
-            <Palette className="h-4 w-4" />
-            Customize Dashboard
-          </Button>
-        </div>
-      </div>
-      
-      <div className="space-y-6">
-        {enabledWidgets.map((widget) => (
-          <div key={widget.id}>
-            {widget.id === 'stats' ? (
-              getWidget(widget.id)
-            ) : widget.id === 'recent-jobs' ? (
-              getWidget(widget.id)
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {getWidget(widget.id)}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Timezone Settings Dialog */}
-      {showTimezoneDialog && (
-        <Dialog open={true} onOpenChange={setShowTimezoneDialog}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Timezone Settings</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Select Timezone</Label>
-                <select
-                  id="timezone"
-                  value={tempTimezone}
-                  onChange={(e) => setTempTimezone(e.target.value)}
-                  className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <option value="America/New_York">Eastern Time (EST/EDT)</option>
-                  <option value="America/Chicago">Central Time (CST/CDT)</option>
-                  <option value="America/Denver">Mountain Time (MST/MDT)</option>
-                  <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
-                  <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
-                  <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
-                  <option value="UTC">UTC</option>
-                  <option value="Europe/London">London (GMT/BST)</option>
-                  <option value="Europe/Paris">Paris (CET/CEST)</option>
-                  <option value="Asia/Tokyo">Tokyo (JST)</option>
-                  <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="username">Display Name</Label>
-                <Input
-                  id="username"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Enter your name"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setShowTimezoneDialog(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleTimezoneUpdate}>
-                  Save Changes
-                </Button>
-              </div>
+        <div className="space-y-6">
+          {enabledWidgets.map((widget) => (
+            <div key={widget.id}>
+              {widget.id === 'stats' ? (
+                getWidget(widget.id)
+              ) : widget.id === 'recent-jobs' ? (
+                getWidget(widget.id)
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {getWidget(widget.id)}
+                </div>
+              )}
             </div>
-          </DialogContent>
-        </Dialog>
-      )}
+          ))}
+        </div>
 
-      {/* Dashboard Customization Dialog */}
-      <DashboardCustomization
-        open={showCustomization}
-        onOpenChange={setShowCustomization}
-        widgets={widgets}
-        onWidgetsChange={(newWidgets) => {
-          setWidgets(newWidgets);
-          toast({
-            title: "Dashboard Updated",
-            description: "Your dashboard layout has been saved.",
-          });
-        }}
-      />
+        {/* Timezone Settings Dialog */}
+        {showTimezoneDialog && (
+          <Dialog open={true} onOpenChange={setShowTimezoneDialog}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Timezone Settings</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Select Timezone</Label>
+                  <select
+                    id="timezone"
+                    value={tempTimezone}
+                    onChange={(e) => setTempTimezone(e.target.value)}
+                    className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                    <option value="America/Chicago">Central Time (CST/CDT)</option>
+                    <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                    <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                    <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                    <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                    <option value="UTC">UTC</option>
+                    <option value="Europe/London">London (GMT/BST)</option>
+                    <option value="Europe/Paris">Paris (CET/CEST)</option>
+                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="username">Display Name</Label>
+                  <Input
+                    id="username"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button variant="outline" onClick={() => setShowTimezoneDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleTimezoneUpdate}>
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Dashboard Customization Dialog */}
+        <DashboardCustomization
+          open={showCustomization}
+          onOpenChange={setShowCustomization}
+          widgets={widgets}
+          onWidgetsChange={(newWidgets) => {
+            setWidgets(newWidgets);
+            toast({
+              title: "Dashboard Updated",
+              description: "Your dashboard layout has been saved.",
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };

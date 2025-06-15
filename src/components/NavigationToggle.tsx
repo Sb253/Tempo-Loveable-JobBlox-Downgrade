@@ -15,6 +15,7 @@ export const NavigationToggle = ({ currentLayout, onLayoutChange }: NavigationTo
   const { toast } = useToast();
 
   const handleLayoutChange = (layout: 'sidebar' | 'menu') => {
+    console.log('NavigationToggle: Changing layout to:', layout);
     onLayoutChange(layout);
     localStorage.setItem('navigationLayout', layout);
     toast({
