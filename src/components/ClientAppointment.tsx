@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { MapView } from "./MapView";
 import { 
   Truck, 
   Play, 
@@ -22,7 +23,10 @@ import {
   Paperclip,
   Plus,
   Edit2,
-  Camera
+  Camera,
+  Home,
+  Bed,
+  Bath
 } from "lucide-react";
 
 interface ClientAppointmentProps {
@@ -35,27 +39,33 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
   const [status, setStatus] = useState<'pending' | 'on-way' | 'started' | 'finished'>('pending');
   const [notes, setNotes] = useState('REMODEL OF SMALL BATHROOM ON THE UPPER FLOOR');
   const [showNotesDialog, setShowNotesDialog] = useState(false);
+  const [showMapDialog, setShowMapDialog] = useState(false);
   
-  // Mock appointment data
+  // Mock appointment data with realistic property information
   const appointment = {
     estimateNumber: `EST-${appointmentId}`,
     customer: {
       name: 'RENE REICHL',
       address: '1950 25th Ave E\nSeattle, WA, 98112',
       phone: '(206) 555-0123',
-      propertyImage: '/placeholder.svg',
+      email: 'rene.reichl@email.com',
+      propertyImage: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80',
       propertyValue: '$1,755,773',
       yearBuilt: '1926',
       beds: 4,
       baths: 2.0,
-      sqft: 2710
+      sqft: 2710,
+      lotSize: '0.15 acres',
+      propertyType: 'Single Family',
+      coordinates: [-122.3021, 47.6392] as [number, number] // Seattle coordinates
     },
     schedule: {
       date: 'Thu Mar 14',
       startTime: '10:30a',
       endTime: '11:30a',
       technician: 'Scott Bondy',
-      technicianAvatar: '/placeholder.svg'
+      technicianAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
+      technicianPhone: '(206) 555-0199'
     },
     financial: {
       subtotal: 12839.62,
@@ -72,8 +82,29 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
         amount: 6298.29,
         dueDate: '3/13'
       }
+    },
+    projectDetails: {
+      type: 'Bathroom Renovation',
+      scope: 'Complete bathroom remodel including tile work, fixtures, and plumbing updates',
+      estimatedDuration: '5-7 business days',
+      materials: ['Porcelain tile', 'Vanity cabinet', 'Modern fixtures', 'LED lighting']
     }
   };
+
+  // Create job data for map display
+  const jobsForMap = [
+    {
+      id: appointmentId,
+      title: appointment.projectDetails.type,
+      customer: appointment.customer.name,
+      address: appointment.customer.address.replace('\n', ', '),
+      coordinates: appointment.customer.coordinates,
+      status: status === 'finished' ? 'completed' as const : 
+              status === 'started' ? 'in-progress' as const : 'scheduled' as const,
+      type: 'appointment' as const,
+      time: `${appointment.schedule.date} ${appointment.schedule.startTime}`
+    }
+  ];
 
   const handleStatusChange = (newStatus: 'on-way' | 'started' | 'finished') => {
     setStatus(newStatus);
@@ -109,7 +140,10 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
     <div className="max-w-4xl mx-auto space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Estimate #{appointmentId}</h1>
+        <div>
+          <h1 className="text-2xl font-bold">Estimate #{appointmentId}</h1>
+          <p className="text-muted-foreground">{appointment.projectDetails.type} - {appointment.customer.name}</p>
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm">
             <Edit2 className="h-4 w-4 mr-2" />
@@ -168,12 +202,12 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
         </CardContent>
       </Card>
 
-      {/* Customer Section */}
+      {/* Customer & Property Section */}
       <Card>
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold flex items-center gap-2 mb-4">
             <User className="h-5 w-5" />
-            Customer
+            Customer & Property Information
           </h3>
           
           <div className="space-y-4">
@@ -184,33 +218,64 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
                 className="w-full h-48 object-cover rounded-lg"
               />
               <div className="absolute top-4 right-4 bg-black/75 text-white px-3 py-1 rounded text-sm">
-                {formatCurrency(parseFloat(appointment.customer.propertyValue.replace(/[$,]/g, '')))}
+                {appointment.customer.propertyValue}
               </div>
               <div className="absolute bottom-4 right-4 bg-black/75 text-white px-2 py-1 rounded text-xs">
                 Built in {appointment.customer.yearBuilt}
               </div>
-              <div className="absolute bottom-4 left-4 bg-black/75 text-white px-2 py-1 rounded text-xs">
-                {appointment.customer.beds} Beds | {appointment.customer.baths} Baths | {appointment.customer.sqft} Sq. ft.
+              <div className="absolute bottom-4 left-4 bg-black/75 text-white px-2 py-1 rounded text-xs flex items-center gap-2">
+                <Home className="h-3 w-3" />
+                {appointment.customer.propertyType}
               </div>
             </div>
             
-            <div className="flex items-center justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-semibold text-lg">{appointment.customer.name}</h4>
-                <p className="text-muted-foreground text-sm whitespace-pre-line">
+                <p className="text-muted-foreground text-sm whitespace-pre-line mb-2">
                   {appointment.customer.address}
                 </p>
+                <div className="flex gap-2 mb-2">
+                  <Button size="sm" variant="outline">
+                    <Phone className="h-4 w-4 mr-1" />
+                    {appointment.customer.phone}
+                  </Button>
+                  <Button size="sm" variant="outline">
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => setShowMapDialog(true)}
+                  >
+                    <MapPin className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button size="sm" variant="outline">
-                  <MessageCircle className="h-4 w-4" />
-                </Button>
-                <Button size="sm" variant="outline">
-                  <MapPin className="h-4 w-4" />
-                </Button>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Bed className="h-4 w-4" />
+                    <span className="font-semibold">{appointment.customer.beds}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">Bedrooms</div>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Bath className="h-4 w-4" />
+                    <span className="font-semibold">{appointment.customer.baths}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">Bathrooms</div>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="font-semibold">{appointment.customer.sqft.toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">Sq. Ft.</div>
+                </div>
+                <div className="text-center p-3 bg-muted rounded-lg">
+                  <div className="font-semibold">{appointment.customer.lotSize}</div>
+                  <div className="text-xs text-muted-foreground">Lot Size</div>
+                </div>
               </div>
             </div>
           </div>
@@ -230,22 +295,59 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
             </Button>
           </div>
           
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">From:</span>
-              <span className="font-medium">{appointment.schedule.date} {appointment.schedule.startTime}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">From:</span>
+                <span className="font-medium">{appointment.schedule.date} {appointment.schedule.startTime}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">To:</span>
+                <span className="font-medium">{appointment.schedule.date} {appointment.schedule.endTime}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Duration:</span>
+                <span className="font-medium">{appointment.projectDetails.estimatedDuration}</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">To:</span>
-              <span className="font-medium">{appointment.schedule.date} {appointment.schedule.endTime}</span>
+            
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={appointment.schedule.technicianAvatar} 
+                  alt={appointment.schedule.technician}
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <div className="font-medium">{appointment.schedule.technician}</div>
+                  <div className="text-sm text-muted-foreground">{appointment.schedule.technicianPhone}</div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3 pt-2">
-              <img 
-                src={appointment.schedule.technicianAvatar} 
-                alt={appointment.schedule.technician}
-                className="w-8 h-8 rounded-full"
-              />
-              <span className="font-medium">{appointment.schedule.technician}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Project Details */}
+      <Card>
+        <CardContent className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Project Details</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Project Type</label>
+              <p className="font-medium">{appointment.projectDetails.type}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Scope of Work</label>
+              <p className="text-sm">{appointment.projectDetails.scope}</p>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-muted-foreground">Materials Required</label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {appointment.projectDetails.materials.map((material, index) => (
+                  <Badge key={index} variant="outline">{material}</Badge>
+                ))}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -254,6 +356,7 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
       {/* Financial Summary */}
       <Card>
         <CardContent className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Financial Summary</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
               <span>Subtotal</span>
@@ -397,6 +500,18 @@ export const ClientAppointment = ({ appointmentId = "5709", onClose }: ClientApp
                 Save Notes
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Map Dialog */}
+      <Dialog open={showMapDialog} onOpenChange={setShowMapDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Property Location</DialogTitle>
+          </DialogHeader>
+          <div className="h-[60vh]">
+            <MapView jobs={jobsForMap} />
           </div>
         </DialogContent>
       </Dialog>
