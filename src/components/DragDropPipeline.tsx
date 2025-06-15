@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/ThemeProvider";
 
 export interface PipelineItem {
   id: string;
@@ -46,12 +46,23 @@ export const DragDropPipeline = ({
   onAddItem, 
   onEditStage 
 }: DragDropPipelineProps) => {
+  const { actualTheme } = useTheme();
+
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-orange-100 text-orange-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+    if (actualTheme === 'dark') {
+      switch (priority) {
+        case 'high': return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg';
+        case 'medium': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg';
+        case 'low': return 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg';
+        default: return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg';
+      }
+    } else {
+      switch (priority) {
+        case 'high': return 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg';
+        case 'medium': return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg';
+        case 'low': return 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg';
+        default: return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg';
+      }
     }
   };
 
@@ -101,20 +112,30 @@ export const DragDropPipeline = ({
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         {stages.map((stage) => (
-          <Card key={stage.id} className="h-fit min-h-[500px]">
-            <CardHeader className="pb-3">
+          <Card key={stage.id} className="h-fit min-h-[500px] bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-3" style={{ 
+              background: `linear-gradient(135deg, ${stage.color}15 0%, ${stage.color}05 100%)`,
+              borderRadius: '0.5rem 0.5rem 0 0'
+            }}>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <CardTitle className="text-sm font-bold flex items-center gap-3">
                   <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: stage.color }}
+                    className="w-4 h-4 rounded-full shadow-md border-2 border-white" 
+                    style={{ 
+                      backgroundColor: stage.color,
+                      boxShadow: `0 0 10px ${stage.color}40`
+                    }}
                   />
-                  {stage.title}
-                  <Badge variant="secondary">{stage.items.length}</Badge>
+                  <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                    {stage.title}
+                  </span>
+                  <Badge variant="secondary" className="bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-bold border border-primary/20">
+                    {stage.items.length}
+                  </Badge>
                   {stage.limit && stage.items.length >= stage.limit && (
-                    <Badge variant="destructive">Full</Badge>
+                    <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg">Full</Badge>
                   )}
                 </CardTitle>
                 <div className="flex items-center gap-1">
@@ -122,21 +143,22 @@ export const DragDropPipeline = ({
                     <Button 
                       size="sm" 
                       variant="ghost" 
+                      className="hover:bg-primary/10 hover:text-primary transition-colors"
                       onClick={() => onAddItem(stage.id)}
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-4 w-4" />
                     </Button>
                   )}
                   {onEditStage && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button size="sm" variant="ghost">
-                          <MoreVertical className="h-3 w-3" />
+                        <Button size="sm" variant="ghost" className="hover:bg-primary/10 hover:text-primary transition-colors">
+                          <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => onEditStage(stage.id)}>
-                          <Settings className="h-3 w-3 mr-2" />
+                      <DropdownMenuContent className="bg-card border-2 border-primary/20 shadow-xl">
+                        <DropdownMenuItem onClick={() => onEditStage(stage.id)} className="hover:bg-primary/10 hover:text-primary">
+                          <Settings className="h-4 w-4 mr-2" />
                           Edit Stage
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -151,8 +173,8 @@ export const DragDropPipeline = ({
                 <CardContent
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`space-y-3 min-h-[400px] ${
-                    snapshot.isDraggingOver ? 'bg-accent/50' : ''
+                  className={`space-y-3 min-h-[400px] p-4 transition-all duration-200 ${
+                    snapshot.isDraggingOver ? 'bg-primary/5 border-2 border-primary/30 border-dashed rounded-lg' : ''
                   }`}
                 >
                   {stage.items.map((item, index) => (
@@ -162,35 +184,38 @@ export const DragDropPipeline = ({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className={`p-3 cursor-pointer hover:shadow-md transition-shadow ${
-                            snapshot.isDragging ? 'rotate-2 shadow-lg' : ''
+                          className={`p-4 cursor-pointer bg-gradient-to-br from-card to-card/50 border-2 border-primary/10 hover:border-primary/30 hover:shadow-lg transition-all duration-200 ${
+                            snapshot.isDragging ? 'rotate-1 shadow-2xl scale-105 border-primary/50' : ''
                           }`}
                           onClick={() => onItemClick?.(item)}
+                          style={{
+                            boxShadow: snapshot.isDragging ? `0 10px 30px ${stage.color}30` : undefined
+                          }}
                         >
-                          <div className="space-y-2">
-                            <h4 className="font-medium text-sm">{item.title}</h4>
-                            <p className="text-xs text-muted-foreground">{item.client}</p>
+                          <div className="space-y-3">
+                            <h4 className="font-bold text-sm bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">{item.title}</h4>
+                            <p className="text-xs text-muted-foreground font-medium">{item.client}</p>
                             
                             <div className="flex items-center justify-between">
-                              <Badge className={getPriorityColor(item.priority)} variant="secondary">
+                              <Badge className={getPriorityColor(item.priority)}>
                                 {item.priority}
                               </Badge>
-                              <div className="flex items-center gap-1">
-                                <DollarSign className="h-3 w-3" />
-                                <span className="text-sm font-medium">
+                              <div className="flex items-center gap-1 bg-gradient-to-r from-green-500/10 to-green-600/10 px-2 py-1 rounded-full border border-green-500/20">
+                                <DollarSign className="h-3 w-3 text-green-600" />
+                                <span className="text-sm font-bold text-green-600">
                                   {item.value.toLocaleString()}
                                 </span>
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {item.estimatedStart}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 px-2 py-1 rounded-md">
+                              <Calendar className="h-3 w-3 text-primary" />
+                              <span className="font-medium">{item.estimatedStart}</span>
                             </div>
                             
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <User className="h-3 w-3" />
-                              {item.assignedTo}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 px-2 py-1 rounded-md">
+                              <User className="h-3 w-3 text-primary" />
+                              <span className="font-medium">{item.assignedTo}</span>
                             </div>
                           </div>
                         </Card>

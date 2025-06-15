@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,13 +6,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Settings, BarChart3, PieChart, TrendingUp, Calendar } from "lucide-react";
 import { DragDropPipeline, PipelineStage, PipelineItem } from "@/components/DragDropPipeline";
 import { CustomBarChart, CustomPieChart, CustomLineChart } from "@/components/charts/ChartTypes";
+import { useTheme } from "@/components/ThemeProvider";
 
 export const Pipeline = () => {
+  const { actualTheme } = useTheme();
+  
   const [pipelineStages, setPipelineStages] = useState<PipelineStage[]>([
     {
       id: 'lead',
       title: 'Leads',
-      color: '#6366f1',
+      color: actualTheme === 'dark' ? '#60a5fa' : '#3b82f6',
       items: [
         {
           id: '1',
@@ -29,7 +31,7 @@ export const Pipeline = () => {
     {
       id: 'estimate',
       title: 'Estimates',
-      color: '#8b5cf6',
+      color: actualTheme === 'dark' ? '#a78bfa' : '#8b5cf6',
       items: [
         {
           id: '2',
@@ -45,13 +47,13 @@ export const Pipeline = () => {
     {
       id: 'approved',
       title: 'Approved',
-      color: '#10b981',
+      color: actualTheme === 'dark' ? '#34d399' : '#10b981',
       items: []
     },
     {
       id: 'in-progress',
       title: 'In Progress',
-      color: '#f59e0b',
+      color: actualTheme === 'dark' ? '#fbbf24' : '#f59e0b',
       items: [
         {
           id: '3',
@@ -67,14 +69,14 @@ export const Pipeline = () => {
     {
       id: 'completed',
       title: 'Completed',
-      color: '#6b7280',
+      color: actualTheme === 'dark' ? '#94a3b8' : '#6b7280',
       items: []
     }
   ]);
 
   const [selectedItem, setSelectedItem] = useState<PipelineItem | null>(null);
 
-  // Sample data for charts
+  // Sample data for charts with modern colors
   const pipelineValueData = pipelineStages.map(stage => ({
     stage: stage.title,
     value: stage.items.reduce((sum, item) => sum + item.value, 0),
@@ -124,15 +126,15 @@ export const Pipeline = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Pipeline Management</h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Pipeline Management</h1>
         <div className="flex gap-2">
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg">
             <Plus className="h-4 w-4" />
             Add New Job
           </Button>
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button variant="outline" className="flex items-center gap-2 border-2 border-primary/20 hover:bg-primary/10">
             <Settings className="h-4 w-4" />
             Pipeline Settings
           </Button>
@@ -141,46 +143,57 @@ export const Pipeline = () => {
 
       {/* Pipeline Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-2 border-blue-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white shadow-lg">
+                <TrendingUp className="h-6 w-6" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{getTotalCount()}</p>
-                <p className="text-sm text-muted-foreground">Total Deals</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{getTotalCount()}</p>
+                <p className="text-sm text-muted-foreground font-medium">Total Deals</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-2 border-green-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-green-600" />
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl text-white shadow-lg">
+                <BarChart3 className="h-6 w-6" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">${getTotalValue().toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Pipeline Value</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">${getTotalValue().toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground font-medium">Pipeline Value</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        
+        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-2 border-orange-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-orange-600" />
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl text-white shadow-lg">
+                <Calendar className="h-6 w-6" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{pipelineStages[3]?.items.length || 0}</p>
-                <p className="text-sm text-muted-foreground">Active Projects</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">{pipelineStages[3]?.items.length || 0}</p>
+                <p className="text-sm text-muted-foreground font-medium">Active Projects</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        
+        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-2 border-purple-500/20 shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <PieChart className="h-5 w-5 text-purple-600" />
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl text-white shadow-lg">
+                <PieChart className="h-6 w-6" />
+              </div>
               <div>
-                <p className="text-2xl font-bold">{pipelineStages[4]?.items.length || 0}</p>
-                <p className="text-sm text-muted-foreground">Completed</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">{pipelineStages[4]?.items.length || 0}</p>
+                <p className="text-sm text-muted-foreground font-medium">Completed</p>
               </div>
             </div>
           </CardContent>
@@ -188,10 +201,10 @@ export const Pipeline = () => {
       </div>
 
       <Tabs defaultValue="kanban" className="w-full">
-        <TabsList>
-          <TabsTrigger value="kanban">Kanban Board</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
+        <TabsList className="bg-gradient-to-r from-muted/50 to-muted border-2 border-primary/20">
+          <TabsTrigger value="kanban" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Kanban Board</TabsTrigger>
+          <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Analytics</TabsTrigger>
+          <TabsTrigger value="trends" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Trends</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kanban" className="space-y-6">
@@ -205,37 +218,37 @@ export const Pipeline = () => {
 
           {/* Item Details Modal/Panel */}
           {selectedItem && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Deal Details - {selectedItem.title}</CardTitle>
+            <Card className="bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-t-lg">
+                <CardTitle className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Deal Details - {selectedItem.title}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium">Client</label>
+                    <label className="text-sm font-medium text-primary">Client</label>
                     <p className="text-sm">{selectedItem.client}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Value</label>
-                    <p className="text-sm">${selectedItem.value.toLocaleString()}</p>
+                    <label className="text-sm font-medium text-primary">Value</label>
+                    <p className="text-sm font-bold">${selectedItem.value.toLocaleString()}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Priority</label>
-                    <Badge className={selectedItem.priority === 'high' ? 'bg-red-100 text-red-800' : 
-                                   selectedItem.priority === 'medium' ? 'bg-orange-100 text-orange-800' : 
-                                   'bg-green-100 text-green-800'}>
+                    <label className="text-sm font-medium text-primary">Priority</label>
+                    <Badge className={selectedItem.priority === 'high' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white' : 
+                                   selectedItem.priority === 'medium' ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white' : 
+                                   'bg-gradient-to-r from-green-500 to-green-600 text-white'}>
                       {selectedItem.priority}
                     </Badge>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Assigned To</label>
+                    <label className="text-sm font-medium text-primary">Assigned To</label>
                     <p className="text-sm">{selectedItem.assignedTo}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm">Edit Deal</Button>
-                  <Button size="sm" variant="outline">Create Job</Button>
-                  <Button size="sm" variant="outline" onClick={() => setSelectedItem(null)}>
+                  <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80">Edit Deal</Button>
+                  <Button size="sm" variant="outline" className="border-2 border-primary/20">Create Job</Button>
+                  <Button size="sm" variant="outline" className="border-2 border-primary/20" onClick={() => setSelectedItem(null)}>
                     Close
                   </Button>
                 </div>
@@ -251,14 +264,14 @@ export const Pipeline = () => {
               title="Pipeline Value by Stage"
               xDataKey="stage"
               yDataKey="value"
-              color="#8b5cf6"
+              color={actualTheme === 'dark' ? '#a78bfa' : '#8b5cf6'}
             />
             <CustomPieChart
               data={priorityData}
               title="Deals by Priority"
               dataKey="value"
               nameKey="name"
-              colors={['#ef4444', '#f97316', '#22c55e']}
+              colors={actualTheme === 'dark' ? ['#f87171', '#fbbf24', '#34d399'] : ['#ef4444', '#f59e0b', '#22c55e']}
             />
           </div>
         </TabsContent>
@@ -270,14 +283,14 @@ export const Pipeline = () => {
               title="Monthly Deal Count Trend"
               xDataKey="month"
               yDataKey="deals"
-              color="#06b6d4"
+              color={actualTheme === 'dark' ? '#22d3ee' : '#06b6d4'}
             />
             <CustomLineChart
               data={monthlyTrendData}
               title="Monthly Revenue Trend"
               xDataKey="month"
               yDataKey="value"
-              color="#10b981"
+              color={actualTheme === 'dark' ? '#34d399' : '#10b981'}
             />
           </div>
         </TabsContent>
