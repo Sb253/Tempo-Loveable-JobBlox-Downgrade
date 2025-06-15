@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ interface Job {
   estimatedDuration: number;
   estimatedValue: number;
   priority: 'low' | 'medium' | 'high';
-  jobType: 'inspection' | 'repair' | 'installation' | 'maintenance' | 'consultation';
+  jobType: 'inspection' | 'repair' | 'installation' | 'maintenance' | 'consultation' | 'roofing' | 'siding' | 'deck' | 'patio-cover';
   assignedTechnician: string;
   status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
   materials: string[];
@@ -36,7 +35,11 @@ const jobTypes = [
   { value: 'repair', label: 'Repair' },
   { value: 'installation', label: 'Installation' },
   { value: 'maintenance', label: 'Maintenance' },
-  { value: 'consultation', label: 'Consultation' }
+  { value: 'consultation', label: 'Consultation' },
+  { value: 'roofing', label: 'Roofing' },
+  { value: 'siding', label: 'Siding' },
+  { value: 'deck', label: 'Deck' },
+  { value: 'patio-cover', label: 'Patio Cover' }
 ];
 
 const priorities = [

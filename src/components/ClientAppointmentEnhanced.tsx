@@ -9,7 +9,6 @@ import { LineItemsCard } from './appointment/LineItemsCard';
 import { EditableNotesCard } from './appointment/EditableNotesCard';
 import { EstimateFieldsCard } from './appointment/EstimateFieldsCard';
 import { AttachmentsCard } from './appointment/AttachmentsCard';
-import { OnMyWayButtonOptions } from './appointment/OnMyWayButtonOptions';
 
 interface Appointment {
   id: string;
@@ -41,7 +40,6 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
   const { toast } = useToast();
   const [appointment, setAppointment] = useState<Appointment>(selectedAppointment);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [showOnMyWayOptions, setShowOnMyWayOptions] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -144,29 +142,6 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
     }));
   };
 
-  if (showOnMyWayOptions) {
-    return (
-      <div className="bg-background min-h-screen p-4">
-        <button 
-          onClick={() => setShowOnMyWayOptions(false)}
-          className="mb-4 text-blue-600 hover:underline"
-        >
-          ← Back to Appointment
-        </button>
-        <OnMyWayButtonOptions 
-          appointment={{
-            customer: appointment.customer,
-            phone: appointment.phone,
-            email: appointment.email,
-            technician: appointment.technician,
-            scheduledTime: appointment.scheduledTime
-          }}
-          status={appointment.status}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="bg-background min-h-screen">
       <AppointmentHeader appointmentId="5709" status={appointment.status} />
@@ -216,15 +191,6 @@ export const ClientAppointmentEnhanced = ({ selectedAppointment }: ClientAppoint
         <EstimateFieldsCard />
 
         <AttachmentsCard />
-
-        <div className="mt-4">
-          <button 
-            onClick={() => setShowOnMyWayOptions(true)}
-            className="text-blue-600 hover:underline text-sm"
-          >
-            → View "On My Way" Button Options
-          </button>
-        </div>
       </div>
     </div>
   );

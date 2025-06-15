@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -150,6 +149,10 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
                   <SelectItem value="installation">Installation</SelectItem>
                   <SelectItem value="maintenance">Maintenance</SelectItem>
                   <SelectItem value="consultation">Consultation</SelectItem>
+                  <SelectItem value="roofing">Roofing</SelectItem>
+                  <SelectItem value="siding">Siding</SelectItem>
+                  <SelectItem value="deck">Deck</SelectItem>
+                  <SelectItem value="patio-cover">Patio Cover</SelectItem>
                 </SelectContent>
               </Select>
             </div>
