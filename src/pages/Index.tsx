@@ -12,7 +12,8 @@ import { CustomerList } from "@/components/CustomerList";
 import { CustomerPortal } from "@/components/CustomerPortal";
 import { ReviewManagement } from "@/components/ReviewManagement";
 import { LeadGeneration } from "@/components/LeadGeneration";
-import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp } from "lucide-react";
+import { PaymentProcessing } from "@/components/PaymentProcessing";
+import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -33,6 +34,8 @@ const Index = () => {
         return <ReviewManagement />;
       case 'leads':
         return <LeadGeneration />;
+      case 'payments':
+        return <PaymentProcessing />;
       case 'settings':
         return <SettingsDashboard />;
       case 'gps-tracking':
@@ -58,6 +61,7 @@ const Index = () => {
           { id: 'customer-portal', label: 'Customer Portal', icon: Globe },
           { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
           { id: 'reviews', label: 'Review Management', icon: Star },
+          { id: 'payments', label: 'Payment Processing', icon: CreditCard },
           { id: 'map', label: 'Map View', icon: MapPin },
           { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
           { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
