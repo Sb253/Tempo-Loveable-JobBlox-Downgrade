@@ -498,10 +498,14 @@ export const AppLayout = () => {
   const sidebarWidth = sidebarCollapsed ? 80 : 320;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <AppHeader onCompanySettingsClick={handleCompanySettingsClick} />
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* Fixed Header */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <AppHeader onCompanySettingsClick={handleCompanySettingsClick} />
+      </div>
       
-      <div className="flex flex-1">
+      {/* Main Content with proper spacing for fixed header */}
+      <div className="pt-16 flex flex-1 min-h-screen">
         <MegaMenuSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
@@ -511,8 +515,10 @@ export const AppLayout = () => {
           onToggleCollapse={handleSidebarToggle}
         />
 
-        <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
-          {renderSection()}
+        <main className="flex-1 transition-all duration-300 bg-background text-foreground" style={{ marginLeft: `${sidebarWidth}px` }}>
+          <div className="min-h-full bg-background text-foreground">
+            {renderSection()}
+          </div>
         </main>
       </div>
     </div>

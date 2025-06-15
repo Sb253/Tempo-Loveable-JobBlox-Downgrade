@@ -145,11 +145,12 @@ export const MegaMenuSidebar = ({
 
   return (
     <div className={cn(
-      "fixed left-0 top-0 h-full bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
+      "fixed left-0 bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
+      "top-16 h-[calc(100vh-4rem)]", // Account for fixed header height
       collapsed ? "w-20" : "w-80"
     )}>
-      {/* Fixed App Header */}
-      <div className="p-4 md:p-6 border-b border-border">
+      {/* App Branding */}
+      <div className="p-4 md:p-6 border-b border-border bg-card">
         <div className="flex items-center gap-3 mb-3">
           <Hammer className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
           {!collapsed && (
@@ -163,7 +164,7 @@ export const MegaMenuSidebar = ({
             variant="ghost"
             size="icon"
             onClick={handleToggleCollapse}
-            className="h-6 w-6 md:h-8 md:w-8"
+            className="h-6 w-6 md:h-8 md:w-8 text-foreground hover:bg-accent"
           >
             {collapsed ? <Menu className="h-3 w-3 md:h-4 md:w-4" /> : <X className="h-3 w-3 md:h-4 md:w-4" />}
           </Button>
@@ -171,7 +172,7 @@ export const MegaMenuSidebar = ({
       </div>
       
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-2 md:px-4 py-2">
+      <ScrollArea className="flex-1 px-2 md:px-4 py-2 bg-card">
         <div className="space-y-2">
           {/* Dashboard Home Link */}
           {dashboardSection && (
@@ -238,7 +239,7 @@ export const MegaMenuSidebar = ({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-2 md:p-3 h-auto font-medium text-left hover:bg-accent text-xs md:text-sm"
+                    className="w-full justify-between p-2 md:p-3 h-auto font-medium text-left hover:bg-accent text-xs md:text-sm text-foreground"
                   >
                     <div className="flex items-center gap-2 md:gap-3 min-w-0">
                       <GroupIcon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
