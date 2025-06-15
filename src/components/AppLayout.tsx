@@ -1,12 +1,14 @@
 
 import { useState, useEffect } from 'react';
-import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home } from "lucide-react";
+import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
 import { TopMenuNavigation } from "./TopMenuNavigation";
 import { Dashboard } from "./Dashboard";
 import { CustomWidgetList } from "./CustomWidgetList";
 import { CustomCardList } from "./CustomCardList";
 import { CompanySettings } from "./CompanySettings";
 import { NavigationSettings } from "./NavigationSettings";
+import { TeamManagement } from "./TeamManagement";
+import { SubcontractorManagement } from "./SubcontractorManagement";
 
 interface SidebarSection {
   id: string;
@@ -39,6 +41,8 @@ const sections: SidebarSection[] = [
   { id: 'analytics', label: 'Analytics', icon: PieChart },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'map-view', label: 'Map View', icon: Map },
+  { id: 'team-management', label: 'Team Management', icon: UserCheck },
+  { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
   { id: 'widgets', label: 'Dashboard Widgets', icon: Palette },
   { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
@@ -63,6 +67,10 @@ export const AppLayout = () => {
         return <CustomCardList />;
       case 'company-settings':
         return <CompanySettings />;
+      case 'team-management':
+        return <TeamManagement />;
+      case 'subcontractor-management':
+        return <SubcontractorManagement />;
       case 'settings':
         return <SettingsView />;
       default:

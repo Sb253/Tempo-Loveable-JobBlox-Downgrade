@@ -66,8 +66,8 @@ export const TopMenuNavigation = ({
     'Dashboard': sections.filter(s => ['dashboard', 'widgets', 'cards'].includes(s.id)),
     'Customer Management': sections.filter(s => ['customers', 'customer-form', 'pipeline', 'communication', 'reviews'].includes(s.id)),
     'Job Management': sections.filter(s => ['jobs', 'job-form', 'schedule', 'time-tracking', 'photos', 'safety', 'quality'].includes(s.id)),
+    'Team & Resources': sections.filter(s => ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles'].includes(s.id)),
     'Financial': sections.filter(s => ['estimates', 'invoices', 'expenses', 'goals'].includes(s.id)),
-    'Resources': sections.filter(s => ['inventory', 'equipment', 'vehicles'].includes(s.id)),
     'Reports & Analytics': sections.filter(s => ['reports', 'analytics', 'map-view'].includes(s.id)),
     'System': sections.filter(s => ['notifications', 'company-settings', 'settings'].includes(s.id))
   };
@@ -92,50 +92,52 @@ export const TopMenuNavigation = ({
         {/* Navigation Menu */}
         <div className="flex items-center gap-2">
           {Object.entries(menuGroups).map(([groupName, groupSections]) => (
-            <DropdownMenu key={groupName}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-1 text-sm">
-                  {groupName}
-                  <ChevronDown className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="start" 
-                className="w-56 bg-background border border-border shadow-lg z-[9999]"
-                sideOffset={4}
-              >
-                {groupSections.map((section) => {
-                  const Icon = section.icon;
-                  return (
-                    <DropdownMenuItem
-                      key={section.id}
-                      onClick={() => {
-                        console.log('TopMenuNavigation: Section clicked:', section.id);
-                        onSectionChange(section.id);
-                      }}
-                      className={`flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground ${
-                        activeSection === section.id ? 'bg-accent text-accent-foreground' : ''
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span>{section.label}</span>
-                    </DropdownMenuItem>
-                  );
-                })}
-                {groupName === 'System' && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={onNavigationSettings}
-                      className="flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
-                    >
-                      <Settings className="h-4 w-4" />
-                      <span>Navigation Settings</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            groupSections.length > 0 && (
+              <DropdownMenu key={groupName}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-1 text-sm">
+                    {groupName}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="start" 
+                  className="w-56 bg-background border border-border shadow-lg z-[9999]"
+                  sideOffset={4}
+                >
+                  {groupSections.map((section) => {
+                    const Icon = section.icon;
+                    return (
+                      <DropdownMenuItem
+                        key={section.id}
+                        onClick={() => {
+                          console.log('TopMenuNavigation: Section clicked:', section.id);
+                          onSectionChange(section.id);
+                        }}
+                        className={`flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground ${
+                          activeSection === section.id ? 'bg-accent text-accent-foreground' : ''
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{section.label}</span>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                  {groupName === 'System' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={onNavigationSettings}
+                        className="flex items-center gap-3 cursor-pointer px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <Settings className="h-4 w-4" />
+                        <span>Navigation Settings</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )
           ))}
         </div>
       </div>
