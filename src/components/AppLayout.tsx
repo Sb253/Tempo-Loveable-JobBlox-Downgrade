@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +26,7 @@ import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
 import { BranchManagement } from "./BranchManagement";
 import { RadiusAssignment } from "./RadiusAssignment";
 import { EmployeeLocationManager } from "./EmployeeLocationManager";
+import { Pipeline } from "./Pipeline";
 
 interface SidebarSection {
   id: string;

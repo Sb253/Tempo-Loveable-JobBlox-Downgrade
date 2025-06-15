@@ -4,9 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Settings, BarChart3, PieChart, TrendingUp, Calendar } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Plus, Settings, BarChart3, PieChart, TrendingUp, Calendar, MapPin, Users } from "lucide-react";
 import { DragDropPipeline, PipelineStage, PipelineItem } from "@/components/DragDropPipeline";
 import { CustomBarChart, CustomPieChart, CustomLineChart } from "@/components/charts/ChartTypes";
+import { RadiusOverrideManager } from "@/components/RadiusOverrideManager";
+import { EmployeeAvailabilityTracker } from "@/components/EmployeeAvailabilityTracker";
 import { useTheme } from "@/components/ThemeProvider";
 
 export const Pipeline = () => {
@@ -76,6 +79,7 @@ export const Pipeline = () => {
   ]);
 
   const [selectedItem, setSelectedItem] = useState<PipelineItem | null>(null);
+  const [showRadiusManager, setShowRadiusManager] = useState(false);
 
   // Sample data for charts with modern colors
   const pipelineValueData = pipelineStages.map(stage => ({
@@ -126,13 +130,24 @@ export const Pipeline = () => {
     return pipelineStages.flatMap(stage => stage.items).length;
   };
 
+  const stats = {
+    total: getTotalCount(),
+    totalValue: getTotalValue(),
+    inProgress: pipelineStages.find(s => s.id === 'in-progress')?.items.length || 0,
+    completed: pipelineStages.find(s => s.id === 'completed')?.items.length || 0
+  };
+
   return (
     <div className="space-y-6 min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">Pipeline Management</h1>
         <div className="flex gap-2">
-          <Button className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg">
-            <Plus className="h-4 w-4" />
+          <Button onClick={() => setShowRadiusManager(true)} variant="outline">
+            <MapPin className="h-4 w-4 mr-2" />
+            Radius Override
+          </Button>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
             Add New Job
           </Button>
           <Button variant="outline" className="flex items-center gap-2 border-2 border-primary/20 hover:bg-primary/10">
@@ -151,7 +166,7 @@ export const Pipeline = () => {
                 <TrendingUp className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{getTotalCount()}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-500 bg-clip-text text-transparent">{stats.total}</p>
                 <p className="text-sm text-muted-foreground font-medium">Total Deals</p>
               </div>
             </div>
@@ -165,7 +180,7 @@ export const Pipeline = () => {
                 <BarChart3 className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">${getTotalValue().toLocaleString()}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">${stats.totalValue.toLocaleString()}</p>
                 <p className="text-sm text-muted-foreground font-medium">Pipeline Value</p>
               </div>
             </div>
@@ -179,7 +194,7 @@ export const Pipeline = () => {
                 <Calendar className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">{pipelineStages[3]?.items.length || 0}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">{stats.inProgress}</p>
                 <p className="text-sm text-muted-foreground font-medium">Active Projects</p>
               </div>
             </div>
@@ -193,7 +208,7 @@ export const Pipeline = () => {
                 <PieChart className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">{pipelineStages[4]?.items.length || 0}</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-500 bg-clip-text text-transparent">{stats.completed}</p>
                 <p className="text-sm text-muted-foreground font-medium">Completed</p>
               </div>
             </div>
@@ -204,6 +219,7 @@ export const Pipeline = () => {
       <Tabs defaultValue="kanban" className="w-full">
         <TabsList className="bg-gradient-to-r from-muted/50 to-muted border-2 border-primary/20">
           <TabsTrigger value="kanban" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Kanban Board</TabsTrigger>
+          <TabsTrigger value="availability" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Employee Availability</TabsTrigger>
           <TabsTrigger value="analytics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Analytics</TabsTrigger>
           <TabsTrigger value="trends" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-white">Trends</TabsTrigger>
         </TabsList>
@@ -249,6 +265,10 @@ export const Pipeline = () => {
                 <div className="flex gap-2">
                   <Button size="sm" className="bg-gradient-to-r from-primary to-primary/80">Edit Deal</Button>
                   <Button size="sm" variant="outline" className="border-2 border-primary/20">Create Job</Button>
+                  <Button size="sm" variant="outline" className="border-2 border-orange-500/20 text-orange-600 hover:bg-orange-50" onClick={() => setShowRadiusManager(true)}>
+                    <MapPin className="h-3 w-3 mr-1" />
+                    Set Radius Override
+                  </Button>
                   <Button size="sm" variant="outline" className="border-2 border-primary/20" onClick={() => setSelectedItem(null)}>
                     Close
                   </Button>
@@ -256,6 +276,10 @@ export const Pipeline = () => {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="availability" className="space-y-6">
+          <EmployeeAvailabilityTracker />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
@@ -296,6 +320,19 @@ export const Pipeline = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Radius Override Manager Dialog */}
+      <Dialog open={showRadiusManager} onOpenChange={setShowRadiusManager}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Employee Radius Override Management
+            </DialogTitle>
+          </DialogHeader>
+          <RadiusOverrideManager />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
