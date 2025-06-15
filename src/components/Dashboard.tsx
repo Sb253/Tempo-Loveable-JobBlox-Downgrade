@@ -12,6 +12,7 @@ import { NavigationToggle } from "./NavigationToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { QuickActions } from "./QuickActions";
 import { MapView } from "./MapView";
+import { JobLocationsList } from "./JobLocationsList";
 
 interface DashboardWidget {
   id: string;
@@ -135,7 +136,7 @@ export const Dashboard = () => {
       
       case 'recent-jobs':
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Recent Jobs</CardTitle>
@@ -162,6 +163,8 @@ export const Dashboard = () => {
             </Card>
             
             <MapView jobs={recentJobs} />
+            
+            <JobLocationsList jobs={recentJobs} />
           </div>
         );
       

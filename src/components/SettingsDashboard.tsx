@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, User, Bell, Shield, Layout, Grid3X3, Palette } from "lucide-react";
+import { Settings, User, Bell, Shield, Layout, Grid3X3, Palette, FileText } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CustomWidgetList } from "@/components/CustomWidgetList";
 import { CustomCardList } from "@/components/CustomCardList";
 import { CustomThemeList } from "@/components/CustomThemeList";
+import { EstimateInvoiceCustomization } from "@/components/EstimateInvoiceCustomization";
 
 export const SettingsDashboard = () => {
   return (
@@ -16,12 +17,13 @@ export const SettingsDashboard = () => {
       <h1 className="text-3xl font-bold">Settings</h1>
       
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="widgets">Widgets</TabsTrigger>
           <TabsTrigger value="cards">Cards</TabsTrigger>
           <TabsTrigger value="themes">Themes</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
@@ -115,6 +117,20 @@ export const SettingsDashboard = () => {
             </CardHeader>
             <CardContent>
               <CustomThemeList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="documents">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Document Customization
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <EstimateInvoiceCustomization />
             </CardContent>
           </Card>
         </TabsContent>
