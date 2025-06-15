@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { WidgetCustomization } from "./WidgetCustomization";
-import { Palette, Layout, Grid3X3, Settings } from "lucide-react";
+import { CustomWidgetList } from "./CustomWidgetList";
+import { CustomCardList } from "./CustomCardList";
+import { Palette, Layout, Grid3X3, Settings, Plus } from "lucide-react";
 
 interface DashboardWidget {
   id: string;
@@ -153,10 +154,14 @@ export const DashboardCustomization = ({
         </DialogHeader>
         
         <Tabs defaultValue="widgets" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-primary/10 to-primary/5">
+          <TabsList className="grid w-full grid-cols-5 bg-gradient-to-r from-primary/10 to-primary/5">
             <TabsTrigger value="widgets" className="flex items-center gap-2">
               <Grid3X3 className="h-4 w-4" />
               Widgets
+            </TabsTrigger>
+            <TabsTrigger value="cards" className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Cards
             </TabsTrigger>
             <TabsTrigger value="layout" className="flex items-center gap-2">
               <Layout className="h-4 w-4" />
@@ -173,10 +178,17 @@ export const DashboardCustomization = ({
           </TabsList>
 
           <TabsContent value="widgets" className="space-y-4">
-            <WidgetCustomization 
-              widgets={enhancedWidgets}
-              onWidgetsChange={onWidgetsChange}
-            />
+            <div className="space-y-6">
+              <WidgetCustomization 
+                widgets={enhancedWidgets}
+                onWidgetsChange={onWidgetsChange}
+              />
+              <CustomWidgetList />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="cards" className="space-y-4">
+            <CustomCardList />
           </TabsContent>
 
           <TabsContent value="layout" className="space-y-4">
