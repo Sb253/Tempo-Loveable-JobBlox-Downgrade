@@ -1,12 +1,19 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Calendar, Users, DollarSign, Wrench, Settings, Clock } from "lucide-react";
+import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { DashboardCustomization } from "./DashboardCustomization";
+
+interface DashboardWidget {
+  id: string;
+  title: string;
+  enabled: boolean;
+  order: number;
+}
 
 export const Dashboard = () => {
   const { toast } = useToast();
@@ -14,7 +21,14 @@ export const Dashboard = () => {
   const [timezone, setTimezone] = useState('America/New_York');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
+
+  const [widgets, setWidgets] = useState<DashboardWidget[]>([
+    { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
+    { id: 'recent-jobs', title: 'Recent Jobs', enabled: true, order: 1 },
+    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
+  ]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -61,6 +75,85 @@ export const Dashboard = () => {
       description: `Timezone has been set to ${tempTimezone}`,
     });
   };
+
+  const getWidget = (id: string) => {
+    switch (id) {
+      case 'stats':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={index}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                    <Icon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <p className="text-xs text-muted-foreground">{stat.trend}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        );
+      
+      case 'recent-jobs':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Jobs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <p className="font-medium">Kitchen Renovation</p>
+                    <p className="text-sm text-muted-foreground">John Smith - Today 2:00 PM</p>
+                  </div>
+                  <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">Scheduled</span>
+                </div>
+                <div className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <p className="font-medium">Bathroom Repair</p>
+                    <p className="text-sm text-muted-foreground">ABC Construction - Tomorrow 9:00 AM</p>
+                  </div>
+                  <span className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">In Progress</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      
+      case 'quick-actions':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <button className="w-full p-3 text-left border rounded hover:bg-muted">
+                Schedule New Job
+              </button>
+              <button className="w-full p-3 text-left border rounded hover:bg-muted">
+                Add New Customer
+              </button>
+              <button className="w-full p-3 text-left border rounded hover:bg-muted">
+                Create Estimate
+              </button>
+            </CardContent>
+          </Card>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  const enabledWidgets = widgets
+    .filter(widget => widget.enabled)
+    .sort((a, b) => a.order - b.order);
 
   const stats = [
     {
@@ -109,67 +202,36 @@ export const Dashboard = () => {
             </Button>
           </div>
         </div>
+        
+        <Button 
+          variant="outline" 
+          onClick={() => setShowCustomization(true)}
+          className="flex items-center gap-2"
+        >
+          <Palette className="h-4 w-4" />
+          Customize Dashboard
+        </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground">{stat.trend}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Jobs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 border rounded">
-                <div>
-                  <p className="font-medium">Kitchen Renovation</p>
-                  <p className="text-sm text-muted-foreground">John Smith - Today 2:00 PM</p>
-                </div>
-                <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">Scheduled</span>
+      <div className="space-y-6">
+        {enabledWidgets.map((widget) => (
+          <div key={widget.id}>
+            {widget.id === 'stats' ? (
+              getWidget(widget.id)
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {widget.id === 'recent-jobs' && enabledWidgets.find(w => w.id === 'quick-actions') ? (
+                  <>
+                    {getWidget('recent-jobs')}
+                    {getWidget('quick-actions')}
+                  </>
+                ) : (
+                  getWidget(widget.id)
+                )}
               </div>
-              <div className="flex justify-between items-center p-3 border rounded">
-                <div>
-                  <p className="font-medium">Bathroom Repair</p>
-                  <p className="text-sm text-muted-foreground">ABC Construction - Tomorrow 9:00 AM</p>
-                </div>
-                <span className="text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded">In Progress</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <button className="w-full p-3 text-left border rounded hover:bg-muted">
-              Schedule New Job
-            </button>
-            <button className="w-full p-3 text-left border rounded hover:bg-muted">
-              Add New Customer
-            </button>
-            <button className="w-full p-3 text-left border rounded hover:bg-muted">
-              Create Estimate
-            </button>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Timezone Settings Dialog */}
@@ -224,6 +286,20 @@ export const Dashboard = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Dashboard Customization Dialog */}
+      <DashboardCustomization
+        open={showCustomization}
+        onOpenChange={setShowCustomization}
+        widgets={widgets}
+        onWidgetsChange={(newWidgets) => {
+          setWidgets(newWidgets);
+          toast({
+            title: "Dashboard Updated",
+            description: "Your dashboard layout has been saved.",
+          });
+        }}
+      />
     </div>
   );
 };
