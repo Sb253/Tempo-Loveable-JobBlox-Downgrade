@@ -61,7 +61,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Enhanced vibrant colors for both modes (no yellow)
+        // Enhanced vibrant colors for both modes (removed yellow/amber)
         vibrant: {
           purple: "#8B5CF6",
           blue: "#3B82F6", 
@@ -78,9 +78,8 @@ export default {
           violet: "#7C3AED",
           fuchsia: "#C026D3",
           rose: "#F43F5E",
-          amber: "#D97706",
         },
-        // Dark mode vibrant colors (no yellow)
+        // Dark mode vibrant colors (removed yellow/amber)
         "vibrant-dark": {
           purple: "#A78BFA",
           blue: "#60A5FA",
@@ -97,7 +96,6 @@ export default {
           violet: "#8B5CF6",
           fuchsia: "#E879F9",
           rose: "#FB7185",
-          amber: "#FCD34D",
         },
       },
       borderRadius: {
