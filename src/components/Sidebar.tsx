@@ -1,74 +1,87 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  FileText, 
-  Receipt, 
-  BarChart3, 
-  Settings,
-  ClipboardCheck,
-  ChevronLeft,
-  ChevronRight
-} from "lucide-react";
+import { LucideIcon, Building2 } from "lucide-react";
 
-interface SidebarProps {
-  activeView: string;
-  setActiveView: (view: string) => void;
+interface SidebarSection {
+  id: string;
+  label: string;
+  icon: LucideIcon;
 }
 
-export const Sidebar = ({ activeView, setActiveView }: SidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface SidebarProps {
+  activeSection: string;
+  onSectionChange: (section: string) => void;
+  sections: SidebarSection[];
+  isVisible?: boolean;
+}
 
-  const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "appointment", label: "Appointment", icon: ClipboardCheck },
-    { id: "customers", label: "Customers", icon: Users },
-    { id: "jobs", label: "Jobs", icon: Calendar },
-    { id: "estimates", label: "Estimates", icon: FileText },
-    { id: "invoices", label: "Invoices", icon: Receipt },
-    { id: "schedule", label: "Schedule", icon: Calendar },
-    { id: "reports", label: "Reports", icon: BarChart3 },
-    { id: "settings", label: "Settings", icon: Settings },
-  ];
+interface CompanyData {
+  name: string;
+  logo: string | null;
+}
+
+export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = true }: SidebarProps) => {
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Construction CRM',
+    logo: null
+  });
+
+  useEffect(() => {
+    const savedCompanyData = localStorage.getItem('companySettings');
+    if (savedCompanyData) {
+      const data = JSON.parse(savedCompanyData);
+      setCompanyData({
+        name: data.name || 'Construction CRM',
+        logo: data.logo || null
+      });
+    }
+  }, []);
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
-    <div className={`bg-white shadow-lg transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && <h2 className="text-xl font-bold text-primary">ConstructCRM</h2>}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2"
-          >
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
+    <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border z-40">
+      <div className="p-6">
+        <div className="flex items-center gap-3">
+          {companyData.logo ? (
+            <img 
+              src={companyData.logo} 
+              alt="Company Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          ) : (
+            <Building2 className="h-8 w-8 text-primary" />
+          )}
+          <h1 className="text-2xl font-bold text-primary">{companyData.name}</h1>
         </div>
       </div>
       
-      <ScrollArea className="flex-1">
-        <nav className="p-4 space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Button
-                key={item.id}
-                variant={activeView === item.id ? "default" : "ghost"}
-                className={`w-full justify-start ${isCollapsed ? 'px-2' : 'px-4'}`}
-                onClick={() => setActiveView(item.id)}
-              >
-                <Icon className="h-4 w-4" />
-                {!isCollapsed && <span className="ml-2">{item.label}</span>}
-              </Button>
-            );
-          })}
-        </nav>
-      </ScrollArea>
+      <nav className="px-4 space-y-2">
+        {sections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <Button
+              key={section.id}
+              variant={activeSection === section.id ? "default" : "ghost"}
+              className={cn(
+                "w-full justify-start gap-3",
+                activeSection === section.id && "bg-primary text-primary-foreground"
+              )}
+              onClick={() => {
+                console.log('Sidebar: Section clicked:', section.id);
+                onSectionChange(section.id);
+              }}
+            >
+              <Icon className="h-5 w-5" />
+              {section.label}
+            </Button>
+          );
+        })}
+      </nav>
     </div>
   );
 };

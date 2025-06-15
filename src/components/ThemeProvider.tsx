@@ -52,12 +52,12 @@ export function ThemeProvider({
       root.style.color = '#f8fafc'
       body.style.backgroundColor = '#0f172a'
       body.style.color = '#f8fafc'
-      body.style.background = '#0f172a'
+      body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
       body.style.minHeight = '100vh'
       
       // Ensure the root element covers full height
       root.style.minHeight = '100vh'
-      root.style.background = '#0f172a'
+      root.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
       
       // Set all containers to inherit dark styling
       root.style.setProperty('--background', '15 23 42') // slate-900
@@ -72,32 +72,23 @@ export function ThemeProvider({
       if (rootDiv) {
         rootDiv.style.backgroundColor = '#0f172a'
         rootDiv.style.minHeight = '100vh'
-        rootDiv.style.background = '#0f172a'
+        rootDiv.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
       }
-
-      // Apply dark mode to all major container elements
-      const containers = document.querySelectorAll('div, main, section, article, aside, header, footer, nav')
-      containers.forEach((container) => {
-        const element = container as HTMLElement
-        if (!element.style.backgroundColor || element.style.backgroundColor === 'transparent') {
-          element.style.backgroundColor = '#0f172a'
-        }
-      })
     } else {
       // Set light background for entire page
       root.style.backgroundColor = '#ffffff'
       root.style.color = '#0f172a'
       body.style.backgroundColor = '#ffffff'
       body.style.color = '#0f172a'
-      body.style.background = '#ffffff'
+      body.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
       body.style.minHeight = '100vh'
       
       // Ensure the root element covers full height
       root.style.minHeight = '100vh'
-      root.style.background = '#ffffff'
+      root.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
       
       // Set all containers to inherit light styling
-      root.style.setProperty('--background', '0 0 100') // white
+      root.style.setProperty('--background', '240 100 99') // near white
       root.style.setProperty('--foreground', '15 23 42') // slate-900
       root.style.setProperty('--card', '0 0 100') // white
       root.style.setProperty('--card-foreground', '15 23 42') // slate-900
@@ -109,7 +100,7 @@ export function ThemeProvider({
       if (rootDiv) {
         rootDiv.style.backgroundColor = '#ffffff'
         rootDiv.style.minHeight = '100vh'
-        rootDiv.style.background = '#ffffff'
+        rootDiv.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)'
       }
     }
   }, [theme])
