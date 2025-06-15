@@ -13,7 +13,12 @@ import { CustomerPortal } from "@/components/CustomerPortal";
 import { ReviewManagement } from "@/components/ReviewManagement";
 import { LeadGeneration } from "@/components/LeadGeneration";
 import { PaymentProcessing } from "@/components/PaymentProcessing";
-import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard } from "lucide-react";
+import { ExpenseList } from "@/components/ExpenseList";
+import { ReportsView } from "@/components/ReportsView";
+import { ProfitMarginAnalysis } from "@/components/ProfitMarginAnalysis";
+import { AdvancedReporting } from "@/components/AdvancedReporting";
+import { AdvancedAnalytics } from "@/components/AdvancedAnalytics";
+import { MapPin, Zap, MessageSquare, LayoutDashboard, Calendar, Settings, Users, Globe, Star, TrendingUp, CreditCard, Receipt, BarChart3, PieChart, TrendingDown } from "lucide-react";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -36,6 +41,16 @@ const Index = () => {
         return <LeadGeneration />;
       case 'payments':
         return <PaymentProcessing />;
+      case 'expenses':
+        return <ExpenseList />;
+      case 'reports':
+        return <ReportsView />;
+      case 'profit-analysis':
+        return <ProfitMarginAnalysis />;
+      case 'advanced-reporting':
+        return <AdvancedReporting />;
+      case 'analytics':
+        return <AdvancedAnalytics />;
       case 'settings':
         return <SettingsDashboard />;
       case 'gps-tracking':
@@ -62,6 +77,11 @@ const Index = () => {
           { id: 'leads', label: 'Lead Generation', icon: TrendingUp },
           { id: 'reviews', label: 'Review Management', icon: Star },
           { id: 'payments', label: 'Payment Processing', icon: CreditCard },
+          { id: 'expenses', label: 'Expense Tracking', icon: Receipt },
+          { id: 'reports', label: 'Financial Reports', icon: BarChart3 },
+          { id: 'profit-analysis', label: 'Profit Analysis', icon: TrendingDown },
+          { id: 'advanced-reporting', label: 'Advanced Reporting', icon: PieChart },
+          { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
           { id: 'map', label: 'Map View', icon: MapPin },
           { id: 'gps-tracking', label: 'GPS Tracking', icon: MapPin },
           { id: 'dispatch', label: 'Real-Time Dispatch', icon: Zap },
