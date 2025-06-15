@@ -1,16 +1,16 @@
 
-import { Communication } from "@/components/Communication";
+import { VehicleManagement } from "@/components/VehicleManagement";
 import { MainNavigation } from "@/components/MainNavigation";
 
-const CommunicationPage = () => {
+const VehiclesPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <MainNavigation />
       <div className="container mx-auto p-6">
-        <Communication />
+        <VehicleManagement />
       </div>
     </div>
   );
 };
 
-export default CommunicationPage;
+export default VehiclesPage;

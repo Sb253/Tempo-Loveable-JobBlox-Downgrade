@@ -7,7 +7,7 @@ import {
   Briefcase, 
   MessageSquare, 
   Star,
-  Settings
+  Truck
 } from "lucide-react";
 
 export const MainNavigation = () => {
@@ -19,10 +19,11 @@ export const MainNavigation = () => {
     { path: "/jobs", label: "Jobs", icon: Briefcase },
     { path: "/communication", label: "Communication", icon: MessageSquare },
     { path: "/reviews", label: "Reviews", icon: Star },
+    { path: "/vehicles", label: "Vehicles", icon: Truck },
   ];
 
   return (
-    <nav className="flex gap-2 p-4 bg-white border-b">
+    <nav className="flex gap-2 p-4 bg-background border-b">
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = location.pathname === item.path;
