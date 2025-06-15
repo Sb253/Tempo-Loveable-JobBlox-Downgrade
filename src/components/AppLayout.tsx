@@ -26,6 +26,7 @@ import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
 import { Communication } from "./Communication";
 import { SafetyManagement } from "./SafetyManagement";
+import { QualityControl } from "./QualityControl";
 
 interface SidebarSection {
   id: string;
@@ -129,6 +130,12 @@ const SafetyManagementComponent = () => (
   </div>
 );
 
+const QualityControlComponent = () => (
+  <div className="p-6">
+    <QualityControl />
+  </div>
+);
+
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('client-appointment');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -188,7 +195,7 @@ export const AppLayout = () => {
       case 'safety':
         return <SafetyManagementComponent />;
       case 'quality':
-        return <QualityControl />;
+        return <QualityControlComponent />;
       case 'goals':
         return <KPIDashboard />;
       case 'reports':

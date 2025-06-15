@@ -12,6 +12,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { QuickActions } from "./QuickActions";
 import { MapView } from "./MapView";
 import { JobLocationsList } from "./JobLocationsList";
+import { EmployeeLocationMap } from "./EmployeeLocationMap";
 
 interface DashboardWidget {
   id: string;
@@ -32,7 +33,8 @@ export const Dashboard = () => {
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
     { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
     { id: 'recent-jobs', title: 'Recent Jobs', enabled: true, order: 1 },
-    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
+    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 },
+    { id: 'employee-locations', title: 'Employee Locations', enabled: false, order: 3 }
   ]);
 
   // Sample job data with coordinates for map display - added 'type' property to fix TypeScript error
@@ -222,25 +224,18 @@ export const Dashboard = () => {
               <Label className="text-lg font-semibold">Quick Actions</Label>
               <Badge variant="outline">Shortcuts</Badge>
             </div>
-            <Card className="colorful-card shadow-lg">
-              <CardHeader>
-                <CardTitle className="colorful-text">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { text: 'Schedule New Job', gradient: 'from-purple-500 to-pink-500' },
-                  { text: 'Add New Customer', gradient: 'from-blue-500 to-cyan-500' },
-                  { text: 'Create Estimate', gradient: 'from-green-500 to-emerald-500' }
-                ].map((action, index) => (
-                  <button 
-                    key={index}
-                    className={`w-full p-3 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105`}
-                  >
-                    {action.text}
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
+            <QuickActions />
+          </div>
+        );
+
+      case 'employee-locations':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Employee Locations</Label>
+              <Badge variant="outline">Real-time</Badge>
+            </div>
+            <EmployeeLocationMap compact={true} />
           </div>
         );
       
