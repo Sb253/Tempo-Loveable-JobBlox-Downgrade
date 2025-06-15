@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer } from "lucide-react";
+import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dashboard } from "./Dashboard";
@@ -59,7 +59,16 @@ const sections: SidebarSection[] = [
   { id: 'widgets', label: 'Dashboard Widgets', icon: Palette },
   { id: 'cards', label: 'Dashboard Cards', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
-  { id: 'settings', label: 'Settings', icon: Settings }
+  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'team-chat', label: 'Team Chat', icon: MessageSquare },
+  { id: 'advanced-inventory', label: 'Advanced Inventory', icon: Package },
+  { id: 'financial-analytics', label: 'Financial Analytics', icon: TrendingUp },
+  { id: 'payment-integration', label: 'Payment Hub', icon: CreditCard },
+  { id: 'profit-analysis', label: 'Profit Analysis', icon: DollarSign },
+  { id: 'predictive-analytics', label: 'Predictive Analytics', icon: Target },
+  { id: 'advanced-reporting', label: 'Advanced Reports', icon: BarChart3 },
+  { id: 'quickbooks-integration', label: 'QuickBooks', icon: Database },
+  { id: 'accounting-integration', label: 'Accounting', icon: Calculator }
 ];
 
 // Sample job data with appointments and jobs
@@ -180,6 +189,24 @@ export const AppLayout = () => {
         return <SubcontractorManagement />;
       case 'settings':
         return <SettingsView />;
+      case 'team-chat':
+        return <RealTimeChat />;
+      case 'advanced-inventory':
+        return <AdvancedInventorySystem />;
+      case 'financial-analytics':
+        return <FinancialAnalyticsDashboard />;
+      case 'payment-integration':
+        return <PaymentIntegrationHub />;
+      case 'profit-analysis':
+        return <ProfitMarginAnalysis />;
+      case 'predictive-analytics':
+        return <PredictiveAnalytics />;
+      case 'advanced-reporting':
+        return <AdvancedReporting />;
+      case 'quickbooks-integration':
+        return <QuickBooksIntegration />;
+      case 'accounting-integration':
+        return <AccountingIntegration />;
       default:
         return (
           <div className="p-6">
@@ -493,3 +520,102 @@ const SettingsView = () => {
     </div>
   );
 };
+
+const RealTimeChat = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Team Chat</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Real-time communication and collaboration system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AdvancedInventorySystem = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Advanced Inventory</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Advanced inventory management and tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const FinancialAnalyticsDashboard = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Financial Analytics</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Financial analysis and reporting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const PaymentIntegrationHub = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Payment Hub</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Payment processing and integration system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ProfitMarginAnalysis = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Profit Analysis</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Profit margin and financial performance analysis will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const PredictiveAnalytics = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Predictive Analytics</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Predictive analytics and forecasting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AdvancedReporting = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Advanced Reports</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Advanced reporting and visualization system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const QuickBooksIntegration = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">QuickBooks</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>QuickBooks integration and accounting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AccountingIntegration = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Accounting</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Accounting and financial management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
