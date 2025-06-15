@@ -335,17 +335,6 @@ const EquipmentTracking = () => (
   </div>
 );
 
-const PhotoDocumentation = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Photo Documentation</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Photo management and documentation system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const EmployeeChat = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Employee Communication</h2>
@@ -524,50 +513,6 @@ const SettingsView = () => {
     </div>
   );
 };
-
-const RealTimeChat = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Team Chat</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Real-time communication and collaboration system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const AdvancedInventorySystem = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Advanced Inventory</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Advanced inventory management and tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const FinancialAnalyticsDashboard = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Financial Analytics</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Financial analysis and reporting system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const PaymentIntegrationHub = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Payment Hub</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Payment processing and integration system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
 
 const ProfitMarginAnalysis = () => (
   <div className="p-6">
