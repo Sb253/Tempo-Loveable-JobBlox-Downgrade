@@ -1,5 +1,5 @@
 
-import { Bot, User } from "lucide-react";
+import { Bot, User, Info } from "lucide-react";
 import { ChatMessage as ChatMessageType } from "@/types/chatTypes";
 
 interface ChatMessageProps {
@@ -12,6 +12,18 @@ export const ChatMessage = ({ message, isFloating = false }: ChatMessageProps) =
   const avatarSize = isFloating ? "w-6 h-6" : "w-8 h-8";
   const padding = isFloating ? "p-2" : "p-3";
   const textSize = isFloating ? "text-xs" : "";
+
+  // Handle system messages differently
+  if (message.role === 'system') {
+    return (
+      <div className="flex justify-center">
+        <div className={`flex items-center gap-2 ${padding} rounded-lg bg-blue-50 border border-blue-200 ${textSize} text-blue-800 max-w-[90%]`}>
+          <Info className={`${iconSize} text-blue-600`} />
+          <span className="text-center">{message.content}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
