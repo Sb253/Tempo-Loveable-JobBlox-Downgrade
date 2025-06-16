@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { MessageCircle, Send, Bot, User, X, Minimize2, Maximize2, Mic, MicOff, Volume2, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { aiService, type ChatMessage } from "@/services/aiService";
@@ -170,7 +171,7 @@ export const EnhancedAIChatAssistant = ({
 
   if (isFloating) {
     return (
-      <>
+      <TooltipProvider>
         {/* Floating Chat Button */}
         {!isOpen && (
           <Button
@@ -227,7 +228,14 @@ export const EnhancedAIChatAssistant = ({
                     </SelectContent>
                   </Select>
                   {isVoiceEnabled && (
-                    <Volume2 className="h-3 w-3 text-green-500" title="Voice enabled" />
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Volume2 className="h-3 w-3 text-green-500" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Voice enabled</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               )}
@@ -311,91 +319,93 @@ export const EnhancedAIChatAssistant = ({
             )}
           </Card>
         )}
-      </>
+      </TooltipProvider>
     );
   }
 
   // Full-page version similar to floating but larger
   return (
-    <Card className="w-full h-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5" />
-            Enhanced AI Assistant
-            <Badge variant="secondary">GPT-4</Badge>
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <Select value={selectedMode} onValueChange={handleModeChange}>
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {chatModes.map((mode) => (
-                  <SelectItem key={mode.value} value={mode.value}>
-                    {mode.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <TooltipProvider>
+      <Card className="w-full h-full">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              Enhanced AI Assistant
+              <Badge variant="secondary">GPT-4</Badge>
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Select value={selectedMode} onValueChange={handleModeChange}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {chatModes.map((mode) => (
+                    <SelectItem key={mode.value} value={mode.value}>
+                      {mode.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent className="flex flex-col h-96">
-        <ScrollArea className="flex-1 pr-4 mb-4">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`flex items-start gap-3 max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.role === 'user' ? 'bg-primary' : 'bg-secondary'
-                  }`}>
-                    {message.role === 'user' ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4" />}
-                  </div>
-                  <div className={`rounded-lg p-3 ${
-                    message.role === 'user' 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'bg-muted'
-                  }`}>
-                    {message.content}
+        </CardHeader>
+        <CardContent className="flex flex-col h-96">
+          <ScrollArea className="flex-1 pr-4 mb-4">
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`flex items-start gap-3 max-w-[80%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.role === 'user' ? 'bg-primary' : 'bg-secondary'
+                    }`}>
+                      {message.role === 'user' ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4" />}
+                    </div>
+                    <div className={`rounded-lg p-3 ${
+                      message.role === 'user' 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted'
+                    }`}>
+                      {message.content}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-        
-        <div className="flex gap-2">
-          <Input
-            placeholder="Ask me anything..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-            disabled={isLoading}
-          />
-          {recognitionRef.current && (
-            <Button
-              onClick={isListening ? stopListening : startListening}
-              variant="outline"
-              size="icon"
-              className={isListening ? 'bg-red-100' : ''}
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
+          
+          <div className="flex gap-2">
+            <Input
+              placeholder="Ask me anything..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
               disabled={isLoading}
+            />
+            {recognitionRef.current && (
+              <Button
+                onClick={isListening ? stopListening : startListening}
+                variant="outline"
+                size="icon"
+                className={isListening ? 'bg-red-100' : ''}
+                disabled={isLoading}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
+            )}
+            <Button
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim() || isLoading}
             >
-              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              <Send className="h-4 w-4" />
             </Button>
-          )}
-          <Button
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim() || isLoading}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 };
