@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Plus, Settings, Navigation, Zap } from "lucide-react";
+import { MapPin, Plus, Settings } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MapMarker } from './map/MapMarker';
+import { MapLegend } from './map/MapLegend';
+import { MapControls } from './map/MapControls';
+import { MapBackground } from './map/MapBackground';
 
 interface Job {
   id: string;
@@ -49,7 +53,6 @@ export const MapView = ({ jobs = [], isCompact = false, editable = false, onJobs
     time: ''
   });
 
-  // Mock map visualization with job markers
   const handleAddJob = () => {
     if (!newJob.title || !newJob.customer || !newJob.address || !onJobsChange) return;
 
@@ -190,79 +193,21 @@ export const MapView = ({ jobs = [], isCompact = false, editable = false, onJobs
       </CardHeader>
       <CardContent className="p-3">
         <div className={`relative bg-muted/30 rounded-lg overflow-hidden border-2 border-dashed border-border/20 ${isCompact ? 'h-64' : 'h-96'}`}>
-          {/* Map Container */}
           <div ref={mapRef} className="w-full h-full relative">
-            {/* Mock Map Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-green-50 to-blue-100 dark:from-blue-950 dark:via-green-950 dark:to-blue-900">
-              {/* Grid Pattern */}
-              <div className="absolute inset-0 opacity-20" style={{
-                backgroundImage: `
-                  linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px)
-                `,
-                backgroundSize: '20px 20px'
-              }} />
-            </div>
+            <MapBackground hasJobs={jobs.length > 0} editable={editable} />
 
-            {/* Job Markers */}
             {jobs.map((job, index) => (
-              <div
+              <MapMarker
                 key={job.id}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-                style={{
-                  left: `${30 + index * 15}%`,
-                  top: `${40 + (index % 3) * 20}%`
-                }}
-                onClick={() => setSelectedJob(job)}
-              >
-                <div className={`w-4 h-4 rounded-full ${getStatusColor(job.status)} border-2 border-white shadow-lg group-hover:scale-125 transition-transform`}>
-                  <div className="absolute inset-0 rounded-full animate-ping bg-current opacity-20"></div>
-                </div>
-                <div className="absolute top-5 left-1/2 transform -translate-x-1/2 bg-background/90 backdrop-blur-sm text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                  <div className="font-medium">{job.customer}</div>
-                  <div className="text-muted-foreground">{job.title}</div>
-                </div>
-              </div>
+                job={job}
+                index={index}
+                onJobClick={setSelectedJob}
+                getStatusColor={getStatusColor}
+              />
             ))}
 
-            {/* Map Controls */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2">
-              <Button size="sm" variant="secondary" className="w-8 h-8 p-0">
-                <Plus className="h-4 w-4" />
-              </Button>
-              <Button size="sm" variant="secondary" className="w-8 h-8 p-0">
-                <Navigation className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Legend */}
-            <div className="absolute bottom-3 left-3 bg-background/90 backdrop-blur-sm rounded-lg p-2 text-xs">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <span>Scheduled</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                  <span>In Progress</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span>Completed</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Center Message */}
-            {jobs.length === 0 && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No job locations to display</p>
-                  {editable && <p className="text-xs">Click "Add" to add locations</p>}
-                </div>
-              </div>
-            )}
+            <MapControls />
+            <MapLegend />
           </div>
         </div>
 
