@@ -457,16 +457,19 @@ export const TeamManagement = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="role">Role *</Label>
-                <Select value={newMember.role} onValueChange={(value) => setNewMember(prev => ({ ...prev, role: value }))}>
+                <Select 
+                  value={newMember.role} 
+                  onValueChange={(value: 'admin' | 'manager' | 'employee') => 
+                    setNewMember(prev => ({ ...prev, role: value }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Lead Contractor">Lead Contractor</SelectItem>
-                    <SelectItem value="Plumber">Plumber</SelectItem>
-                    <SelectItem value="Electrician">Electrician</SelectItem>
-                    <SelectItem value="Carpenter">Carpenter</SelectItem>
-                    <SelectItem value="General Laborer">General Laborer</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="employee">Employee</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
