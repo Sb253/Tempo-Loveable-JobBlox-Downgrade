@@ -81,10 +81,10 @@ const recentJobs = [
 
 // Employee locations
 const employeeLocations = [
-  { id: '1', name: 'Mike Johnson', coordinates: [-74.005, 40.7138] as [number, number], color: '#3B82F6', status: 'active' },
-  { id: '2', name: 'Sarah Davis', coordinates: [-73.998, 40.7158] as [number, number], color: '#10B981', status: 'active' },
-  { id: '3', name: 'Tom Wilson', coordinates: [-74.008, 40.7108] as [number, number], color: '#F59E0B', status: 'break' },
-  { id: '4', name: 'Lisa Chen', coordinates: [-74.012, 40.7088] as [number, number], color: '#8B5CF6', status: 'active' },
+  { id: '1', name: 'Mike Johnson', coordinates: [-74.005, 40.7138] as [number, number], color: '#3B82F6', status: 'active' as const },
+  { id: '2', name: 'Sarah Davis', coordinates: [-73.998, 40.7158] as [number, number], color: '#10B981', status: 'active' as const },
+  { id: '3', name: 'Tom Wilson', coordinates: [-74.008, 40.7108] as [number, number], color: '#F59E0B', status: 'break' as const },
+  { id: '4', name: 'Lisa Chen', coordinates: [-74.012, 40.7088] as [number, number], color: '#8B5CF6', status: 'active' as const },
 ];
 
 export const Dashboard = () => {
