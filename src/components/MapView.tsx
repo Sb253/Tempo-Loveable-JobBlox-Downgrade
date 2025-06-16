@@ -17,13 +17,25 @@ interface Job {
   status: 'scheduled' | 'in-progress' | 'completed';
   type: 'job' | 'appointment';
   time: string;
+  assignedTo?: string;
+  employeeColor?: string;
+}
+
+interface Employee {
+  id: string;
+  name: string;
+  coordinates: [number, number];
+  color: string;
+  status: 'active' | 'break' | 'inactive';
 }
 
 interface MapViewProps {
   jobs: Job[];
+  employees?: Employee[];
+  showEmployeeLocations?: boolean;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
+export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmployeeLocations = false }) => {
   const { toast } = useToast();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -132,6 +144,54 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
         .addTo(map.current);
     }
 
+    // Add markers for employee locations if enabled
+    if (showEmployeeLocations && employees.length > 0) {
+      employees.forEach((employee) => {
+        if (!map.current) return;
+
+        const employeeMarker = document.createElement('div');
+        employeeMarker.style.width = '20px';
+        employeeMarker.style.height = '20px';
+        employeeMarker.style.borderRadius = '50%';
+        employeeMarker.style.backgroundColor = employee.color;
+        employeeMarker.style.border = '3px solid white';
+        employeeMarker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        employeeMarker.style.cursor = 'pointer';
+
+        // Add status indicator
+        if (employee.status === 'break') {
+          employeeMarker.style.border = '3px solid orange';
+        } else if (employee.status === 'inactive') {
+          employeeMarker.style.opacity = '0.5';
+        }
+
+        const employeePopupContent = `
+          <div style="padding: 12px; max-width: 200px;">
+            <h3 style="font-weight: bold; margin: 0 0 8px 0;">${employee.name}</h3>
+            <span style="
+              display: inline-block;
+              padding: 4px 8px;
+              font-size: 12px;
+              border-radius: 6px;
+              background-color: ${employee.color}20;
+              color: ${employee.color};
+              font-weight: 500;
+              text-transform: capitalize;
+            ">
+              ${employee.status}
+            </span>
+          </div>
+        `;
+
+        const employeePopup = new mapboxgl.Popup({ offset: 25 }).setHTML(employeePopupContent);
+
+        new mapboxgl.Marker(employeeMarker)
+          .setLngLat(employee.coordinates)
+          .setPopup(employeePopup)
+          .addTo(map.current);
+      });
+    }
+
     // Add markers for each job and appointment
     jobs.forEach((job) => {
       if (!map.current) return;
@@ -140,7 +200,10 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
       markerEl.style.width = '24px';
       markerEl.style.height = '24px';
       markerEl.style.borderRadius = job.type === 'appointment' ? '4px' : '50%';
-      markerEl.style.backgroundColor = getMarkerColor(job.status, job.type);
+      
+      // Use employee color if assigned, otherwise use default colors
+      const markerColor = job.employeeColor || getMarkerColor(job.status, job.type);
+      markerEl.style.backgroundColor = markerColor;
       markerEl.style.border = '3px solid white';
       markerEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
@@ -175,8 +238,8 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
             padding: 4px 8px;
             font-size: 12px;
             border-radius: 6px;
-            background-color: ${getMarkerColor(job.status, job.type)}20;
-            color: ${getMarkerColor(job.status, job.type)};
+            background-color: ${markerColor}20;
+            color: ${markerColor};
             font-weight: 500;
             text-transform: capitalize;
           ">
@@ -252,6 +315,12 @@ export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
             <div className="w-4 h-4 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
             <span>Appointments</span>
           </div>
+          {showEmployeeLocations && (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-green-500"></div>
+              <span>Employees</span>
+            </div>
+          )}
           <div className="flex gap-4">
             <Badge variant="outline" className="bg-blue-50">Scheduled</Badge>
             <Badge variant="outline" className="bg-orange-50">In Progress</Badge>
