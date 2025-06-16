@@ -1,7 +1,8 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Users, Wrench, DollarSign, Package, Brain, Database, BarChart3, MessageSquare, Settings } from "lucide-react";
 import { SidebarHeader } from "./sidebar/SidebarHeader";
 import { SidebarSearch } from "./sidebar/SidebarSearch";
 import { SidebarDashboard } from "./sidebar/SidebarDashboard";
