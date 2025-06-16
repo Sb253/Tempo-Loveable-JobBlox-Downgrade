@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Receipt, UserCog, Brain } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -301,100 +302,12 @@ export const AppLayout = () => {
 };
 
 // Placeholder components for missing sections
-const JobForm = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Create New Job</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Job creation form will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const ExpenseList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Expenses</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Expense tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const TimeTracking = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Time Tracking</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Time tracking and reporting system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const MaterialInventory = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Material Inventory</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Inventory management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const EquipmentTracking = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Equipment Tracking</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Equipment management and tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const EmployeeChat = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Employee Communication</h2>
     <Card>
       <CardContent className="p-6">
         <p>Internal communication and messaging system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const ReviewManagement = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Review Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Customer review management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const KPIDashboard = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">KPI Dashboard</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Key performance indicators and goals tracking will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const ReportsView = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Reports</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Reporting and analytics system will be implemented here.</p>
       </CardContent>
     </Card>
   </div>
@@ -411,129 +324,12 @@ const AdvancedAnalytics = () => (
   </div>
 );
 
-const NotificationCenter = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Notifications</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Notification management center will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const VehicleManagement = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Vehicle Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Vehicle tracking and management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const SaftyManagement = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Safety protocols and incident management system.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const QualityControl = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Quality Control</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Quality control checklists and inspection management.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const MapViewPage = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Map View</h2>
     <MapView jobs={jobsAndAppointments} />
   </div>
 );
-
-const SettingsView = () => {
-  return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-4">Settings</h2>
-        <p className="text-muted-foreground mb-6">Manage your application settings and integrations</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">General Settings</h3>
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Configure general application preferences</p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Custom Integrations</h3>
-          <div className="space-y-4">
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">QuickBooks Integration</h4>
-              <p className="text-sm text-muted-foreground mb-3">Connect with QuickBooks for accounting sync</p>
-              <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                Configure QuickBooks
-              </button>
-            </div>
-            
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">Zapier Integration</h4>
-              <p className="text-sm text-muted-foreground mb-3">Automate workflows with 5000+ apps</p>
-              <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
-                Setup Zapier
-              </button>
-            </div>
-
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">Stripe Payment Processing</h4>
-              <p className="text-sm text-muted-foreground mb-3">Accept online payments from customers</p>
-              <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors">
-                Connect Stripe
-              </button>
-            </div>
-
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">Email Marketing</h4>
-              <p className="text-sm text-muted-foreground mb-3">Connect with Mailchimp or Constant Contact</p>
-              <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
-                Setup Email Marketing
-              </button>
-            </div>
-
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">Custom API Integration</h4>
-              <p className="text-sm text-muted-foreground mb-3">Connect with your custom systems via API</p>
-              <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                Add Custom API
-              </button>
-            </div>
-
-            <div className="p-4 border rounded-lg bg-card">
-              <h4 className="font-medium mb-2">Map Settings</h4>
-              <p className="text-sm text-muted-foreground mb-3">Configure map display and location settings</p>
-              <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors">
-                Configure Maps
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const ProfitMarginAnalysis = () => (
   <div className="p-6">
