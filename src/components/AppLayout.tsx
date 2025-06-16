@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
+import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Receipt, UserCog } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dashboard } from "./Dashboard";
@@ -26,6 +27,9 @@ import { RadiusAssignment } from "./RadiusAssignment";
 import { EmployeeLocationManager } from "./EmployeeLocationManager";
 import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
+import { HRFeatures } from "./HRFeatures";
+import { MaterialsAndServices } from "./MaterialsAndServices";
+import { TaxAndFinancialSection } from "./TaxAndFinancialSection";
 
 interface SidebarSection {
   id: string;
@@ -46,7 +50,7 @@ const sections: SidebarSection[] = [
   { id: 'schedule', label: 'Schedule', icon: Calendar },
   { id: 'expenses', label: 'Expenses', icon: CreditCard },
   { id: 'time-tracking', label: 'Time Tracking', icon: Clock },
-  { id: 'inventory', label: 'Inventory', icon: Database },
+  { id: 'materials-services', label: 'Materials & Services', icon: Package },
   { id: 'equipment', label: 'Equipment', icon: Package },
   { id: 'vehicles', label: 'Vehicles', icon: Truck },
   { id: 'photos', label: 'Photos', icon: FileImage },
@@ -57,9 +61,11 @@ const sections: SidebarSection[] = [
   { id: 'goals', label: 'Goals & KPIs', icon: Target },
   { id: 'reports', label: 'Reports', icon: BarChart3 },
   { id: 'analytics', label: 'Analytics', icon: PieChart },
+  { id: 'tax-financial', label: 'Tax & Financial', icon: Receipt },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'map-view', label: 'Map View', icon: Map },
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
+  { id: 'hr-features', label: 'HR Features', icon: UserCog },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
@@ -166,6 +172,8 @@ export const AppLayout = () => {
         return <ExpenseList />;
       case 'time-tracking':
         return <TimeTracking />;
+      case 'materials-services':
+        return <MaterialsAndServices />;
       case 'inventory':
         return <MaterialInventory />;
       case 'equipment':
@@ -188,6 +196,8 @@ export const AppLayout = () => {
         return <ReportsView />;
       case 'analytics':
         return <AdvancedAnalytics />;
+      case 'tax-financial':
+        return <TaxAndFinancialSection />;
       case 'notifications':
         return <NotificationCenter />;
       case 'map-view':
@@ -198,6 +208,8 @@ export const AppLayout = () => {
         return <BranchManagement />;
       case 'team-management':
         return <TeamManagement />;
+      case 'hr-features':
+        return <HRFeatures />;
       case 'subcontractor-management':
         return <SubcontractorManagement />;
       case 'settings':

@@ -87,7 +87,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'team-management')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
+        ['team-management', 'hr-features', 'subcontractor-management', 'materials-services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
       )
     },
     {
@@ -95,7 +95,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'invoices')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['estimates', 'invoices', 'expenses', 'goals', 'financial-analytics', 'payment-integration', 'profit-analysis'].includes(s.id)
+        ['estimates', 'invoices', 'expenses', 'goals', 'tax-financial', 'financial-analytics', 'payment-integration', 'profit-analysis'].includes(s.id)
       )
     },
     {
