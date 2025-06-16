@@ -9,7 +9,7 @@ import { TeamManagement } from "./TeamManagement";
 import { SubcontractorManagement } from "./SubcontractorManagement";
 import { MapView } from "./MapView";
 import { ClientAppointment } from "./ClientAppointment";
-import { MegaMenuSidebar } from "./MegaMenuSidebar";
+import { UnifiedSidebar } from "./UnifiedSidebar";
 import { MobileSettings } from "./MobileSettings";
 import { CustomerList } from "./CustomerList";
 import { JobList } from "./JobList";
@@ -31,6 +31,12 @@ import { HRFeatures } from "./HRFeatures";
 import { MaterialsAndServices } from "./MaterialsAndServices";
 import { TaxAndFinancialSection } from "./TaxAndFinancialSection";
 import { BackOfficeSettings } from "./BackOfficeSettings";
+import { ExpenseList } from "./ExpenseList";
+import { TimeTracking } from "./TimeTracking";
+import { MaterialInventory } from "./MaterialInventory";
+import { EquipmentTracking } from "./EquipmentTracking";
+import { EmployeeChat } from "./EmployeeChat";
+import { SafetyManagement } from "./SafetyManagement";
 
 interface SidebarSection {
   id: string;
@@ -39,6 +45,7 @@ interface SidebarSection {
 }
 
 const sections: SidebarSection[] = [
+  { id: 'home', label: 'Dashboard', icon: Home },
   { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'customers', label: 'Customers', icon: Users },
@@ -51,6 +58,7 @@ const sections: SidebarSection[] = [
   { id: 'expenses', label: 'Expenses', icon: CreditCard },
   { id: 'time-tracking', label: 'Time Tracking', icon: Clock },
   { id: 'materials-services', label: 'Materials & Services', icon: Package },
+  { id: 'inventory', label: 'Material Inventory', icon: Package },
   { id: 'equipment', label: 'Equipment', icon: Package },
   { id: 'vehicles', label: 'Vehicles', icon: Truck },
   { id: 'photos', label: 'Photos', icon: FileImage },
@@ -81,7 +89,10 @@ const sections: SidebarSection[] = [
   { id: 'quickbooks-integration', label: 'QuickBooks', icon: Database },
   { id: 'accounting-integration', label: 'Accounting', icon: Calculator },
   { id: 'radius-assignment', label: 'Radius Assignment', icon: Map },
-  { id: 'employee-locations', label: 'Employee Locations', icon: Users }
+  { id: 'employee-locations', label: 'Employee Locations', icon: Users },
+  { id: 'ai-chat', label: 'AI Chat', icon: Brain },
+  { id: 'smart-document-generator', label: 'Smart Documents', icon: FileText },
+  { id: 'ai-settings', label: 'AI Settings', icon: Brain }
 ];
 
 // Sample job data with appointments and jobs
@@ -130,19 +141,29 @@ const jobsAndAppointments = [
 
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('home');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(256);
 
   useEffect(() => {
-    const savedCollapsedState = localStorage.getItem('sidebarCollapsed');
-    if (savedCollapsedState) {
-      setSidebarCollapsed(JSON.parse(savedCollapsedState));
-    }
-  }, []);
+    // Listen for sidebar width changes
+    const handleSidebarToggle = () => {
+      const isCollapsed = JSON.parse(localStorage.getItem('sidebarCollapsed') || 'false');
+      setSidebarWidth(isCollapsed ? 64 : 256);
+    };
 
-  const handleSidebarToggle = (collapsed: boolean) => {
-    setSidebarCollapsed(collapsed);
-    localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
-  };
+    // Initial check
+    handleSidebarToggle();
+
+    // Listen for storage changes
+    window.addEventListener('storage', handleSidebarToggle);
+    
+    // Custom event for immediate updates
+    window.addEventListener('sidebarToggle', handleSidebarToggle);
+
+    return () => {
+      window.removeEventListener('storage', handleSidebarToggle);
+      window.removeEventListener('sidebarToggle', handleSidebarToggle);
+    };
+  }, []);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -187,7 +208,7 @@ export const AppLayout = () => {
       case 'reviews':
         return <ReviewManagement />;
       case 'safety':
-        return <SaftyManagement />;
+        return <SafetyManagement />;
       case 'quality':
         return <QualityControl />;
       case 'goals':
@@ -259,20 +280,16 @@ export const AppLayout = () => {
     }
   };
 
-  const sidebarWidth = sidebarCollapsed ? 64 : 256;
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader onSectionChange={setActiveSection} />
       
       <div className="flex flex-1">
-        <MegaMenuSidebar
+        <UnifiedSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
           sections={sections}
           isVisible={true}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={handleSidebarToggle}
         />
 
         <main 
@@ -419,23 +436,12 @@ const VehicleManagement = () => (
   </div>
 );
 
-const SaftyManagement = () => (
+const SafetyManagement = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
     <Card>
       <CardContent className="p-6">
         <p>Safety protocols and incident management system.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const QualityControl = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Quality Control</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Quality control checklists and inspection management.</p>
       </CardContent>
     </Card>
   </div>
