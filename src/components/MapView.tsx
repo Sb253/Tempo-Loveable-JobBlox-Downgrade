@@ -1,9 +1,12 @@
 
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { MapPin, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Navigation, Users, Briefcase, Car, Home } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Job {
   id: string;
@@ -14,326 +17,279 @@ interface Job {
   status: 'scheduled' | 'in-progress' | 'completed';
   type: 'job' | 'appointment';
   time: string;
-  scheduledDate: string;
-  assignedTo: string;
-}
-
-interface Employee {
-  id: string;
-  name: string;
-  position: string;
-  status: 'active' | 'driving' | 'break' | 'offline';
-  currentLocation: string;
-  coordinates: [number, number];
-  nextJob?: string;
 }
 
 interface MapViewProps {
-  jobs?: Job[];
+  jobs: Job[];
 }
 
-export const MapView = ({ jobs = [] }: MapViewProps) => {
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'jobs' | 'employees' | 'both'>('both');
+export const MapView: React.FC<MapViewProps> = ({ jobs }) => {
+  const { toast } = useToast();
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [mapboxToken] = useState('pk.eyJ1Ijoic2NvdHRiOTcxIiwiYSI6ImNtYng0M2d2cTB2dXkybW9zOTJmdzg1MWQifQ.3rpXH4NfcWycCt58VAyGzg');
 
-  // Mock employee data
-  const employees: Employee[] = [
-    {
-      id: '1',
-      name: 'Mike Johnson',
-      position: 'Lead Technician',
-      status: 'active',
-      currentLocation: '123 Main St',
-      coordinates: [-74.006, 40.7128],
-      nextJob: 'Kitchen Renovation - 2:00 PM'
-    },
-    {
-      id: '2',
-      name: 'Sarah Davis',
-      position: 'Project Manager',
-      status: 'driving',
-      currentLocation: 'En route to 456 Oak Ave',
-      coordinates: [-73.9442, 40.6782],
-      nextJob: 'Bathroom Remodel - 3:30 PM'
-    },
-    {
-      id: '3',
-      name: 'Tom Wilson',
-      position: 'Electrician',
-      status: 'break',
-      currentLocation: 'Office',
-      coordinates: [-73.9904, 40.7505]
-    }
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-      case 'active':
-        return 'bg-green-500';
-      case 'in-progress':
-      case 'driving':
-        return 'bg-blue-500';
-      case 'completed':
-        return 'bg-gray-500';
-      case 'break':
-        return 'bg-orange-500';
-      case 'offline':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-400';
+  const getMarkerColor = (status: string, type: string) => {
+    if (type === 'appointment') {
+      switch (status) {
+        case 'scheduled':
+          return '#8B5CF6'; // Purple for scheduled appointments
+        case 'in-progress':
+          return '#EC4899'; // Pink for in-progress appointments
+        case 'completed':
+          return '#059669'; // Green for completed appointments
+        default:
+          return '#6b7280';
+      }
+    } else {
+      // Job colors
+      switch (status) {
+        case 'scheduled':
+          return '#3b82f6'; // Blue for scheduled jobs
+        case 'in-progress':
+          return '#f59e0b'; // Orange for in-progress jobs
+        case 'completed':
+          return '#10b981'; // Emerald for completed jobs
+        default:
+          return '#6b7280';
+      }
     }
   };
 
-  const getMarkerIcon = (type: 'job' | 'employee', status?: string) => {
-    if (type === 'job') {
-      return status === 'completed' ? '✓' : 'J';
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([longitude, latitude]);
+          if (map.current) {
+            map.current.flyTo({
+              center: [longitude, latitude],
+              zoom: 12,
+              essential: true
+            });
+          }
+          toast({
+            title: "Location Found",
+            description: "Map centered on your current location.",
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast({
+            title: "Location Error",
+            description: "Could not get your current location. Using default location.",
+          });
+          // Default to NYC if location fails
+          setUserLocation([-74.006, 40.7128]);
+        }
+      );
+    } else {
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser doesn't support geolocation. Using default location.",
+      });
+      setUserLocation([-74.006, 40.7128]);
     }
-    return 'E';
   };
+
+  const initializeMap = () => {
+    if (!mapContainer.current || map.current) return;
+
+    mapboxgl.accessToken = mapboxToken;
+
+    // Use user location or default center
+    const center: [number, number] = userLocation || 
+      (jobs.length > 0 ? [jobs[0].coordinates[0], jobs[0].coordinates[1]] : [-74.006, 40.7128]);
+
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: center,
+      zoom: userLocation ? 12 : 10
+    });
+
+    // Add navigation controls
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Add user location marker if available
+    if (userLocation) {
+      const userMarker = document.createElement('div');
+      userMarker.style.width = '20px';
+      userMarker.style.height = '20px';
+      userMarker.style.borderRadius = '50%';
+      userMarker.style.backgroundColor = '#ef4444';
+      userMarker.style.border = '3px solid white';
+      userMarker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+
+      const userPopup = new mapboxgl.Popup({ offset: 25 })
+        .setHTML('<div style="padding: 8px;"><strong>Your Location</strong></div>');
+
+      new mapboxgl.Marker(userMarker)
+        .setLngLat(userLocation)
+        .setPopup(userPopup)
+        .addTo(map.current);
+    }
+
+    // Add markers for each job and appointment
+    jobs.forEach((job) => {
+      if (!map.current) return;
+
+      const markerEl = document.createElement('div');
+      markerEl.style.width = '24px';
+      markerEl.style.height = '24px';
+      markerEl.style.borderRadius = job.type === 'appointment' ? '4px' : '50%';
+      markerEl.style.backgroundColor = getMarkerColor(job.status, job.type);
+      markerEl.style.border = '3px solid white';
+      markerEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+      markerEl.style.cursor = 'pointer';
+
+      // Add icon indicator for type
+      if (job.type === 'appointment') {
+        markerEl.style.clipPath = 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)';
+      }
+
+      const popupContent = `
+        <div style="padding: 12px; max-width: 250px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <h3 style="font-weight: bold; margin: 0;">${job.title}</h3>
+            <span style="
+              display: inline-block;
+              padding: 2px 6px;
+              font-size: 10px;
+              border-radius: 4px;
+              background-color: ${job.type === 'appointment' ? '#8B5CF6' : '#3b82f6'};
+              color: white;
+              text-transform: uppercase;
+              font-weight: 500;
+            ">
+              ${job.type}
+            </span>
+          </div>
+          <p style="margin: 4px 0; color: #666; font-size: 14px;">${job.customer}</p>
+          <p style="margin: 4px 0; font-size: 14px;">${job.address}</p>
+          <p style="margin: 4px 0; font-size: 12px; color: #666;">${job.time}</p>
+          <span style="
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 6px;
+            background-color: ${getMarkerColor(job.status, job.type)}20;
+            color: ${getMarkerColor(job.status, job.type)};
+            font-weight: 500;
+            text-transform: capitalize;
+          ">
+            ${job.status.replace('-', ' ')}
+          </span>
+        </div>
+      `;
+
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
+
+      new mapboxgl.Marker(markerEl)
+        .setLngLat([job.coordinates[0], job.coordinates[1]])
+        .setPopup(popup)
+        .addTo(map.current);
+    });
+  };
+
+  useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      initializeMap();
+    }
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, [jobs, userLocation, mapboxToken]);
+
+  // Count jobs and appointments by type and status
+  const jobStats = jobs.reduce((acc, job) => {
+    if (job.type === 'job') {
+      acc.jobs[job.status] = (acc.jobs[job.status] || 0) + 1;
+    } else {
+      acc.appointments[job.status] = (acc.appointments[job.status] || 0) + 1;
+    }
+    return acc;
+  }, { jobs: {} as Record<string, number>, appointments: {} as Record<string, number> });
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Map View</h1>
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === 'jobs' ? 'default' : 'outline'}
-            onClick={() => setViewMode('jobs')}
-            size="sm"
-          >
-            <Briefcase className="h-4 w-4 mr-2" />
-            Jobs Only
-          </Button>
-          <Button
-            variant={viewMode === 'employees' ? 'default' : 'outline'}
-            onClick={() => setViewMode('employees')}
-            size="sm"
-          >
-            <Users className="h-4 w-4 mr-2" />
-            Employees Only
-          </Button>
-          <Button
-            variant={viewMode === 'both' ? 'default' : 'outline'}
-            onClick={() => setViewMode('both')}
-            size="sm"
-          >
-            Both
-          </Button>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5" />
+            Job & Appointment Locations
+          </CardTitle>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={getCurrentLocation}
+              className="flex items-center gap-2"
+            >
+              <Navigation className="h-4 w-4" />
+              My Location
+            </Button>
+          </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Map Container */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Live Map
-                </div>
-                <div className="flex gap-2">
-                  {(viewMode === 'jobs' || viewMode === 'both') && (
-                    <Badge variant="outline">
-                      {jobs.length} jobs
-                    </Badge>
-                  )}
-                  {(viewMode === 'employees' || viewMode === 'both') && (
-                    <Badge variant="outline">
-                      {employees.filter(emp => emp.status !== 'offline').length} active employees
-                    </Badge>
-                  )}
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                {/* Enhanced Map Display */}
-                <div className="w-full h-96 bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950 rounded-lg flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden">
-                  <div className="text-center space-y-2">
-                    <MapPin className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <p className="text-muted-foreground">Interactive Map View</p>
-                    <p className="text-sm text-muted-foreground">
-                      Real-time job and employee tracking
-                    </p>
-                  </div>
-                  
-                  {/* Job Markers */}
-                  {(viewMode === 'jobs' || viewMode === 'both') && jobs.map((job, index) => (
-                    <div 
-                      key={`job-${job.id}`}
-                      className={`absolute w-8 h-8 ${getStatusColor(job.status)} rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg cursor-pointer hover:scale-110 transition-transform`}
-                      style={{
-                        top: `${20 + index * 15}%`,
-                        left: `${25 + index * 20}%`,
-                      }}
-                      onClick={() => setSelectedMarker(`job-${job.id}`)}
-                      title={`${job.title} - ${job.status}`}
-                    >
-                      {getMarkerIcon('job', job.status)}
-                    </div>
-                  ))}
-                  
-                  {/* Employee Markers */}
-                  {(viewMode === 'employees' || viewMode === 'both') && employees.map((employee, index) => (
-                    <div 
-                      key={`employee-${employee.id}`}
-                      className={`absolute w-8 h-8 ${getStatusColor(employee.status)} rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg cursor-pointer hover:scale-110 transition-transform`}
-                      style={{
-                        top: `${30 + index * 20}%`,
-                        right: `${20 + index * 15}%`,
-                      }}
-                      onClick={() => setSelectedMarker(`employee-${employee.id}`)}
-                      title={`${employee.name} - ${employee.status}`}
-                    >
-                      {getMarkerIcon('employee')}
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Map Legend */}
-                <div className="flex justify-between items-center mt-4">
-                  <div className="flex items-center gap-4 text-sm">
-                    {(viewMode === 'jobs' || viewMode === 'both') && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <span>Scheduled Jobs</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                          <span>In Progress</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                          <span>Completed</span>
-                        </div>
-                      </>
-                    )}
-                    {(viewMode === 'employees' || viewMode === 'both') && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                          <span>Active</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                          <span>On Break</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <Button size="sm" variant="outline">
-                    <Navigation className="h-4 w-4 mr-2" />
-                    Get Directions
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        
+        {/* Legend */}
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+            <span>Jobs</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
+            <span>Appointments</span>
+          </div>
+          <div className="flex gap-4">
+            <Badge variant="outline" className="bg-blue-50">Scheduled</Badge>
+            <Badge variant="outline" className="bg-orange-50">In Progress</Badge>
+            <Badge variant="outline" className="bg-green-50">Completed</Badge>
+          </div>
         </div>
-
-        {/* Details Panel */}
-        <div className="space-y-4">
-          {/* Job List */}
-          {(viewMode === 'jobs' || viewMode === 'both') && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5" />
-                  Today's Jobs
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {jobs.map((job) => (
-                    <div 
-                      key={job.id} 
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedMarker === `job-${job.id}` ? 'bg-primary/10 border-primary' : 'hover:bg-muted'
-                      }`}
-                      onClick={() => setSelectedMarker(`job-${job.id}`)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-medium">{job.title}</p>
-                          <p className="text-sm text-muted-foreground">{job.customer}</p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                            <MapPin className="h-3 w-3" />
-                            {job.address}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            Assigned to: {job.assignedTo}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium">{job.time}</p>
-                          <Badge variant={job.status === 'completed' ? 'default' : 'outline'} className="text-xs">
-                            {job.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Employee List */}
-          {(viewMode === 'employees' || viewMode === 'both') && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Employee Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {employees.map((employee) => (
-                    <div 
-                      key={employee.id} 
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedMarker === `employee-${employee.id}` ? 'bg-primary/10 border-primary' : 'hover:bg-muted'
-                      }`}
-                      onClick={() => setSelectedMarker(`employee-${employee.id}`)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <p className="font-medium">{employee.name}</p>
-                          <p className="text-sm text-muted-foreground">{employee.position}</p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                            <MapPin className="h-3 w-3" />
-                            {employee.currentLocation}
-                          </div>
-                          {employee.nextJob && (
-                            <p className="text-xs text-muted-foreground">
-                              Next: {employee.nextJob}
-                            </p>
-                          )}
-                        </div>
-                        <Badge 
-                          variant={employee.status === 'active' ? 'default' : 'outline'}
-                          className={`text-xs ${
-                            employee.status === 'active' ? 'bg-green-100 text-green-800' :
-                            employee.status === 'driving' ? 'bg-blue-100 text-blue-800' :
-                            employee.status === 'break' ? 'bg-orange-100 text-orange-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}
-                        >
-                          {employee.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+      </CardHeader>
+      <CardContent>
+        <div className="w-full h-96 rounded-lg border overflow-hidden">
+          <div ref={mapContainer} className="w-full h-full" />
         </div>
-      </div>
-    </div>
+        
+        {/* Stats */}
+        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-medium mb-2">Jobs</h4>
+            <div className="space-y-1">
+              {Object.entries(jobStats.jobs).map(([status, count]) => (
+                <div key={status} className="flex justify-between">
+                  <span className="capitalize">{status.replace('-', ' ')}:</span>
+                  <span className="font-medium">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium mb-2">Appointments</h4>
+            <div className="space-y-1">
+              {Object.entries(jobStats.appointments).map(([status, count]) => (
+                <div key={status} className="flex justify-between">
+                  <span className="capitalize">{status.replace('-', ' ')}:</span>
+                  <span className="font-medium">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -18,7 +17,6 @@ import {
   Camera,
   FileCheck
 } from "lucide-react";
-import { AppointmentScheduler } from "./AppointmentScheduler";
 
 interface QuickAction {
   id: string;
@@ -42,7 +40,6 @@ interface QuickActionsProps {
   onSiteAssessment?: () => void;
   onClientInformation?: () => void;
   onProjectProposal?: () => void;
-  onSectionChange?: (section: string) => void;
 }
 
 export const QuickActions = ({
@@ -57,16 +54,8 @@ export const QuickActions = ({
   onInitialConsultation,
   onSiteAssessment,
   onClientInformation,
-  onProjectProposal,
-  onSectionChange
+  onProjectProposal
 }: QuickActionsProps) => {
-  const [showAppointmentScheduler, setShowAppointmentScheduler] = useState(false);
-
-  const handleAppointmentScheduled = (appointment: any) => {
-    console.log('Appointment scheduled:', appointment);
-    setShowAppointmentScheduler(false);
-  };
-
   const clientIntakeActions: QuickAction[] = [
     {
       id: 'consultation',
@@ -74,7 +63,7 @@ export const QuickActions = ({
       description: 'Schedule first meeting',
       icon: Calendar,
       color: 'from-blue-500 to-blue-600',
-      onClick: () => setShowAppointmentScheduler(true)
+      onClick: onInitialConsultation || (() => {})
     },
     {
       id: 'site-assessment',
@@ -82,7 +71,7 @@ export const QuickActions = ({
       description: 'Property evaluation',
       icon: Home,
       color: 'from-green-500 to-green-600',
-      onClick: () => setShowAppointmentScheduler(true)
+      onClick: onSiteAssessment || (() => {})
     },
     {
       id: 'client-info',
@@ -90,7 +79,7 @@ export const QuickActions = ({
       description: 'Collect details',
       icon: UserPlus,
       color: 'from-purple-500 to-purple-600',
-      onClick: () => onSectionChange?.('customer-form')
+      onClick: onClientInformation || (() => {})
     },
     {
       id: 'project-proposal',
@@ -98,7 +87,7 @@ export const QuickActions = ({
       description: 'Create proposal',
       icon: FileCheck,
       color: 'from-orange-500 to-orange-600',
-      onClick: () => onSectionChange?.('estimates')
+      onClick: onProjectProposal || (() => {})
     }
   ];
 
@@ -109,7 +98,7 @@ export const QuickActions = ({
       description: 'Book new appointment',
       icon: Calendar,
       color: 'from-blue-500 to-blue-600',
-      onClick: () => onSectionChange?.('schedule')
+      onClick: onScheduleJob || (() => {})
     },
     {
       id: 'customer',
@@ -117,7 +106,7 @@ export const QuickActions = ({
       description: 'New client record',
       icon: Users,
       color: 'from-green-500 to-green-600',
-      onClick: () => onSectionChange?.('customer-form')
+      onClick: onAddCustomer || (() => {})
     },
     {
       id: 'estimate',
@@ -125,7 +114,7 @@ export const QuickActions = ({
       description: 'New project quote',
       icon: Calculator,
       color: 'from-purple-500 to-purple-600',
-      onClick: () => onSectionChange?.('estimates')
+      onClick: onCreateEstimate || (() => {})
     },
     {
       id: 'invoice',
@@ -133,7 +122,7 @@ export const QuickActions = ({
       description: 'Bill for services',
       icon: FileText,
       color: 'from-orange-500 to-orange-600',
-      onClick: () => onSectionChange?.('invoices')
+      onClick: onCreateInvoice || (() => {})
     },
     {
       id: 'payment',
@@ -141,7 +130,7 @@ export const QuickActions = ({
       description: 'Accept payment',
       icon: CreditCard,
       color: 'from-emerald-500 to-emerald-600',
-      onClick: () => onSectionChange?.('payment-integration')
+      onClick: onProcessPayment || (() => {})
     },
     {
       id: 'map',
@@ -149,7 +138,7 @@ export const QuickActions = ({
       description: 'Job locations',
       icon: MapPin,
       color: 'from-red-500 to-red-600',
-      onClick: () => onSectionChange?.('map-view')
+      onClick: onViewMap || (() => {})
     },
     {
       id: 'quote',
@@ -157,7 +146,7 @@ export const QuickActions = ({
       description: 'Project proposal',
       icon: ClipboardList,
       color: 'from-indigo-500 to-indigo-600',
-      onClick: () => onSectionChange?.('estimates')
+      onClick: onCreateQuote || (() => {})
     },
     {
       id: 'jobs',
@@ -165,7 +154,7 @@ export const QuickActions = ({
       description: 'View all projects',
       icon: Wrench,
       color: 'from-cyan-500 to-cyan-600',
-      onClick: () => onSectionChange?.('jobs')
+      onClick: onManageJobs || (() => {})
     }
   ];
 
@@ -201,27 +190,6 @@ export const QuickActions = ({
           </div>
         </CardContent>
       </Card>
-
-      {/* Appointment Scheduler Modal */}
-      {showAppointmentScheduler && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Schedule Appointment</h2>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowAppointmentScheduler(false)}
-              >
-                ×
-              </Button>
-            </div>
-            <div className="p-4">
-              <AppointmentScheduler onScheduled={handleAppointmentScheduled} />
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* General Quick Actions */}
       <Card className="bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg">

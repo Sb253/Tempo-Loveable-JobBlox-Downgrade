@@ -1,441 +1,394 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { QuickActions } from "./QuickActions";
-import { FinancialSummaryCard } from "./FinancialSummaryCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  DollarSign, 
-  Calendar,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  Star,
-  MapPin,
-  Navigation,
-  User
-} from "lucide-react";
+import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { DashboardCustomization } from "./DashboardCustomization";
+import { ThemeToggle } from "./ThemeToggle";
+import { QuickActions } from "./QuickActions";
+import { MapView } from "./MapView";
+import { JobLocationsList } from "./JobLocationsList";
 
-interface DashboardProps {
-  onSectionChange?: (section: string) => void;
+interface DashboardWidget {
+  id: string;
+  title: string;
+  enabled: boolean;
+  order: number;
 }
 
-export const Dashboard = ({ onSectionChange }: DashboardProps) => {
-  const stats = [
+export const Dashboard = () => {
+  const { toast } = useToast();
+  const [userName, setUserName] = useState('John');
+  const [timezone, setTimezone] = useState('America/New_York');
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
+  const [tempTimezone, setTempTimezone] = useState(timezone);
+
+  const [widgets, setWidgets] = useState<DashboardWidget[]>([
+    { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
+    { id: 'recent-jobs', title: 'Recent Jobs', enabled: true, order: 1 },
+    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
+  ]);
+
+  // Sample job data with coordinates for map display - added 'type' property to fix TypeScript error
+  const recentJobs = [
     {
-      title: "Active Jobs",
-      value: "12",
-      change: "+2 from last week",
-      trend: "up",
-      icon: Briefcase,
-      color: "text-blue-600"
+      id: '1',
+      title: 'Kitchen Renovation',
+      customer: 'John Smith',
+      address: '123 Main St, Anytown, USA',
+      coordinates: [-74.006, 40.7128] as [number, number],
+      status: 'scheduled' as const,
+      type: 'job' as const,
+      time: 'Today 2:00 PM'
     },
     {
-      title: "Total Customers",
-      value: "89",
-      change: "+5 new this month",
-      trend: "up",
-      icon: Users,
-      color: "text-green-600"
+      id: '2',
+      title: 'Bathroom Repair',
+      customer: 'ABC Construction',
+      address: '456 Business Ave, City, USA',
+      coordinates: [-74.0, 40.72] as [number, number],
+      status: 'in-progress' as const,
+      type: 'job' as const,
+      time: 'Tomorrow 9:00 AM'
     },
     {
-      title: "Revenue (MTD)",
-      value: "$45,230",
-      change: "+12% from last month",
-      trend: "up",
-      icon: DollarSign,
-      color: "text-emerald-600"
+      id: '3',
+      title: 'Consultation Appointment',
+      customer: 'Sarah Johnson',
+      address: '789 Oak Street, Downtown',
+      coordinates: [-74.01, 40.71] as [number, number],
+      status: 'scheduled' as const,
+      type: 'appointment' as const,
+      time: 'Friday 3:00 PM'
     },
     {
-      title: "Appointments Today",
-      value: "6",
-      change: "2 confirmed, 4 pending",
-      trend: "neutral",
-      icon: Calendar,
-      color: "text-purple-600"
+      id: '4',
+      title: 'Follow-up Meeting',
+      customer: 'Mike Wilson',
+      address: '321 Pine Ave, Uptown',
+      coordinates: [-73.99, 40.73] as [number, number],
+      status: 'completed' as const,
+      type: 'appointment' as const,
+      time: 'Yesterday 1:00 PM'
     }
   ];
 
-  const recentActivity = [
-    {
-      id: 1,
-      type: "job_completed",
-      title: "Kitchen renovation completed",
-      customer: "Sarah Johnson",
-      time: "2 hours ago",
-      status: "completed",
-      icon: CheckCircle,
-      color: "text-green-600"
-    },
-    {
-      id: 2,
-      type: "appointment_scheduled",
-      title: "New appointment scheduled",
-      customer: "Mike Davis",
-      time: "4 hours ago",
-      status: "scheduled",
-      icon: Calendar,
-      color: "text-blue-600"
-    },
-    {
-      id: 3,
-      type: "payment_received",
-      title: "Payment received - $2,500",
-      customer: "ABC Construction",
-      time: "6 hours ago",
-      status: "paid",
-      icon: DollarSign,
-      color: "text-green-600"
-    },
-    {
-      id: 4,
-      type: "issue_reported",
-      title: "Equipment maintenance needed",
-      customer: "Internal",
-      time: "1 day ago",
-      status: "urgent",
-      icon: AlertTriangle,
-      color: "text-red-600"
-    },
-    {
-      id: 5,
-      type: "review_received",
-      title: "5-star review received",
-      customer: "Jennifer Lee",
-      time: "2 days ago",
-      status: "positive",
-      icon: Star,
-      color: "text-yellow-600"
-    }
-  ];
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
 
-  const upcomingJobs = [
-    {
-      id: 1,
-      title: "Bathroom Remodel",
-      customer: "John Smith",
-      time: "9:00 AM",
-      location: "123 Main St",
-      status: "confirmed",
-      employee: "Mike Johnson",
-      coordinates: [-74.006, 40.7128] as [number, number]
-    },
-    {
-      id: 2,
-      title: "Kitchen Installation",
-      customer: "Mary Wilson",
-      time: "1:00 PM",
-      location: "456 Oak Ave",
-      status: "pending",
-      employee: "Sarah Davis",
-      coordinates: [-74.0, 40.72] as [number, number]
-    },
-    {
-      id: 3,
-      title: "Home Inspection",
-      customer: "Robert Brown",
-      time: "3:30 PM",
-      location: "789 Pine Rd",
-      status: "confirmed",
-      employee: "Tom Wilson",
-      coordinates: [-73.99, 40.71] as [number, number]
-    }
-  ];
+    return () => clearInterval(timer);
+  }, []);
 
-  const employeeSchedules = [
-    {
-      id: 1,
-      name: "Mike Johnson",
-      position: "Lead Technician",
-      status: "active",
-      currentLocation: "123 Main St",
-      nextJob: "Bathroom Remodel - 9:00 AM",
-      coordinates: [-74.006, 40.7128] as [number, number]
-    },
-    {
-      id: 2,
-      name: "Sarah Davis",
-      position: "Project Manager",
-      status: "driving",
-      currentLocation: "En route to 456 Oak Ave",
-      nextJob: "Kitchen Installation - 1:00 PM",
-      coordinates: [-74.0, 40.72] as [number, number]
-    },
-    {
-      id: 3,
-      name: "Tom Wilson",
-      position: "Electrician",
-      status: "break",
-      currentLocation: "Office",
-      nextJob: "Home Inspection - 3:30 PM",
-      coordinates: [-73.99, 40.71] as [number, number]
-    }
-  ];
+  const getGreeting = () => {
+    const timeInTimezone = new Date().toLocaleString("en-US", { 
+      timeZone: timezone,
+      hour12: false,
+      hour: '2-digit'
+    });
+    const hour = parseInt(timeInTimezone);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed': 
-      case 'active': 
-        return 'bg-green-100 text-green-800';
-      case 'pending': 
-        return 'bg-yellow-100 text-yellow-800';
-      case 'driving': 
-        return 'bg-blue-100 text-blue-800';
-      case 'break': 
-        return 'bg-orange-100 text-orange-800';
-      default: 
-        return 'bg-gray-100 text-gray-800';
+    if (hour < 12) {
+      return 'Good morning';
+    } else if (hour < 17) {
+      return 'Good afternoon';
+    } else {
+      return 'Good evening';
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          Last updated: {new Date().toLocaleTimeString()}
-        </div>
-      </div>
+  const getFormattedTime = () => {
+    return new Date().toLocaleString("en-US", {
+      timeZone: timezone,
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="relative overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stat.change}
-                </p>
-                {stat.trend === "up" && (
-                  <div className="absolute top-2 right-2">
-                    <TrendingUp className="h-3 w-3 text-green-500" />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+  const handleTimezoneUpdate = () => {
+    setTimezone(tempTimezone);
+    setShowTimezoneDialog(false);
+    toast({
+      title: "Timezone Updated",
+      description: `Timezone has been set to ${tempTimezone}`,
+    });
+  };
 
-      {/* Financial Summary */}
-      <FinancialSummaryCard />
-
-      {/* Quick Actions */}
-      <QuickActions 
-        onSectionChange={onSectionChange}
-        onScheduleJob={() => onSectionChange?.('schedule')}
-        onAddCustomer={() => onSectionChange?.('customer-form')}
-        onCreateEstimate={() => onSectionChange?.('estimates')}
-        onCreateInvoice={() => onSectionChange?.('invoices')}
-        onProcessPayment={() => onSectionChange?.('payment-integration')}
-        onViewMap={() => onSectionChange?.('map-view')}
-        onCreateQuote={() => onSectionChange?.('estimates')}
-        onManageJobs={() => onSectionChange?.('jobs')}
-        onInitialConsultation={() => onSectionChange?.('client-appointment')}
-        onSiteAssessment={() => onSectionChange?.('client-appointment')}
-        onClientInformation={() => onSectionChange?.('customer-form')}
-        onProjectProposal={() => onSectionChange?.('estimates')}
-      />
-
-      {/* Map Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Live Map - Jobs & Employee Locations
+  const getWidget = (id: string) => {
+    switch (id) {
+      case 'stats':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Key Statistics</Label>
+              <Badge variant="outline">Live Data</Badge>
             </div>
-            <div className="flex gap-2">
-              <Badge variant="outline">
-                {upcomingJobs.length} jobs
-              </Badge>
-              <Badge variant="outline">
-                {employeeSchedules.filter(emp => emp.status === 'active').length} active employees
-              </Badge>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative">
-            {/* Map Placeholder */}
-            <div className="w-full h-64 bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950 rounded-lg flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden">
-              <div className="text-center space-y-2">
-                <MapPin className="h-12 w-12 mx-auto text-muted-foreground" />
-                <p className="text-muted-foreground">Interactive Map View</p>
-                <p className="text-sm text-muted-foreground">
-                  Showing job locations and employee positions
-                </p>
-              </div>
-              
-              {/* Mock job markers */}
-              {upcomingJobs.map((job, index) => (
-                <div 
-                  key={job.id}
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse"
-                  style={{
-                    top: `${20 + index * 20}%`,
-                    left: `${25 + index * 25}%`,
-                  }}
-                  title={job.title}
-                >
-                  J
-                </div>
-              ))}
-              
-              {/* Mock employee markers */}
-              {employeeSchedules.map((employee, index) => (
-                <div 
-                  key={employee.id}
-                  className={`absolute w-6 h-6 rounded-full text-white text-xs flex items-center justify-center font-bold shadow-lg ${
-                    employee.status === 'active' ? 'bg-green-500' : 
-                    employee.status === 'driving' ? 'bg-orange-500' : 'bg-gray-500'
-                  }`}
-                  style={{
-                    top: `${30 + index * 15}%`,
-                    right: `${20 + index * 20}%`,
-                  }}
-                  title={employee.name}
-                >
-                  E
-                </div>
-              ))}
-            </div>
-            
-            {/* Map Controls */}
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span>Jobs</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span>Active Employees</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                  <span>En Route</span>
-                </div>
-              </div>
-              <button 
-                onClick={() => onSectionChange?.('map-view')}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-              >
-                <Navigation className="h-4 w-4" />
-                View Full Map
-              </button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Activity and Enhanced Schedule Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => {
-                const Icon = activity.icon;
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                const gradientColors = [
+                  'from-purple-500 to-pink-500',
+                  'from-blue-500 to-cyan-500', 
+                  'from-green-500 to-emerald-500',
+                  'from-orange-500 to-red-500'
+                ];
                 return (
-                  <div key={activity.id} className="flex items-start gap-3">
-                    <div className={`p-2 rounded-full bg-muted ${activity.color}`}>
-                      <Icon className="h-3 w-3" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium">{activity.title}</p>
-                      <p className="text-xs text-muted-foreground">{activity.customer}</p>
-                      <p className="text-xs text-muted-foreground">{activity.time}</p>
-                    </div>
-                    <Badge variant={
-                      activity.status === 'completed' ? 'default' :
-                      activity.status === 'urgent' ? 'destructive' :
-                      activity.status === 'positive' ? 'secondary' : 'outline'
-                    }>
-                      {activity.status}
-                    </Badge>
-                  </div>
+                  <Card key={index} className="relative overflow-hidden border-0 shadow-lg">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors[index]} opacity-10`}></div>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                      <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                      <div className={`p-2 rounded-lg bg-gradient-to-br ${gradientColors[index]}`}>
+                        <Icon className="h-4 w-4 text-white" />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="relative z-10">
+                      <div className="text-2xl font-bold">{stat.value}</div>
+                      <p className="text-xs text-muted-foreground">{stat.trend}</p>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        );
+      
+      case 'recent-jobs':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Recent Jobs & Locations</Label>
+              <Badge variant="outline">Updated 5 min ago</Badge>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <Card className="colorful-card shadow-lg">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="colorful-text">Recent Jobs</CardTitle>
+                    <Badge variant="secondary">{recentJobs.length} Active</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recentJobs.map((job, index) => {
+                      const statusColors = {
+                        'scheduled': 'from-blue-500 to-indigo-500',
+                        'in-progress': 'from-orange-500 to-red-500',
+                        'completed': 'from-green-500 to-emerald-500'
+                      };
+                      return (
+                        <div key={job.id} className="flex justify-between items-center p-3 border rounded-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+                          <div>
+                            <p className="font-medium">{job.title}</p>
+                            <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                          </div>
+                          <span className={`text-xs px-3 py-1 rounded-full bg-gradient-to-r ${statusColors[job.status]} text-white font-medium`}>
+                            {job.status === 'scheduled' ? 'Scheduled' : job.status === 'in-progress' ? 'In Progress' : 'Completed'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Job Locations Map</Label>
+                <MapView jobs={recentJobs} />
+              </div>
+              
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Location List</Label>
+                <JobLocationsList jobs={recentJobs} />
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'quick-actions':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Quick Actions</Label>
+              <Badge variant="outline">Shortcuts</Badge>
+            </div>
+            <Card className="colorful-card shadow-lg">
+              <CardHeader>
+                <CardTitle className="colorful-text">Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { text: 'Schedule New Job', gradient: 'from-purple-500 to-pink-500' },
+                  { text: 'Add New Customer', gradient: 'from-blue-500 to-cyan-500' },
+                  { text: 'Create Estimate', gradient: 'from-green-500 to-emerald-500' }
+                ].map((action, index) => (
+                  <button 
+                    key={index}
+                    className={`w-full p-3 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105`}
+                  >
+                    {action.text}
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
 
-        {/* Enhanced Today's Schedule */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Today's Schedule</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="jobs" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="jobs">Jobs Schedule</TabsTrigger>
-                <TabsTrigger value="employees">Employee Schedule</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="jobs" className="space-y-4 mt-4">
-                {upcomingJobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">{job.title}</p>
-                      <p className="text-sm text-muted-foreground">{job.customer}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <User className="h-3 w-3" />
-                        {job.employee}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium">{job.time}</p>
-                      <Badge variant={job.status === 'confirmed' ? 'default' : 'outline'}>
-                        {job.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-              
-              <TabsContent value="employees" className="space-y-4 mt-4">
-                {employeeSchedules.map((employee) => (
-                  <div key={employee.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">{employee.name}</p>
-                      <p className="text-sm text-muted-foreground">{employee.position}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {employee.currentLocation}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        {employee.nextJob}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <Badge className={getStatusColor(employee.status)}>
-                        {employee.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+  const enabledWidgets = widgets
+    .filter(widget => widget.enabled)
+    .sort((a, b) => a.order - b.order);
+
+  const stats = [
+    {
+      title: "Total Jobs",
+      value: "24",
+      icon: Calendar,
+      trend: "+12% from last month"
+    },
+    {
+      title: "Active Customers",
+      value: "156",
+      icon: Users,
+      trend: "+8% from last month"
+    },
+    {
+      title: "Monthly Revenue",
+      value: "$45,230",
+      icon: DollarSign,
+      trend: "+23% from last month"
+    },
+    {
+      title: "Completed Jobs",
+      value: "89",
+      icon: Wrench,
+      trend: "+15% from last month"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen">
+      <div className="p-6 space-y-6">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              {getGreeting()}, {userName}!
+            </h1>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>{getFormattedTime()}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowTimezoneDialog(true)}
+                className="ml-2"
+              >
+                <Settings className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCustomization(true)}
+              className="flex items-center gap-2"
+            >
+              <Palette className="h-4 w-4" />
+              Customize Dashboard
+            </Button>
+          </div>
+        </div>
+        
+        <div className="space-y-6">
+          {enabledWidgets.map((widget) => (
+            <div key={widget.id}>
+              {getWidget(widget.id)}
+            </div>
+          ))}
+        </div>
+
+        {/* Timezone Settings Dialog */}
+        {showTimezoneDialog && (
+          <Dialog open={true} onOpenChange={setShowTimezoneDialog}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Timezone Settings</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Select Timezone</Label>
+                  <select
+                    id="timezone"
+                    value={tempTimezone}
+                    onChange={(e) => setTempTimezone(e.target.value)}
+                    className="w-full h-10 px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  >
+                    <option value="America/New_York">Eastern Time (EST/EDT)</option>
+                    <option value="America/Chicago">Central Time (CST/CDT)</option>
+                    <option value="America/Denver">Mountain Time (MST/MDT)</option>
+                    <option value="America/Los_Angeles">Pacific Time (PST/PDT)</option>
+                    <option value="America/Anchorage">Alaska Time (AKST/AKDT)</option>
+                    <option value="Pacific/Honolulu">Hawaii Time (HST)</option>
+                    <option value="UTC">UTC</option>
+                    <option value="Europe/London">London (GMT/BST)</option>
+                    <option value="Europe/Paris">Paris (CET/CEST)</option>
+                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Australia/Sydney">Sydney (AEDT/AEST)</option>
+                  </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="username">Display Name</Label>
+                  <Input
+                    id="username"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button variant="outline" onClick={() => setShowTimezoneDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleTimezoneUpdate}>
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {/* Dashboard Customization Dialog */}
+        <DashboardCustomization
+          open={showCustomization}
+          onOpenChange={setShowCustomization}
+          widgets={widgets}
+          onWidgetsChange={(newWidgets) => {
+            setWidgets(newWidgets);
+            toast({
+              title: "Dashboard Updated",
+              description: "Your dashboard layout has been saved.",
+            });
+          }}
+        />
       </div>
     </div>
   );

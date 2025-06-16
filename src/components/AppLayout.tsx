@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Camera, FolderOpen, Zap } from "lucide-react";
+import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dashboard } from "./Dashboard";
@@ -19,21 +19,13 @@ import { PhotoDocumentation } from "./PhotoDocumentation";
 import { MobileFeaturesDashboard } from "./MobileFeaturesDashboard";
 import { RealTimeChat } from "./RealTimeChat";
 import { AdvancedInventorySystem } from "./AdvancedInventorySystem";
-import { EquipmentManagement } from "./EquipmentManagement";
 import { FinancialAnalyticsDashboard } from "./FinancialAnalyticsDashboard";
 import { PaymentIntegrationHub } from "./PaymentIntegrationHub";
 import { BranchManagement } from "./BranchManagement";
+import { RadiusAssignment } from "./RadiusAssignment";
+import { EmployeeLocationManager } from "./EmployeeLocationManager";
 import { Pipeline } from "./Pipeline";
 import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
-import { Communication } from "./Communication";
-import { SafetyManagement } from "./SafetyManagement";
-import { QualityControl as QualityControlComponent } from "./QualityControl";
-import { AddJobSection } from "./AddJobSection";
-import { TimeTracking } from "./TimeTracking";
-import { AppHeader } from "./AppHeader";
-import { ServicesManagement } from "./ServicesManagement";
-import { ImportExportHub } from "./ImportExportHub";
-import { BackendSettings } from "./BackendSettings";
 
 interface SidebarSection {
   id: string;
@@ -69,9 +61,6 @@ const sections: SidebarSection[] = [
   { id: 'map-view', label: 'Map View', icon: Map },
   { id: 'team-management', label: 'Team Management', icon: UserCheck },
   { id: 'subcontractor-management', label: 'Subcontractor Management', icon: Hammer },
-  { id: 'services', label: 'Services', icon: Briefcase },
-  { id: 'import-export', label: 'Import/Export', icon: Activity },
-  { id: 'resource-allocation', label: 'Resource Allocation', icon: Package },
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
   { id: 'branch-management', label: 'Branch Management', icon: Building },
@@ -89,6 +78,7 @@ const sections: SidebarSection[] = [
   { id: 'employee-locations', label: 'Employee Locations', icon: Users }
 ];
 
+// Sample job data with appointments and jobs
 const jobsAndAppointments = [
   {
     id: '1',
@@ -98,9 +88,7 @@ const jobsAndAppointments = [
     coordinates: [-74.006, 40.7128] as [number, number],
     status: 'scheduled' as const,
     type: 'job' as const,
-    time: 'Today 2:00 PM',
-    scheduledDate: '2024-01-15',
-    assignedTo: 'Mike Johnson'
+    time: 'Today 2:00 PM'
   },
   {
     id: '2',
@@ -110,9 +98,7 @@ const jobsAndAppointments = [
     coordinates: [-74.0, 40.72] as [number, number],
     status: 'in-progress' as const,
     type: 'job' as const,
-    time: 'Tomorrow 9:00 AM',
-    scheduledDate: '2024-01-16',
-    assignedTo: 'Sarah Davis'
+    time: 'Tomorrow 9:00 AM'
   },
   {
     id: '3',
@@ -122,9 +108,7 @@ const jobsAndAppointments = [
     coordinates: [-74.01, 40.715] as [number, number],
     status: 'scheduled' as const,
     type: 'appointment' as const,
-    time: 'Friday 3:00 PM',
-    scheduledDate: '2024-01-19',
-    assignedTo: 'Tom Wilson'
+    time: 'Friday 3:00 PM'
   },
   {
     id: '4',
@@ -134,17 +118,9 @@ const jobsAndAppointments = [
     coordinates: [-73.99, 40.725] as [number, number],
     status: 'completed' as const,
     type: 'appointment' as const,
-    time: 'Yesterday 11:00 AM',
-    scheduledDate: '2024-01-14',
-    assignedTo: 'Lisa Chen'
+    time: 'Yesterday 11:00 AM'
   }
 ];
-
-const SafetyManagementComponent = () => (
-  <div className="p-6">
-    <SafetyManagement />
-  </div>
-);
 
 export const AppLayout = () => {
   const [activeSection, setActiveSection] = useState('client-appointment');
@@ -160,10 +136,6 @@ export const AppLayout = () => {
   const handleSidebarToggle = (collapsed: boolean) => {
     setSidebarCollapsed(collapsed);
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
-  };
-
-  const handleCompanySettingsClick = () => {
-    setActiveSection('company-settings');
   };
 
   const renderSection = () => {
@@ -183,92 +155,43 @@ export const AppLayout = () => {
       case 'customer-form':
         return <CustomerRegistrationForm />;
       case 'job-form':
-        return <AddJobSection />;
+        return <JobForm />;
       case 'estimates':
         return <EstimateList />;
       case 'invoices':
         return <InvoiceList />;
       case 'schedule':
         return <SchedulingDashboard />;
+      case 'expenses':
+        return <ExpenseList />;
       case 'time-tracking':
         return <TimeTracking />;
-      case 'photos':
-        return (
-          <div className="p-6">
-            <PhotoDocumentation />
-          </div>
-        );
       case 'inventory':
-        return (
-          <div className="p-6">
-            <AdvancedInventorySystem />
-          </div>
-        );
+        return <MaterialInventory />;
       case 'equipment':
-        return (
-          <div className="p-6">
-            <EquipmentManagement />
-          </div>
-        );
+        return <EquipmentTracking />;
+      case 'vehicles':
+        return <VehicleManagement />;
+      case 'photos':
+        return <PhotoDocumentation />;
+      case 'communication':
+        return <EmployeeChat />;
+      case 'reviews':
+        return <ReviewManagement />;
       case 'safety':
-        return <SafetyManagementComponent />;
+        return <SaftyManagement />;
       case 'quality':
-        return (
-          <div className="p-6">
-            <QualityControlComponent />
-          </div>
-        );
+        return <QualityControl />;
       case 'goals':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Goals & KPIs</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Key performance indicators and goals tracking will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <KPIDashboard />;
       case 'reports':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Reports</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Reporting and analytics system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <ReportsView />;
       case 'analytics':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Advanced Analytics</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Advanced analytics and insights will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AdvancedAnalytics />;
       case 'notifications':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Notifications</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Notification management center will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <NotificationCenter />;
       case 'map-view':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Map View</h2>
-            <MapView jobs={jobsAndAppointments} />
-          </div>
-        );
+        return <MapViewPage />;
       case 'company-settings':
         return <CompanySettings />;
       case 'branch-management':
@@ -277,202 +200,30 @@ export const AppLayout = () => {
         return <TeamManagement />;
       case 'subcontractor-management':
         return <SubcontractorManagement />;
-      case 'services':
-        return <ServicesManagement />;
-      case 'import-export':
-        return <ImportExportHub />;
       case 'settings':
-        return (
-          <div className="p-6 space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold mb-4">Settings</h2>
-              <p className="text-muted-foreground mb-6">Manage your application settings and integrations</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">General Settings</h3>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Configure general application preferences</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Custom Integrations</h3>
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">QuickBooks Integration</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Connect with QuickBooks for accounting sync</p>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
-                      Configure QuickBooks
-                    </button>
-                  </div>
-                  
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">Zapier Integration</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Automate workflows with 5000+ apps</p>
-                    <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
-                      Setup Zapier
-                    </button>
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">Stripe Payment Processing</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Accept online payments from customers</p>
-                    <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors">
-                      Connect Stripe
-                    </button>
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">Email Marketing</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Connect with Mailchimp or Constant Contact</p>
-                    <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
-                      Setup Email Marketing
-                    </button>
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">Custom API Integration</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Connect with your custom systems via API</p>
-                    <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
-                      Add Custom API
-                    </button>
-                  </div>
-
-                  <div className="p-4 border rounded-lg bg-card">
-                    <h4 className="font-medium mb-2">Map Settings</h4>
-                    <p className="text-sm text-muted-foreground mb-3">Configure map display and location settings</p>
-                    <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors">
-                      Configure Maps
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        return <SettingsView />;
       case 'team-chat':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Team Chat</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Real-time chat and collaboration tools for team members.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <RealTimeChat />;
       case 'advanced-inventory':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Advanced Inventory</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Advanced inventory management system with detailed tracking.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AdvancedInventorySystem />;
       case 'financial-analytics':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Financial Analytics</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Financial analytics and reporting dashboard.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <FinancialAnalyticsDashboard />;
       case 'payment-integration':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Payment Hub</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Centralized payment integration and management.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <PaymentIntegrationHub />;
       case 'profit-analysis':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Profit Analysis</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Profit margin and financial performance analysis will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <ProfitMarginAnalysis />;
       case 'predictive-analytics':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Predictive Analytics</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Predictive analytics and forecasting system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <PredictiveAnalytics />;
       case 'advanced-reporting':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Advanced Reports</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Advanced reporting and visualization system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AdvancedReporting />;
       case 'quickbooks-integration':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">QuickBooks</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>QuickBooks integration and accounting system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <QuickBooksIntegration />;
       case 'accounting-integration':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Accounting</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Accounting and financial management system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <AccountingIntegration />;
       case 'radius-assignment':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Radius Assignment</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Radius assignment and location management system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <RadiusAssignment />;
       case 'employee-locations':
-        return (
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Employee Locations</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p>Employee location tracking and management system will be implemented here.</p>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <EmployeeLocationManager />;
       default:
         return (
           <div className="p-6">
@@ -499,29 +250,309 @@ export const AppLayout = () => {
   const sidebarWidth = sidebarCollapsed ? 80 : 320;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <AppHeader onCompanySettingsClick={handleCompanySettingsClick} />
-      </div>
-      
-      {/* Main Content with proper spacing for fixed header */}
-      <div className="pt-16 flex flex-1 min-h-screen">
-        <MegaMenuSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          sections={sections}
-          isVisible={true}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={handleSidebarToggle}
-        />
+    <div className="min-h-screen bg-background flex">
+      <MegaMenuSidebar
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        sections={sections}
+        isVisible={true}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={handleSidebarToggle}
+      />
 
-        <main className="flex-1 transition-all duration-300 bg-background text-foreground" style={{ marginLeft: `${sidebarWidth}px` }}>
-          <div className="min-h-full bg-background text-foreground">
-            {renderSection()}
+      <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
+        {renderSection()}
+      </main>
+    </div>
+  );
+};
+
+// Placeholder components for missing sections
+const JobForm = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Create New Job</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Job creation form will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ExpenseList = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Expenses</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Expense tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const TimeTracking = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Time Tracking</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Time tracking and reporting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const MaterialInventory = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Material Inventory</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Inventory management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EquipmentTracking = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Equipment Tracking</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Equipment management and tracking system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const EmployeeChat = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Employee Communication</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Internal communication and messaging system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ReviewManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Review Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Customer review management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const KPIDashboard = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">KPI Dashboard</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Key performance indicators and goals tracking will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ReportsView = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Reports</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Reporting and analytics system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AdvancedAnalytics = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Advanced Analytics</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Advanced analytics and insights will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const NotificationCenter = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Notifications</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Notification management center will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const VehicleManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Vehicle Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Vehicle tracking and management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const SaftyManagement = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Safety protocols and incident management system.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const QualityControl = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Quality Control</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Quality control checklists and inspection management.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const MapViewPage = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Map View</h2>
+    <MapView jobs={jobsAndAppointments} />
+  </div>
+);
+
+const SettingsView = () => {
+  return (
+    <div className="p-6 space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Settings</h2>
+        <p className="text-muted-foreground mb-6">Manage your application settings and integrations</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">General Settings</h3>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Configure general application preferences</p>
           </div>
-        </main>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Custom Integrations</h3>
+          <div className="space-y-4">
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">QuickBooks Integration</h4>
+              <p className="text-sm text-muted-foreground mb-3">Connect with QuickBooks for accounting sync</p>
+              <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                Configure QuickBooks
+              </button>
+            </div>
+            
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Zapier Integration</h4>
+              <p className="text-sm text-muted-foreground mb-3">Automate workflows with 5000+ apps</p>
+              <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
+                Setup Zapier
+              </button>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Stripe Payment Processing</h4>
+              <p className="text-sm text-muted-foreground mb-3">Accept online payments from customers</p>
+              <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors">
+                Connect Stripe
+              </button>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Email Marketing</h4>
+              <p className="text-sm text-muted-foreground mb-3">Connect with Mailchimp or Constant Contact</p>
+              <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors">
+                Setup Email Marketing
+              </button>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Custom API Integration</h4>
+              <p className="text-sm text-muted-foreground mb-3">Connect with your custom systems via API</p>
+              <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                Add Custom API
+              </button>
+            </div>
+
+            <div className="p-4 border rounded-lg bg-card">
+              <h4 className="font-medium mb-2">Map Settings</h4>
+              <p className="text-sm text-muted-foreground mb-3">Configure map display and location settings</p>
+              <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors">
+                Configure Maps
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
+const ProfitMarginAnalysis = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Profit Analysis</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Profit margin and financial performance analysis will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const PredictiveAnalytics = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Predictive Analytics</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Predictive analytics and forecasting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AdvancedReporting = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Advanced Reports</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Advanced reporting and visualization system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const QuickBooksIntegration = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">QuickBooks</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>QuickBooks integration and accounting system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const AccountingIntegration = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Accounting</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Accounting and financial management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);

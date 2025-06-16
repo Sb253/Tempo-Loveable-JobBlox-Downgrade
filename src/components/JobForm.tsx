@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,28 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
-interface Job {
-  id: string;
-  title: string;
-  customer: string;
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
-  priority: 'low' | 'medium' | 'high';
-  scheduledDate: string;
-  estimatedValue: number;
-  description: string;
-  address: string;
-  assignedTechnician: string;
-  estimatedHours: number;
-  jobType: 'inspection' | 'repair' | 'installation' | 'maintenance' | 'consultation';
-}
-
 interface JobFormProps {
   onClose: () => void;
-  job?: Job;
-  onSave: (job: Job) => void;
+  job?: any;
 }
 
-export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
+export const JobForm = ({ onClose, job }: JobFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     title: job?.title || '',
@@ -36,29 +21,25 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
     status: job?.status || 'scheduled',
     priority: job?.priority || 'medium',
     scheduledDate: job?.scheduledDate || '',
-    estimatedValue: job?.estimatedValue || 0,
-    description: job?.description || '',
-    address: job?.address || '',
-    assignedTechnician: job?.assignedTechnician || '',
-    estimatedHours: job?.estimatedHours || 0,
-    jobType: job?.jobType || 'installation'
+    estimatedValue: job?.estimatedValue || '',
+    description: job?.description || ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const jobData: Job = {
-      ...formData,
-      id: job?.id || Date.now().toString(),
-      estimatedValue: Number(formData.estimatedValue),
-      estimatedHours: Number(formData.estimatedHours)
-    };
+    // Here you would typically save to a database
+    console.log('Saving job:', formData);
     
-    onSave(jobData);
+    toast({
+      title: job ? "Job Updated" : "Job Created",
+      description: `${formData.title} has been ${job ? 'updated' : 'created'} successfully.`,
+    });
+    
     onClose();
   };
 
-  const handleChange = (field: string, value: string | number) => {
+  const handleChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -67,7 +48,7 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
           <DialogTitle>{job ? 'Edit Job' : 'Create New Job'}</DialogTitle>
         </DialogHeader>
@@ -97,17 +78,7 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              value={formData.address}
-              onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="Job address"
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select value={formData.status} onValueChange={(value) => handleChange('status', value)}>
@@ -136,29 +107,9 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="jobType">Job Type</Label>
-              <Select value={formData.jobType} onValueChange={(value) => handleChange('jobType', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="inspection">Inspection</SelectItem>
-                  <SelectItem value="repair">Repair</SelectItem>
-                  <SelectItem value="installation">Installation</SelectItem>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="consultation">Consultation</SelectItem>
-                  <SelectItem value="roofing">Roofing</SelectItem>
-                  <SelectItem value="siding">Siding</SelectItem>
-                  <SelectItem value="deck">Deck</SelectItem>
-                  <SelectItem value="patio-cover">Patio Cover</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="scheduledDate">Scheduled Date</Label>
               <Input
@@ -175,31 +126,10 @@ export const JobForm = ({ onClose, job, onSave }: JobFormProps) => {
                 id="estimatedValue"
                 type="number"
                 value={formData.estimatedValue}
-                onChange={(e) => handleChange('estimatedValue', Number(e.target.value))}
+                onChange={(e) => handleChange('estimatedValue', e.target.value)}
                 placeholder="0"
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="estimatedHours">Estimated Hours</Label>
-              <Input
-                id="estimatedHours"
-                type="number"
-                value={formData.estimatedHours}
-                onChange={(e) => handleChange('estimatedHours', Number(e.target.value))}
-                placeholder="0"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="assignedTechnician">Assigned Technician</Label>
-            <Input
-              id="assignedTechnician"
-              value={formData.assignedTechnician}
-              onChange={(e) => handleChange('assignedTechnician', e.target.value)}
-              placeholder="Technician name"
-            />
           </div>
 
           <div className="space-y-2">

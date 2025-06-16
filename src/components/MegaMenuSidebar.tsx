@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X, Hammer } from "lucide-react";
+import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
 
 interface SidebarSection {
   id: string;
@@ -28,6 +28,11 @@ interface MegaMenuSidebarProps {
   onToggleCollapse?: (collapsed: boolean) => void;
 }
 
+interface CompanyData {
+  name: string;
+  logo: string | null;
+}
+
 export const MegaMenuSidebar = ({ 
   activeSection, 
   onSectionChange, 
@@ -36,17 +41,38 @@ export const MegaMenuSidebar = ({
   collapsed = false,
   onToggleCollapse
 }: MegaMenuSidebarProps) => {
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Construction CRM',
+    logo: null
+  });
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+
+  useEffect(() => {
+    const savedCompanyData = localStorage.getItem('companySettings');
+    if (savedCompanyData) {
+      const data = JSON.parse(savedCompanyData);
+      setCompanyData({
+        name: data.name || 'Construction CRM',
+        logo: data.logo || null
+      });
+    }
+  }, []);
 
   // Group sections into logical categories
   const menuGroups: SidebarGroup[] = [
+    {
+      label: 'Dashboard',
+      icon: Building2,
+      defaultOpen: true,
+      items: sections.filter(s => s.id === 'dashboard')
+    },
     {
       label: 'Customer Management',
       icon: sections.find(s => s.id === 'customers')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
         ['customers', 'customer-form', 'pipeline', 'client-appointment', 'communication', 'reviews'].includes(s.id)
-      ).map(item => item.id === 'customer-form' ? { ...item, label: 'Customer Intake' } : item)
+      )
     },
     {
       label: 'Job Management',
@@ -61,7 +87,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'team-management')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['team-management', 'subcontractor-management', 'services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'import-export', 'employee-locations', 'radius-assignment'].includes(s.id)
+        ['team-management', 'subcontractor-management', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
       )
     },
     {
@@ -85,7 +111,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'quickbooks-integration')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['quickbooks-integration', 'accounting-integration', 'sales-crm-lead', 'project-field', 'communication-reviews', 'document-storage', 'automation', 'miscellaneous'].includes(s.id)
+        ['quickbooks-integration', 'accounting-integration'].includes(s.id)
       )
     },
     {
@@ -101,13 +127,10 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'settings')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['company-settings', 'settings', 'mobile-settings', 'branch-management', 'backend-settings'].includes(s.id)
+        ['company-settings', 'settings', 'mobile-settings', 'branch-management'].includes(s.id)
       )
     }
   ];
-
-  // Get dashboard section separately
-  const dashboardSection = sections.find(s => s.id === 'dashboard');
 
   // Initialize open groups based on active section
   useEffect(() => {
@@ -135,78 +158,44 @@ export const MegaMenuSidebar = ({
     }
   };
 
-  const handleSectionClick = (sectionId: string) => {
-    console.log('MegaMenuSidebar: Section clicked:', sectionId);
-    onSectionChange(sectionId);
-  };
-
   if (!isVisible) {
     return null;
   }
 
   return (
     <div className={cn(
-      "fixed left-0 bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
-      "top-16 h-[calc(100vh-4rem)]", // Account for fixed header height
+      "fixed left-0 top-0 h-full bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
       collapsed ? "w-20" : "w-80"
     )}>
-      {/* App Branding */}
-      <div className="p-4 md:p-6 border-b border-border bg-card">
-        <div className="flex items-center gap-3 mb-3">
-          <Hammer className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
+      {/* Header */}
+      <div className="p-6 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {companyData.logo ? (
+            <img 
+              src={companyData.logo} 
+              alt="Company Logo" 
+              className="h-8 w-8 object-contain"
+            />
+          ) : (
+            <Building2 className="h-8 w-8 text-primary" />
+          )}
           {!collapsed && (
-            <h1 className="text-lg md:text-xl font-bold text-orange-600">Build Connect</h1>
+            <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
           )}
         </div>
-        
-        {/* Collapse Toggle */}
-        <div className="flex justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleToggleCollapse}
-            className="h-6 w-6 md:h-8 md:w-8 text-foreground hover:bg-accent"
-          >
-            {collapsed ? <Menu className="h-3 w-3 md:h-4 md:w-4" /> : <X className="h-3 w-3 md:h-4 md:w-4" />}
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleToggleCollapse}
+          className="h-8 w-8"
+        >
+          {collapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+        </Button>
       </div>
       
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-2 md:px-4 py-2 bg-card">
+      <ScrollArea className="flex-1 px-4 py-2">
         <div className="space-y-2">
-          {/* Dashboard Home Link */}
-          {dashboardSection && (
-            <div className="mb-4">
-              {collapsed ? (
-                <div className="flex justify-center py-2">
-                  <Button
-                    variant={activeSection === 'dashboard' ? "default" : "ghost"}
-                    size="icon"
-                    className="h-8 w-8 md:h-10 md:w-10"
-                    title={dashboardSection.label}
-                    onClick={() => handleSectionClick(dashboardSection.id)}
-                  >
-                    <dashboardSection.icon className="h-4 w-4 md:h-5 md:w-5" />
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  variant={activeSection === 'dashboard' ? "default" : "ghost"}
-                  className={cn(
-                    "w-full justify-start gap-3 text-xs md:text-sm h-8 md:h-10",
-                    activeSection === 'dashboard' && "bg-primary text-primary-foreground"
-                  )}
-                  onClick={() => handleSectionClick(dashboardSection.id)}
-                >
-                  <dashboardSection.icon className="h-4 w-4 md:h-5 md:w-5 flex-shrink-0" />
-                  <span className="truncate">{dashboardSection.label}</span>
-                </Button>
-              )}
-            </div>
-          )}
-
-          {/* Menu Groups */}
           {menuGroups.map((group) => {
             if (group.items.length === 0) return null;
             
@@ -214,6 +203,7 @@ export const MegaMenuSidebar = ({
             const GroupIcon = group.icon;
             
             if (collapsed) {
+              // In collapsed mode, show only icons for groups that have active items
               const hasActiveItem = group.items.some(item => item.id === activeSection);
               if (!hasActiveItem) return null;
               
@@ -226,10 +216,10 @@ export const MegaMenuSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 md:h-10 md:w-10 bg-primary text-primary-foreground"
+                    className="h-10 w-10 bg-primary text-primary-foreground"
                     title={activeItem.label}
                   >
-                    <ActiveIcon className="h-4 w-4 md:h-5 md:w-5" />
+                    <ActiveIcon className="h-5 w-5" />
                   </Button>
                 </div>
               );
@@ -240,21 +230,21 @@ export const MegaMenuSidebar = ({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-2 md:p-3 h-auto font-medium text-left hover:bg-accent text-xs md:text-sm text-foreground"
+                    className="w-full justify-between p-3 h-auto font-medium text-left hover:bg-accent"
                   >
-                    <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                      <GroupIcon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                      <span className="truncate">{group.label}</span>
+                    <div className="flex items-center gap-3">
+                      <GroupIcon className="h-4 w-4" />
+                      <span>{group.label}</span>
                     </div>
                     {isOpen ? (
-                      <ChevronDown className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                      <ChevronDown className="h-4 w-4" />
                     ) : (
-                      <ChevronRight className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
+                      <ChevronRight className="h-4 w-4" />
                     )}
                   </Button>
                 </CollapsibleTrigger>
                 
-                <CollapsibleContent className="ml-2 md:ml-4 mt-1 space-y-1">
+                <CollapsibleContent className="ml-4 mt-1 space-y-1">
                   {group.items.map((section) => {
                     const Icon = section.icon;
                     const isActive = activeSection === section.id;
@@ -264,13 +254,16 @@ export const MegaMenuSidebar = ({
                         key={section.id}
                         variant={isActive ? "default" : "ghost"}
                         className={cn(
-                          "w-full justify-start gap-2 md:gap-3 text-xs md:text-sm h-7 md:h-9",
+                          "w-full justify-start gap-3 text-sm h-9",
                           isActive && "bg-primary text-primary-foreground"
                         )}
-                        onClick={() => handleSectionClick(section.id)}
+                        onClick={() => {
+                          console.log('MegaMenuSidebar: Section clicked:', section.id);
+                          onSectionChange(section.id);
+                        }}
                       >
-                        <Icon className="h-3 w-3 md:h-4 md:w-4 flex-shrink-0" />
-                        <span className="truncate">{section.label}</span>
+                        <Icon className="h-4 w-4" />
+                        {section.label}
                       </Button>
                     );
                   })}

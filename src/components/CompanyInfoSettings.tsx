@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,19 +72,6 @@ export const CompanyInfoSettings: React.FC = () => {
     defaultFont: 'sans'
   });
 
-  // Load saved settings on component mount
-  useEffect(() => {
-    const savedSettings = localStorage.getItem('companySettings');
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setSettings({ ...settings, ...parsed });
-      } catch (error) {
-        console.error('Error parsing company settings:', error);
-      }
-    }
-  }, []);
-
   const handleInputChange = (field: keyof CompanyInfoSettings, value: string | boolean) => {
     setSettings(prev => ({
       ...prev,
@@ -119,21 +107,11 @@ export const CompanyInfoSettings: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Your Company Information</h2>
-          <p className="text-muted-foreground">Manage your company details that appear on estimates and invoices</p>
-        </div>
+        <h2 className="text-2xl font-bold">Company Information Settings</h2>
         <Button onClick={handleSave}>
           <Save className="h-4 w-4 mr-2" />
           Save Settings
         </Button>
-      </div>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Note:</strong> This is for your company information that will appear on customer documents. 
-          The "Build Connect" app name and branding is fixed and cannot be changed.
-        </p>
       </div>
 
       <Tabs defaultValue="basic" className="space-y-4">

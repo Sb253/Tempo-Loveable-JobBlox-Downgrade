@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,10 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, MapPin, Clock, Plus, Search, UserCheck, Settings } from "lucide-react";
+import { Users, MapPin, Clock, Plus, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { HRFeatures } from "./HRFeatures";
 
 interface TeamMember {
   id: string;
@@ -79,7 +78,6 @@ export const TeamManagement = () => {
   const [teamMembers] = useState<TeamMember[]>(mockTeamMembers);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddMember, setShowAddMember] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
   const [newMember, setNewMember] = useState({
     name: '',
     role: '',
@@ -121,139 +119,123 @@ export const TeamManagement = () => {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Team Overview</TabsTrigger>
-          <TabsTrigger value="gps">GPS Tracking</TabsTrigger>
-          <TabsTrigger value="hr">HR Management</TabsTrigger>
-        </TabsList>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Team Members</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{teamMembers.length}</div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="overview" className="space-y-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Team Members</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{teamMembers.length}</div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+            <MapPin className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {teamMembers.filter(m => m.status === 'active' || m.status === 'on-job').length}
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {teamMembers.filter(m => m.status === 'active' || m.status === 'on-job').length}
-                </div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">On Jobs</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {teamMembers.filter(m => m.status === 'on-job').length}
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">On Jobs</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {teamMembers.filter(m => m.status === 'on-job').length}
-                </div>
-              </CardContent>
-            </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Offline</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {teamMembers.filter(m => m.status === 'offline').length}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Offline</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {teamMembers.filter(m => m.status === 'offline').length}
-                </div>
-              </CardContent>
-            </Card>
+      {/* Search */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Team Search</CardTitle>
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search team members..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
           </div>
+        </CardHeader>
+      </Card>
 
-          {/* Search */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Team Search</CardTitle>
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search team members..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </CardHeader>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="gps" className="space-y-6">
-          {/* Team Members GPS Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Team Members & GPS Tracking</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Current Location</TableHead>
-                    <TableHead>Last Update</TableHead>
-                    <TableHead>Current Job</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredMembers.map((member) => (
-                    <TableRow key={member.id}>
-                      <TableCell className="font-medium">{member.name}</TableCell>
-                      <TableCell>{member.role}</TableCell>
-                      <TableCell>
-                        <Badge className={getStatusColor(member.status)}>
-                          {member.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          <span className="text-sm">{member.location.address}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{member.lastUpdate}</TableCell>
-                      <TableCell>{member.currentJob || 'None'}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            View Map
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Contact
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="hr">
-          <HRFeatures />
-        </TabsContent>
-      </Tabs>
+      {/* Team Members Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Team Members & GPS Tracking</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Current Location</TableHead>
+                <TableHead>Last Update</TableHead>
+                <TableHead>Current Job</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredMembers.map((member) => (
+                <TableRow key={member.id}>
+                  <TableCell className="font-medium">{member.name}</TableCell>
+                  <TableCell>{member.role}</TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(member.status)}>
+                      {member.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      <span className="text-sm">{member.location.address}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{member.lastUpdate}</TableCell>
+                  <TableCell>{member.currentJob || 'None'}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        View Map
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Contact
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Add Member Dialog */}
       {showAddMember && (

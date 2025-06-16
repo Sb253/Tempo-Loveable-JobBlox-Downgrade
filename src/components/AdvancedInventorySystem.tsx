@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
 import { 
   Package, 
   Wrench, 
@@ -19,12 +18,7 @@ import {
   Scan,
   Plus,
   Filter,
-  Download,
-  Minus,
-  ShoppingCart,
-  Search,
-  Edit,
-  Trash2
+  Download
 } from "lucide-react";
 import { 
   LineChart, 
@@ -70,7 +64,7 @@ interface Equipment {
   value: number;
 }
 
-const initialInventory: InventoryItem[] = [
+const mockInventory: InventoryItem[] = [
   {
     id: '1',
     name: 'PVC Pipes (2 inch)',
@@ -112,38 +106,10 @@ const initialInventory: InventoryItem[] = [
     location: 'Warehouse A',
     lastRestocked: '2024-11-25',
     status: 'out-of-stock'
-  },
-  {
-    id: '4',
-    name: 'Concrete Mix',
-    category: 'Construction',
-    currentStock: 75,
-    minStock: 30,
-    maxStock: 150,
-    unit: 'bags',
-    costPerUnit: 8.50,
-    supplier: 'BuildCorp',
-    location: 'Warehouse C',
-    lastRestocked: '2024-12-12',
-    status: 'in-stock'
-  },
-  {
-    id: '5',
-    name: 'Copper Fittings',
-    category: 'Plumbing',
-    currentStock: 25,
-    minStock: 50,
-    maxStock: 200,
-    unit: 'pieces',
-    costPerUnit: 3.75,
-    supplier: 'PlumbCorp',
-    location: 'Warehouse A',
-    lastRestocked: '2024-12-05',
-    status: 'low-stock'
   }
 ];
 
-const initialEquipment: Equipment[] = [
+const mockEquipment: Equipment[] = [
   {
     id: '1',
     name: 'Hydraulic Drill',
@@ -182,19 +148,6 @@ const initialEquipment: Equipment[] = [
     lastMaintenance: '2024-12-10',
     nextMaintenance: '2025-01-10',
     value: 800
-  },
-  {
-    id: '4',
-    name: 'Concrete Mixer',
-    type: 'Heavy Equipment',
-    serialNumber: 'CM-2024-004',
-    assignedTo: 'Sarah Davis',
-    location: 'Construction Site B',
-    status: 'in-use',
-    purchaseDate: '2024-05-10',
-    lastMaintenance: '2024-11-20',
-    nextMaintenance: '2025-02-20',
-    value: 5500
   }
 ];
 
@@ -210,15 +163,14 @@ const usageData = [
 const categoryData = [
   { name: 'Plumbing', value: 35, color: '#8884d8' },
   { name: 'Electrical', value: 28, color: '#82ca9d' },
-  { name: 'Construction', value: 20, color: '#ffc658' },
-  { name: 'Flooring', value: 17, color: '#ff7300' }
+  { name: 'HVAC', value: 20, color: '#ffc658' },
+  { name: 'General', value: 17, color: '#ff7300' }
 ];
 
 export const AdvancedInventorySystem = () => {
-  const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState('inventory');
-  const [inventory, setInventory] = useState<InventoryItem[]>(initialInventory);
-  const [equipment, setEquipment] = useState<Equipment[]>(initialEquipment);
+  const [inventory] = useState<InventoryItem[]>(mockInventory);
+  const [equipment] = useState<Equipment[]>(mockEquipment);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -249,55 +201,9 @@ export const AdvancedInventorySystem = () => {
     (categoryFilter === 'all' || item.category.toLowerCase() === categoryFilter)
   );
 
-  const filteredEquipment = equipment.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const lowStockItems = inventory.filter(item => item.status === 'low-stock' || item.status === 'out-of-stock');
   const totalInventoryValue = inventory.reduce((sum, item) => sum + (item.currentStock * item.costPerUnit), 0);
   const totalEquipmentValue = equipment.reduce((sum, item) => sum + item.value, 0);
-
-  const handleStockAdjustment = (itemId: string, adjustment: number) => {
-    setInventory(prev => prev.map(item => {
-      if (item.id === itemId) {
-        const newStock = Math.max(0, item.currentStock + adjustment);
-        let newStatus: InventoryItem['status'] = 'in-stock';
-        
-        if (newStock === 0) newStatus = 'out-of-stock';
-        else if (newStock <= item.minStock) newStatus = 'low-stock';
-        
-        return { ...item, currentStock: newStock, status: newStatus };
-      }
-      return item;
-    }));
-
-    toast({
-      title: "Stock Updated",
-      description: `Inventory has been ${adjustment > 0 ? 'increased' : 'decreased'}.`,
-    });
-  };
-
-  const handleReorder = (itemId: string) => {
-    const item = inventory.find(i => i.id === itemId);
-    if (item) {
-      const orderQuantity = item.maxStock - item.currentStock;
-      toast({
-        title: "Reorder Initiated",
-        description: `Ordering ${orderQuantity} ${item.unit} of ${item.name}`,
-      });
-    }
-  };
-
-  const handleEquipmentStatusChange = (equipmentId: string, newStatus: Equipment['status']) => {
-    setEquipment(prev => prev.map(item => 
-      item.id === equipmentId ? { ...item, status: newStatus } : item
-    ));
-    
-    toast({
-      title: "Equipment Status Updated",
-      description: `Status changed to ${newStatus}.`,
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -383,15 +289,12 @@ export const AdvancedInventorySystem = () => {
         <TabsContent value="inventory" className="space-y-4">
           {/* Search and Filters */}
           <div className="flex gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search inventory..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <Input
+              placeholder="Search inventory..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="Filter by category" />
@@ -400,46 +303,20 @@ export const AdvancedInventorySystem = () => {
                 <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem value="plumbing">Plumbing</SelectItem>
                 <SelectItem value="electrical">Electrical</SelectItem>
-                <SelectItem value="construction">Construction</SelectItem>
                 <SelectItem value="flooring">Flooring</SelectItem>
               </SelectContent>
             </Select>
+            <Button variant="outline">
+              <Filter className="h-4 w-4 mr-2" />
+              More Filters
+            </Button>
             <Button variant="outline">
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
           </div>
 
-          {/* Low Stock Alert */}
-          {lowStockItems.length > 0 && (
-            <Card className="border-orange-200 bg-orange-50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-800">
-                  <AlertTriangle className="h-5 w-5" />
-                  Low Stock Alerts ({lowStockItems.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-2">
-                  {lowStockItems.slice(0, 3).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                      <span className="font-medium">{item.name}</span>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-orange-600">
-                          {item.currentStock} {item.unit}
-                        </Badge>
-                        <Button size="sm" onClick={() => handleReorder(item.id)}>
-                          Reorder
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Inventory Grid */}
+          {/* Inventory List */}
           <div className="grid gap-4">
             {filteredInventory.map((item) => (
               <Card key={item.id}>
@@ -471,30 +348,6 @@ export const AdvancedInventorySystem = () => {
                         <div className="text-xs text-muted-foreground">{item.supplier}</div>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleStockAdjustment(item.id, -1)}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleStockAdjustment(item.id, 1)}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleReorder(item.id)}
-                        >
-                          <ShoppingCart className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      
                       <Badge className={getStatusColor(item.status)}>
                         {item.status.replace('-', ' ')}
                       </Badge>
@@ -514,7 +367,7 @@ export const AdvancedInventorySystem = () => {
                           item.currentStock <= item.minStock * 1.5 ? 'bg-yellow-500' :
                           'bg-green-500'
                         }`}
-                        style={{ width: `${Math.min((item.currentStock / item.maxStock) * 100, 100)}%` }}
+                        style={{ width: `${(item.currentStock / item.maxStock) * 100}%` }}
                       />
                     </div>
                   </div>
@@ -525,18 +378,8 @@ export const AdvancedInventorySystem = () => {
         </TabsContent>
 
         <TabsContent value="equipment" className="space-y-4">
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search equipment..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
           <div className="grid gap-4">
-            {filteredEquipment.map((item) => (
+            {equipment.map((item) => (
               <Card key={item.id}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -568,35 +411,6 @@ export const AdvancedInventorySystem = () => {
                           <Calendar className="h-3 w-3" />
                           Next Service
                         </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        {item.status === 'available' && (
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleEquipmentStatusChange(item.id, 'in-use')}
-                          >
-                            Assign
-                          </Button>
-                        )}
-                        {item.status === 'in-use' && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEquipmentStatusChange(item.id, 'available')}
-                          >
-                            Return
-                          </Button>
-                        )}
-                        {item.status !== 'maintenance' && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleEquipmentStatusChange(item.id, 'maintenance')}
-                          >
-                            Maintenance
-                          </Button>
-                        )}
                       </div>
                       
                       <Badge className={getStatusColor(item.status)}>
@@ -655,24 +469,6 @@ export const AdvancedInventorySystem = () => {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Stock Levels Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={inventory}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="currentStock" fill="#8884d8" name="Current Stock" />
-                    <Bar dataKey="minStock" fill="#82ca9d" name="Min Stock" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
@@ -695,46 +491,11 @@ export const AdvancedInventorySystem = () => {
                         <p className="text-sm text-muted-foreground">
                           {item.status === 'out-of-stock' ? 'Out of stock' : `Low stock: ${item.currentStock} ${item.unit} remaining`}
                         </p>
-                        <p className="text-xs text-muted-foreground">Location: {item.location}</p>
                       </div>
                     </div>
-                    <Button size="sm" onClick={() => handleReorder(item.id)}>
-                      Reorder
-                    </Button>
+                    <Button size="sm">Reorder</Button>
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wrench className="h-5 w-5 text-blue-500" />
-                Equipment Maintenance Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {equipment
-                  .filter(item => new Date(item.nextMaintenance) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
-                  .map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-blue-500" />
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Maintenance due: {item.nextMaintenance}
-                          </p>
-                          <p className="text-xs text-muted-foreground">Location: {item.location}</p>
-                        </div>
-                      </div>
-                      <Button size="sm" onClick={() => handleEquipmentStatusChange(item.id, 'maintenance')}>
-                        Schedule
-                      </Button>
-                    </div>
-                  ))}
               </div>
             </CardContent>
           </Card>
