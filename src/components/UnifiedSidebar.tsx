@@ -1,39 +1,11 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Badge } from "@/components/ui/badge";
-import { 
-  LucideIcon, 
-  Building2, 
-  ChevronDown, 
-  ChevronRight, 
-  Menu, 
-  X, 
-  Search,
-  Home,
-  Users,
-  Wrench,
-  DollarSign,
-  Package,
-  Brain,
-  Settings,
-  BarChart3,
-  MessageSquare,
-  Calendar,
-  Clock,
-  Shield,
-  CheckCircle,
-  CreditCard,
-  TrendingUp,
-  FileText,
-  Map,
-  UserCheck,
-  Calculator,
-  Database
-} from "lucide-react";
+import { LucideIcon } from "lucide-react";
+import { SidebarHeader } from "./sidebar/SidebarHeader";
+import { SidebarSearch } from "./sidebar/SidebarSearch";
+import { SidebarDashboard } from "./sidebar/SidebarDashboard";
+import { SidebarMenuGroup } from "./sidebar/SidebarMenuGroup";
 
 interface SidebarSection {
   id: string;
@@ -237,10 +209,6 @@ export const UnifiedSidebar = ({
     }
   }, [activeSection]);
 
-  const displayName = companyData.useCustomHeaderName 
-    ? companyData.headerCompanyName 
-    : companyData.name;
-
   if (!isVisible) {
     return null;
   }
@@ -252,159 +220,41 @@ export const UnifiedSidebar = ({
         isCollapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border/40">
-        {!isCollapsed && (
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            {companyData.logo ? (
-              <img 
-                src={companyData.logo} 
-                alt="Company Logo" 
-                className="h-8 w-8 object-contain flex-shrink-0"
-              />
-            ) : (
-              <Building2 className="h-8 w-8 text-primary flex-shrink-0" />
-            )}
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-              {displayName}
-            </h1>
-          </div>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleCollapse}
-          className="h-8 w-8 flex-shrink-0"
-        >
-          {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
-        </Button>
-      </div>
+      <SidebarHeader 
+        companyData={companyData}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={toggleCollapse}
+      />
 
-      {/* Search */}
-      {!isCollapsed && (
-        <div className="p-4 border-b border-border/40">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search menu..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-        </div>
-      )}
+      <SidebarSearch 
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        isCollapsed={isCollapsed}
+      />
 
-      {/* Dashboard Button */}
-      <div className="p-2 border-b border-border/40">
-        <Button
-          variant={activeSection === 'home' ? "default" : "ghost"}
-          size={isCollapsed ? "icon" : "default"}
-          className={cn(
-            "w-full",
-            isCollapsed ? "h-12 px-0" : "justify-start gap-3 h-10",
-            activeSection === 'home' && "bg-primary text-primary-foreground"
-          )}
-          onClick={() => handleSectionClick('home')}
-          title={isCollapsed ? "Dashboard" : undefined}
-        >
-          <Home className="h-5 w-5" />
-          {!isCollapsed && <span>Dashboard</span>}
-        </Button>
-      </div>
+      <SidebarDashboard 
+        activeSection={activeSection}
+        onSectionClick={handleSectionClick}
+        isCollapsed={isCollapsed}
+      />
 
-      {/* Navigation */}
       <ScrollArea className="flex-1 px-2 py-4">
         <nav className="space-y-2">
           {filteredGroups.map((group) => {
             if (group.sections.length === 0) return null;
             
             const isOpen = openGroups.includes(group.id) || group.defaultOpen;
-            const GroupIcon = group.icon;
-            const hasActiveSection = group.sections.some(section => section.id === activeSection);
-
-            if (isCollapsed) {
-              // Collapsed state - show only icons with tooltips
-              return (
-                <div key={group.id} className="relative group">
-                  <Button
-                    variant={hasActiveSection ? "default" : "ghost"}
-                    size="icon"
-                    className={cn(
-                      "w-12 h-12 mx-auto relative",
-                      hasActiveSection && "bg-primary text-primary-foreground"
-                    )}
-                    onClick={() => {
-                      // If group has only one section, navigate directly
-                      if (group.sections.length === 1) {
-                        handleSectionClick(group.sections[0].id);
-                      } else {
-                        setIsCollapsed(false);
-                        toggleGroup(group.id);
-                      }
-                    }}
-                    title={group.label}
-                  >
-                    <GroupIcon className="h-5 w-5" />
-                    {hasActiveSection && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full border-2 border-background" />
-                    )}
-                    {group.badge && (
-                      <Badge className="absolute -top-2 -right-2 h-4 w-4 p-0 text-xs">
-                        {group.badge}
-                      </Badge>
-                    )}
-                  </Button>
-                </div>
-              );
-            }
 
             return (
-              <Collapsible key={group.id} open={isOpen} onOpenChange={() => toggleGroup(group.id)}>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-between p-3 h-auto font-medium text-left hover:bg-accent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <GroupIcon className="h-4 w-4" />
-                      <span className="flex-1">{group.label}</span>
-                      {group.badge && (
-                        <Badge variant="secondary" className="h-5 text-xs">
-                          {group.badge}
-                        </Badge>
-                      )}
-                    </div>
-                    {isOpen ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent className="ml-4 mt-1 space-y-1">
-                  {group.sections.map((section) => {
-                    const Icon = section.icon;
-                    const isActive = activeSection === section.id;
-                    
-                    return (
-                      <Button
-                        key={section.id}
-                        variant="ghost"
-                        className={cn(
-                          "w-full justify-start gap-3 text-sm h-9 hover:bg-accent",
-                          isActive && "bg-primary text-primary-foreground hover:bg-primary/90"
-                        )}
-                        onClick={() => handleSectionClick(section.id)}
-                      >
-                        <Icon className="h-4 w-4" />
-                        {section.label}
-                      </Button>
-                    );
-                  })}
-                </CollapsibleContent>
-              </Collapsible>
+              <SidebarMenuGroup
+                key={group.id}
+                group={group}
+                isOpen={isOpen}
+                onToggleGroup={toggleGroup}
+                activeSection={activeSection}
+                onSectionClick={handleSectionClick}
+                isCollapsed={isCollapsed}
+              />
             );
           })}
         </nav>
