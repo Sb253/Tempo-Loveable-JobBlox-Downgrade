@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette } from "lucide-react";
+import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette, MapPin, UserCheck, Building2, Plus, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DashboardCustomization } from "./DashboardCustomization";
 import { ThemeToggle } from "./ThemeToggle";
@@ -20,6 +20,73 @@ interface DashboardWidget {
   order: number;
 }
 
+// Sample data with employee colors
+const employees = [
+  { id: '1', name: 'Mike Johnson', color: '#3B82F6' }, // blue
+  { id: '2', name: 'Sarah Davis', color: '#10B981' }, // green
+  { id: '3', name: 'Tom Wilson', color: '#F59E0B' }, // amber
+  { id: '4', name: 'Lisa Chen', color: '#8B5CF6' }, // purple
+];
+
+const recentJobs = [
+  {
+    id: '1',
+    title: 'Kitchen Renovation',
+    customer: 'John Smith',
+    address: '123 Main St, Anytown, USA',
+    coordinates: [-74.006, 40.7128] as [number, number],
+    status: 'scheduled' as const,
+    type: 'job' as const,
+    time: 'Today 2:00 PM',
+    assignedTo: '1',
+    employeeColor: '#3B82F6'
+  },
+  {
+    id: '2',
+    title: 'Bathroom Repair',
+    customer: 'ABC Construction',
+    address: '456 Business Ave, City, USA',
+    coordinates: [-74.0, 40.72] as [number, number],
+    status: 'in-progress' as const,
+    type: 'job' as const,
+    time: 'Tomorrow 9:00 AM',
+    assignedTo: '2',
+    employeeColor: '#10B981'
+  },
+  {
+    id: '3',
+    title: 'Consultation Appointment',
+    customer: 'Sarah Johnson',
+    address: '789 Oak Street, Downtown',
+    coordinates: [-74.01, 40.71] as [number, number],
+    status: 'scheduled' as const,
+    type: 'appointment' as const,
+    time: 'Friday 3:00 PM',
+    assignedTo: '3',
+    employeeColor: '#F59E0B'
+  },
+  {
+    id: '4',
+    title: 'Follow-up Meeting',
+    customer: 'Mike Wilson',
+    address: '321 Pine Ave, Uptown',
+    coordinates: [-73.99, 40.73] as [number, number],
+    status: 'completed' as const,
+    type: 'appointment' as const,
+    time: 'Yesterday 1:00 PM',
+    assignedTo: '4',
+    employeeColor: '#8B5CF6'
+  }
+];
+
+// Employee locations
+const employeeLocations = [
+  { id: '1', name: 'Mike Johnson', coordinates: [-74.005, 40.7138] as [number, number], color: '#3B82F6', status: 'active' },
+  { id: '2', name: 'Sarah Davis', coordinates: [-73.998, 40.7158] as [number, number], color: '#10B981', status: 'active' },
+  { id: '3', name: 'Tom Wilson', coordinates: [-74.008, 40.7108] as [number, number], color: '#F59E0B', status: 'break' },
+  { id: '4', name: 'Lisa Chen', coordinates: [-74.012, 40.7088] as [number, number], color: '#8B5CF6', status: 'active' },
+];
+
 export const Dashboard = () => {
   const { toast } = useToast();
   const [userName, setUserName] = useState('John');
@@ -31,53 +98,11 @@ export const Dashboard = () => {
 
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
     { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
-    { id: 'recent-jobs', title: 'Recent Jobs', enabled: true, order: 1 },
-    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 2 }
+    { id: 'calendar', title: 'Calendar & Appointments', enabled: true, order: 1 },
+    { id: 'customer-management', title: 'Customer Management', enabled: true, order: 2 },
+    { id: 'recent-jobs', title: 'Recent Jobs & Locations', enabled: true, order: 3 },
+    { id: 'quick-actions', title: 'Quick Actions', enabled: true, order: 4 }
   ]);
-
-  // Sample job data with coordinates for map display - added 'type' property to fix TypeScript error
-  const recentJobs = [
-    {
-      id: '1',
-      title: 'Kitchen Renovation',
-      customer: 'John Smith',
-      address: '123 Main St, Anytown, USA',
-      coordinates: [-74.006, 40.7128] as [number, number],
-      status: 'scheduled' as const,
-      type: 'job' as const,
-      time: 'Today 2:00 PM'
-    },
-    {
-      id: '2',
-      title: 'Bathroom Repair',
-      customer: 'ABC Construction',
-      address: '456 Business Ave, City, USA',
-      coordinates: [-74.0, 40.72] as [number, number],
-      status: 'in-progress' as const,
-      type: 'job' as const,
-      time: 'Tomorrow 9:00 AM'
-    },
-    {
-      id: '3',
-      title: 'Consultation Appointment',
-      customer: 'Sarah Johnson',
-      address: '789 Oak Street, Downtown',
-      coordinates: [-74.01, 40.71] as [number, number],
-      status: 'scheduled' as const,
-      type: 'appointment' as const,
-      time: 'Friday 3:00 PM'
-    },
-    {
-      id: '4',
-      title: 'Follow-up Meeting',
-      customer: 'Mike Wilson',
-      address: '321 Pine Ave, Uptown',
-      coordinates: [-73.99, 40.73] as [number, number],
-      status: 'completed' as const,
-      type: 'appointment' as const,
-      time: 'Yesterday 1:00 PM'
-    }
-  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -162,19 +187,133 @@ export const Dashboard = () => {
             </div>
           </div>
         );
+
+      case 'calendar':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Calendar & Appointments</Label>
+              <Badge variant="outline">Today</Badge>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-blue-500" />
+                    Today's Schedule
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {recentJobs.filter(job => job.time.includes('Today')).map((job) => (
+                      <div key={job.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: job.employeeColor }}
+                          ></div>
+                          <div>
+                            <p className="font-medium">{job.title}</p>
+                            <p className="text-sm text-muted-foreground">{job.customer}</p>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">{job.time.split(' ').slice(-2).join(' ')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserCheck className="h-5 w-5 text-green-500" />
+                    Upcoming Appointments
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {recentJobs.filter(job => job.type === 'appointment' && !job.time.includes('Yesterday')).map((appointment) => (
+                      <div key={appointment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: appointment.employeeColor }}
+                          ></div>
+                          <div>
+                            <p className="font-medium">{appointment.title}</p>
+                            <p className="text-sm text-muted-foreground">{appointment.customer}</p>
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium">{appointment.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
+
+      case 'customer-management':
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-lg font-semibold">Customer Management</Label>
+              <Badge variant="outline">Active</Badge>
+            </div>
+            <Card className="shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Building2 className="h-5 w-5 text-purple-500" />
+                  Customer Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">156</div>
+                    <div className="text-sm text-blue-700">Total Customers</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">23</div>
+                    <div className="text-sm text-green-700">New This Month</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">12</div>
+                    <div className="text-sm text-purple-700">Pending Follow-up</div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button className="flex-1">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Customer
+                  </Button>
+                  <Button variant="outline" className="flex-1">
+                    <Users className="h-4 w-4 mr-2" />
+                    View All
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
       
       case 'recent-jobs':
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold">Recent Jobs & Locations</Label>
-              <Badge variant="outline">Updated 5 min ago</Badge>
+              <Badge variant="outline">Live Map</Badge>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="colorful-card shadow-lg">
+              <Card className="shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="colorful-text">Recent Jobs</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Wrench className="h-5 w-5 text-blue-500" />
+                      Recent Jobs
+                    </CardTitle>
                     <Badge variant="secondary">{recentJobs.length} Active</Badge>
                   </div>
                 </CardHeader>
@@ -188,9 +327,15 @@ export const Dashboard = () => {
                       };
                       return (
                         <div key={job.id} className="flex justify-between items-center p-3 border rounded-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
-                          <div>
-                            <p className="font-medium">{job.title}</p>
-                            <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: job.employeeColor }}
+                            ></div>
+                            <div>
+                              <p className="font-medium">{job.title}</p>
+                              <p className="text-sm text-muted-foreground">{job.customer} - {job.time}</p>
+                            </div>
                           </div>
                           <span className={`text-xs px-3 py-1 rounded-full bg-gradient-to-r ${statusColors[job.status]} text-white font-medium`}>
                             {job.status === 'scheduled' ? 'Scheduled' : job.status === 'in-progress' ? 'In Progress' : 'Completed'}
@@ -203,13 +348,64 @@ export const Dashboard = () => {
               </Card>
               
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Job Locations Map</Label>
-                <MapView jobs={recentJobs} />
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  Live Locations Map
+                </Label>
+                <Card className="h-64">
+                  <CardContent className="p-2">
+                    <MapView 
+                      jobs={recentJobs} 
+                      employees={employeeLocations}
+                      showEmployeeLocations={true}
+                    />
+                  </CardContent>
+                </Card>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span>Jobs</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span>Appointments</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <span>Employees</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <span>Active</span>
+                  </div>
+                </div>
               </div>
               
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Location List</Label>
-                <JobLocationsList jobs={recentJobs} />
+                <Label className="text-sm font-medium">Employee Status</Label>
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      {employeeLocations.map((employee) => (
+                        <div key={employee.id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full" 
+                              style={{ backgroundColor: employee.color }}
+                            ></div>
+                            <span className="text-sm font-medium">{employee.name}</span>
+                          </div>
+                          <Badge 
+                            variant={employee.status === 'active' ? 'default' : 'secondary'}
+                            className="text-xs"
+                          >
+                            {employee.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
@@ -222,23 +418,35 @@ export const Dashboard = () => {
               <Label className="text-lg font-semibold">Quick Actions</Label>
               <Badge variant="outline">Shortcuts</Badge>
             </div>
-            <Card className="colorful-card shadow-lg">
+            <Card className="shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
               <CardHeader>
-                <CardTitle className="colorful-text">Quick Actions</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <ArrowRight className="h-5 w-5 text-blue-500" />
+                  Quick Actions
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {[
-                  { text: 'Schedule New Job', gradient: 'from-purple-500 to-pink-500' },
-                  { text: 'Add New Customer', gradient: 'from-blue-500 to-cyan-500' },
-                  { text: 'Create Estimate', gradient: 'from-green-500 to-emerald-500' }
-                ].map((action, index) => (
-                  <button 
-                    key={index}
-                    className={`w-full p-3 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105`}
-                  >
-                    {action.text}
-                  </button>
-                ))}
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    { text: 'Schedule New Job', icon: Calendar, gradient: 'from-purple-500 to-pink-500' },
+                    { text: 'Add New Customer', icon: Users, gradient: 'from-blue-500 to-cyan-500' },
+                    { text: 'Create Estimate', icon: DollarSign, gradient: 'from-green-500 to-emerald-500' },
+                    { text: 'Upload Photos', icon: UserCheck, gradient: 'from-orange-500 to-red-500' },
+                    { text: 'Track Time', icon: Clock, gradient: 'from-indigo-500 to-purple-500' },
+                    { text: 'View Reports', icon: Wrench, gradient: 'from-teal-500 to-blue-500' }
+                  ].map((action, index) => {
+                    const Icon = action.icon;
+                    return (
+                      <button 
+                        key={index}
+                        className={`p-4 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span className="text-sm">{action.text}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -323,7 +531,6 @@ export const Dashboard = () => {
           ))}
         </div>
 
-        {/* Timezone Settings Dialog */}
         {showTimezoneDialog && (
           <Dialog open={true} onOpenChange={setShowTimezoneDialog}>
             <DialogContent className="sm:max-w-[425px]">
@@ -376,7 +583,6 @@ export const Dashboard = () => {
           </Dialog>
         )}
 
-        {/* Dashboard Customization Dialog */}
         <DashboardCustomization
           open={showCustomization}
           onOpenChange={setShowCustomization}
