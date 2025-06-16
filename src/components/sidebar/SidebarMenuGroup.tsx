@@ -3,23 +3,9 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface SidebarSection {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-}
-
-interface MenuGroup {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  sections: SidebarSection[];
-  badge?: string;
-  defaultOpen?: boolean;
-}
+import { MenuGroup, SidebarSection } from "./config/menuGroupsConfig";
 
 interface SidebarMenuGroupProps {
   group: MenuGroup;
