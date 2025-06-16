@@ -8,7 +8,7 @@ export interface SidebarSection {
 }
 
 export const sections: SidebarSection[] = [
-  { id: 'home', label: 'Home', icon: Home },
+  { id: 'home', label: 'Dashboard', icon: Home },
   { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'customers', label: 'Customers', icon: Users },

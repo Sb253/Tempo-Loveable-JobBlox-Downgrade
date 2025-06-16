@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings, FileText, Database, Shield, Users, Building, Palette } from "lucide-react";
+import { Settings, FileText, Database, Shield, Users, Building, Palette, Zap } from "lucide-react";
 import { TemplateEditor } from "./TemplateEditor";
+import { BusinessIntegrations } from "./BusinessIntegrations";
 
 export const BackOfficeSettings = () => {
   const [activeTab, setActiveTab] = useState('templates');
@@ -17,8 +17,9 @@ export const BackOfficeSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="database">Database</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
@@ -29,6 +30,20 @@ export const BackOfficeSettings = () => {
 
         <TabsContent value="templates" className="space-y-4">
           <TemplateEditor />
+        </TabsContent>
+
+        <TabsContent value="integrations" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Business Tool Integrations
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BusinessIntegrations />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="database" className="space-y-4">

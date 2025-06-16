@@ -295,7 +295,7 @@ export const UnifiedSidebar = ({
         </div>
       )}
 
-      {/* Home Button */}
+      {/* Dashboard Button */}
       <div className="p-2 border-b border-border/40">
         <Button
           variant={activeSection === 'home' ? "default" : "ghost"}
@@ -306,10 +306,10 @@ export const UnifiedSidebar = ({
             activeSection === 'home' && "bg-primary text-primary-foreground"
           )}
           onClick={() => handleSectionClick('home')}
-          title={isCollapsed ? "Home" : undefined}
+          title={isCollapsed ? "Dashboard" : undefined}
         >
           <Home className="h-5 w-5" />
-          {!isCollapsed && <span>Home</span>}
+          {!isCollapsed && <span>Dashboard</span>}
         </Button>
       </div>
 
