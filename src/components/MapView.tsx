@@ -59,13 +59,13 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
     } else {
       switch (status) {
         case 'scheduled':
-          return '#3b82f6';
+          return theme === 'dark' ? '#60a5fa' : '#3b82f6';
         case 'in-progress':
-          return '#f59e0b';
+          return theme === 'dark' ? '#fbbf24' : '#f59e0b';
         case 'completed':
-          return '#10b981';
+          return theme === 'dark' ? '#34d399' : '#10b981';
         default:
-          return '#6b7280';
+          return theme === 'dark' ? '#9ca3af' : '#6b7280';
       }
     }
   };
@@ -130,12 +130,12 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       userMarker.style.width = '20px';
       userMarker.style.height = '20px';
       userMarker.style.borderRadius = '50%';
-      userMarker.style.backgroundColor = '#ef4444';
-      userMarker.style.border = '3px solid white';
-      userMarker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+      userMarker.style.backgroundColor = theme === 'dark' ? '#ef4444' : '#dc2626';
+      userMarker.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+      userMarker.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
 
       const userPopup = new mapboxgl.Popup({ offset: 25 })
-        .setHTML('<div style="padding: 8px;"><strong>Your Location</strong></div>');
+        .setHTML(`<div style="padding: 8px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};"><strong>Your Location</strong></div>`);
 
       new mapboxgl.Marker(userMarker)
         .setLngLat(userLocation)
@@ -153,18 +153,18 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         employeeMarker.style.height = '20px';
         employeeMarker.style.borderRadius = '50%';
         employeeMarker.style.backgroundColor = employee.color;
-        employeeMarker.style.border = '3px solid white';
-        employeeMarker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+        employeeMarker.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+        employeeMarker.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
         employeeMarker.style.cursor = 'pointer';
 
         if (employee.status === 'break') {
-          employeeMarker.style.border = '3px solid #f59e0b';
+          employeeMarker.style.border = `3px solid ${theme === 'dark' ? '#fbbf24' : '#f59e0b'}`;
         } else if (employee.status === 'inactive') {
           employeeMarker.style.opacity = '0.5';
         }
 
         const employeePopupContent = `
-          <div style="padding: 12px; max-width: 200px;">
+          <div style="padding: 12px; max-width: 200px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};">
             <h3 style="font-weight: bold; margin: 0 0 8px 0;">${employee.name}</h3>
             <span style="
               display: inline-block;
@@ -201,8 +201,8 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       
       const markerColor = job.employeeColor || getMarkerColor(job.status, job.type);
       markerEl.style.backgroundColor = markerColor;
-      markerEl.style.border = '3px solid white';
-      markerEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+      markerEl.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+      markerEl.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
 
       if (job.type === 'appointment') {
@@ -210,7 +210,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       }
 
       const popupContent = `
-        <div style="padding: 12px; max-width: 250px;">
+        <div style="padding: 12px; max-width: 250px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
             <h3 style="font-weight: bold; margin: 0;">${job.title}</h3>
             <span style="
@@ -226,9 +226,9 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
               ${job.type}
             </span>
           </div>
-          <p style="margin: 4px 0; color: #666; font-size: 14px;">${job.customer}</p>
+          <p style="margin: 4px 0; color: ${theme === 'dark' ? '#d1d5db' : '#666'}; font-size: 14px;">${job.customer}</p>
           <p style="margin: 4px 0; font-size: 14px;">${job.address}</p>
-          <p style="margin: 4px 0; font-size: 12px; color: #666;">${job.time}</p>
+          <p style="margin: 4px 0; font-size: 12px; color: ${theme === 'dark' ? '#d1d5db' : '#666'};">${job.time}</p>
           <span style="
             display: inline-block;
             padding: 4px 8px;
@@ -251,42 +251,6 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         .setPopup(popup)
         .addTo(map.current);
     });
-  };
-
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation([longitude, latitude]);
-          if (map.current) {
-            map.current.flyTo({
-              center: [longitude, latitude],
-              zoom: 12,
-              essential: true
-            });
-          }
-          toast({
-            title: "Location Found",
-            description: "Map centered on your current location.",
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          toast({
-            title: "Location Error",
-            description: "Could not get your current location. Using default location.",
-          });
-          setUserLocation([-74.006, 40.7128]);
-        }
-      );
-    } else {
-      toast({
-        title: "Geolocation Not Supported",
-        description: "Your browser doesn't support geolocation. Using default location.",
-      });
-      setUserLocation([-74.006, 40.7128]);
-    }
   };
 
   useEffect(() => {
