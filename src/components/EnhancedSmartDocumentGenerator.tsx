@@ -2,31 +2,22 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { FileText, Wand2, Download, Copy, Sparkles, Upload, Camera, Mic, MicOff } from "lucide-react";
+import { Wand2, Sparkles, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { aiService, type DocumentGenerationRequest } from "@/services/aiService";
 
-interface DocumentTemplate {
-  id: string;
-  name: string;
-  type: 'estimate' | 'invoice' | 'proposal' | 'report';
-  description: string;
-  category: string;
-}
+// Components
+import { TemplateSelector } from "@/components/ai/document/TemplateSelector";
+import { VoiceInputField } from "@/components/ai/document/VoiceInputField";
+import { GenerationProgress } from "@/components/ai/document/GenerationProgress";
+import { DocumentPreview } from "@/components/ai/document/DocumentPreview";
 
-const templates: DocumentTemplate[] = [
-  { id: '1', name: 'Kitchen Renovation Estimate', type: 'estimate', description: 'Complete kitchen remodel pricing', category: 'Residential' },
-  { id: '2', name: 'Bathroom Repair Invoice', type: 'invoice', description: 'Standard bathroom repair billing', category: 'Residential' },
-  { id: '3', name: 'Commercial Project Proposal', type: 'proposal', description: 'Large-scale commercial proposal', category: 'Commercial' },
-  { id: '4', name: 'Job Completion Report', type: 'report', description: 'Post-job completion summary', category: 'General' },
-  { id: '5', name: 'Roofing Estimate', type: 'estimate', description: 'Comprehensive roofing project estimate', category: 'Residential' },
-  { id: '6', name: 'Emergency Repair Invoice', type: 'invoice', description: 'Emergency service billing', category: 'Emergency' }
-];
+// Types and data
+import { documentTemplates } from "@/types/documentTemplates";
+
+// Custom hooks
+import { useVoiceRecognition } from "@/hooks/ai/useVoiceRecognition";
 
 export const EnhancedSmartDocumentGenerator = () => {
   const { toast } = useToast();
@@ -38,8 +29,13 @@ export const EnhancedSmartDocumentGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
-  const [isListening, setIsListening] = useState(false);
   const [activeField, setActiveField] = useState<string>('');
+
+  const { 
+    isListening, 
+    startListening, 
+    stopListening 
+  } = useVoiceRecognition();
 
   const generateDocument = async () => {
     if (!selectedTemplate || !projectDetails) {
@@ -64,7 +60,7 @@ export const EnhancedSmartDocumentGenerator = () => {
     setGenerationProgress(0);
 
     try {
-      const template = templates.find(t => t.id === selectedTemplate);
+      const template = documentTemplates.find(t => t.id === selectedTemplate);
       if (!template) return;
 
       // Simulate progress steps
@@ -117,7 +113,6 @@ export const EnhancedSmartDocumentGenerator = () => {
     const files = Array.from(event.target.files || []);
     setUploadedImages(prev => [...prev, ...files]);
     
-    // Here you could implement image analysis using AI
     if (files.length > 0) {
       toast({
         title: "Images Uploaded",
@@ -132,71 +127,19 @@ export const EnhancedSmartDocumentGenerator = () => {
 
   const startVoiceInput = (field: string) => {
     setActiveField(field);
-    setIsListening(true);
-    
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        
-        switch (field) {
-          case 'projectDetails':
-            setProjectDetails(prev => prev + ' ' + transcript);
-            break;
-          case 'customerInfo':
-            setCustomerInfo(prev => prev + ' ' + transcript);
-            break;
-          case 'additionalNotes':
-            setAdditionalNotes(prev => prev + ' ' + transcript);
-            break;
-        }
-        
-        setIsListening(false);
-        setActiveField('');
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-        setActiveField('');
-        toast({
-          title: "Voice Input Error",
-          description: "Could not process voice input. Please try again.",
-          variant: "destructive"
-        });
-      };
-
-      recognition.start();
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedContent);
-    toast({
-      title: "Copied!",
-      description: "Document content copied to clipboard.",
-    });
-  };
-
-  const downloadDocument = () => {
-    const blob = new Blob([generatedContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `document-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Download Started",
-      description: "Your document is being downloaded.",
+    startListening((transcript) => {
+      switch (field) {
+        case 'projectDetails':
+          setProjectDetails(prev => prev + ' ' + transcript);
+          break;
+        case 'customerInfo':
+          setCustomerInfo(prev => prev + ' ' + transcript);
+          break;
+        case 'additionalNotes':
+          setAdditionalNotes(prev => prev + ' ' + transcript);
+          break;
+      }
+      setActiveField('');
     });
   };
 
@@ -212,96 +155,47 @@ export const EnhancedSmartDocumentGenerator = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Template Selection */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Document Template</label>
-            <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a template" />
-              </SelectTrigger>
-              <SelectContent>
-                {templates.map((template) => (
-                  <SelectItem key={template.id} value={template.id}>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      <div>
-                        <div className="font-medium">{template.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {template.description} • {template.category}
-                        </div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <TemplateSelector 
+            value={selectedTemplate} 
+            onChange={setSelectedTemplate} 
+          />
 
           {/* Customer Information */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Customer Information</label>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Customer name, address, contact details..."
-                value={customerInfo}
-                onChange={(e) => setCustomerInfo(e.target.value)}
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => startVoiceInput('customerInfo')}
-                disabled={isListening && activeField !== 'customerInfo'}
-                className={isListening && activeField === 'customerInfo' ? 'bg-red-100' : ''}
-              >
-                {isListening && activeField === 'customerInfo' ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
+          <VoiceInputField
+            label="Customer Information"
+            value={customerInfo}
+            onChange={setCustomerInfo}
+            placeholder="Customer name, address, contact details..."
+            isListening={isListening && activeField === 'customerInfo'}
+            onVoiceStart={() => startVoiceInput('customerInfo')}
+            onVoiceStop={stopListening}
+          />
 
           {/* Project Details */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Project Details</label>
-            <div className="flex gap-2">
-              <Textarea
-                placeholder="Describe the project, materials needed, scope of work, special requirements..."
-                value={projectDetails}
-                onChange={(e) => setProjectDetails(e.target.value)}
-                rows={4}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => startVoiceInput('projectDetails')}
-                disabled={isListening && activeField !== 'projectDetails'}
-                className={isListening && activeField === 'projectDetails' ? 'bg-red-100' : ''}
-              >
-                {isListening && activeField === 'projectDetails' ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
+          <VoiceInputField
+            label="Project Details"
+            value={projectDetails}
+            onChange={setProjectDetails}
+            placeholder="Describe the project, materials needed, scope of work, special requirements..."
+            isListening={isListening && activeField === 'projectDetails'}
+            onVoiceStart={() => startVoiceInput('projectDetails')}
+            onVoiceStop={stopListening}
+            isTextarea={true}
+            rows={4}
+          />
 
           {/* Additional Notes */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Additional Notes</label>
-            <div className="flex gap-2">
-              <Textarea
-                placeholder="Any additional context, special terms, or custom requirements..."
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
-                rows={2}
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => startVoiceInput('additionalNotes')}
-                disabled={isListening && activeField !== 'additionalNotes'}
-                className={isListening && activeField === 'additionalNotes' ? 'bg-red-100' : ''}
-              >
-                {isListening && activeField === 'additionalNotes' ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-            </div>
-          </div>
+          <VoiceInputField
+            label="Additional Notes"
+            value={additionalNotes}
+            onChange={setAdditionalNotes}
+            placeholder="Any additional context, special terms, or custom requirements..."
+            isListening={isListening && activeField === 'additionalNotes'}
+            onVoiceStart={() => startVoiceInput('additionalNotes')}
+            onVoiceStop={stopListening}
+            isTextarea={true}
+            rows={2}
+          />
 
           {/* Image Upload */}
           <div className="space-y-2">
@@ -352,13 +246,7 @@ export const EnhancedSmartDocumentGenerator = () => {
 
           {/* Generation Progress */}
           {isGenerating && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span>Generating Document...</span>
-                <span>{generationProgress}%</span>
-              </div>
-              <Progress value={generationProgress} className="h-2" />
-            </div>
+            <GenerationProgress progress={generationProgress} />
           )}
 
           {/* Generate Button */}
@@ -385,28 +273,7 @@ export const EnhancedSmartDocumentGenerator = () => {
 
       {/* Generated Document */}
       {generatedContent && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Generated Document</CardTitle>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={copyToClipboard}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy
-                </Button>
-                <Button variant="outline" size="sm" onClick={downloadDocument}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-muted p-6 rounded-lg max-h-96 overflow-y-auto">
-              <pre className="whitespace-pre-wrap text-sm font-mono">{generatedContent}</pre>
-            </div>
-          </CardContent>
-        </Card>
+        <DocumentPreview content={generatedContent} />
       )}
     </div>
   );
