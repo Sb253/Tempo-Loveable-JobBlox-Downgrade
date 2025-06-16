@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LucideIcon, Building2 } from "lucide-react";
+import { CollapsedSidebar } from "./CollapsedSidebar";
 
 interface SidebarSection {
   id: string;
@@ -21,34 +22,77 @@ interface SidebarProps {
 interface CompanyData {
   name: string;
   logo: string | null;
+  displayInHeader: boolean;
+  useCustomHeaderName: boolean;
+  headerCompanyName: string;
 }
 
 export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = true, isCollapsed = false }: SidebarProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'JobBlox',
-    logo: null
+    logo: null,
+    displayInHeader: true,
+    useCustomHeaderName: false,
+    headerCompanyName: 'JobBlox'
   });
 
   useEffect(() => {
     const savedCompanyData = localStorage.getItem('companySettings');
     if (savedCompanyData) {
-      const data = JSON.parse(savedCompanyData);
-      setCompanyData({
-        name: data.name || 'JobBlox',
-        logo: data.logo || null
-      });
+      try {
+        const data = JSON.parse(savedCompanyData);
+        setCompanyData({
+          name: data.name || data.companyName || 'JobBlox',
+          logo: data.logo || null,
+          displayInHeader: data.displayInHeader ?? true,
+          useCustomHeaderName: data.useCustomHeaderName ?? false,
+          headerCompanyName: data.headerCompanyName || 'JobBlox'
+        });
+      } catch (error) {
+        console.error('Error parsing company settings:', error);
+      }
     }
+
+    // Listen for company settings changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'companySettings' && e.newValue) {
+        try {
+          const data = JSON.parse(e.newValue);
+          setCompanyData({
+            name: data.name || data.companyName || 'JobBlox',
+            logo: data.logo || null,
+            displayInHeader: data.displayInHeader ?? true,
+            useCustomHeaderName: data.useCustomHeaderName ?? false,
+            headerCompanyName: data.headerCompanyName || 'JobBlox'
+          });
+        } catch (error) {
+          console.error('Error parsing updated company settings:', error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   if (!isVisible) {
     return null;
   }
 
+  if (isCollapsed) {
+    return <CollapsedSidebar 
+      activeSection={activeSection} 
+      onSectionChange={onSectionChange} 
+      sections={sections} 
+    />;
+  }
+
+  const displayName = companyData.useCustomHeaderName 
+    ? companyData.headerCompanyName 
+    : companyData.name;
+
   return (
-    <div className={cn(
-      "fixed left-0 top-0 h-full bg-card border-r border-border/40 z-40 transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
+    <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border/40 z-40 transition-all duration-300">
       <div className="p-6">
         <div className="flex items-center gap-3">
           {companyData.logo ? (
@@ -60,11 +104,9 @@ export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = 
           ) : (
             <Building2 className="h-8 w-8 text-primary" />
           )}
-          {!isCollapsed && (
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {companyData.name}
-            </h1>
-          )}
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {displayName}
+          </h1>
         </div>
       </div>
       
@@ -77,17 +119,15 @@ export const Sidebar = ({ activeSection, onSectionChange, sections, isVisible = 
               variant={activeSection === section.id ? "default" : "ghost"}
               className={cn(
                 "w-full justify-start gap-3",
-                activeSection === section.id && "bg-primary text-primary-foreground",
-                isCollapsed && "px-3"
+                activeSection === section.id && "bg-primary text-primary-foreground"
               )}
               onClick={() => {
                 console.log('Sidebar: Section clicked:', section.id);
                 onSectionChange(section.id);
               }}
-              title={isCollapsed ? section.label : undefined}
             >
               <Icon className="h-5 w-5 flex-shrink-0" />
-              {!isCollapsed && section.label}
+              {section.label}
             </Button>
           );
         })}

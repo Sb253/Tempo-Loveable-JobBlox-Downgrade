@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -33,9 +34,17 @@ interface MapViewProps {
   jobs: Job[];
   employees?: Employee[];
   showEmployeeLocations?: boolean;
+  compact?: boolean;
+  height?: string;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmployeeLocations = false }) => {
+export const MapView: React.FC<MapViewProps> = ({ 
+  jobs, 
+  employees = [], 
+  showEmployeeLocations = false, 
+  compact = false,
+  height = "h-80"
+}) => {
   const { toast } = useToast();
   const { theme } = useTheme();
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -82,25 +91,31 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
               essential: true
             });
           }
-          toast({
-            title: "Location Found",
-            description: "Map centered on your current location.",
-          });
+          if (!compact) {
+            toast({
+              title: "Location Found",
+              description: "Map centered on your current location.",
+            });
+          }
         },
         (error) => {
           console.error('Error getting location:', error);
-          toast({
-            title: "Location Error",
-            description: "Could not get your current location. Using default location.",
-          });
+          if (!compact) {
+            toast({
+              title: "Location Error",
+              description: "Could not get your current location. Using default location.",
+            });
+          }
           setUserLocation([-74.006, 40.7128]);
         }
       );
     } else {
-      toast({
-        title: "Geolocation Not Supported",
-        description: "Your browser doesn't support geolocation. Using default location.",
-      });
+      if (!compact) {
+        toast({
+          title: "Geolocation Not Supported",
+          description: "Your browser doesn't support geolocation. Using default location.",
+        });
+      }
       setUserLocation([-74.006, 40.7128]);
     }
   };
@@ -117,23 +132,25 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       container: mapContainer.current,
       style: theme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
       center: center,
-      zoom: userLocation ? 12 : 10
+      zoom: compact ? 10 : (userLocation ? 12 : 10)
     });
 
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    if (!compact) {
+      map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    }
 
     // Add user location marker if available
     if (userLocation) {
       const userMarker = document.createElement('div');
-      userMarker.style.width = '20px';
-      userMarker.style.height = '20px';
+      userMarker.style.width = '16px';
+      userMarker.style.height = '16px';
       userMarker.style.borderRadius = '50%';
       userMarker.style.backgroundColor = theme === 'dark' ? '#ef4444' : '#dc2626';
-      userMarker.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+      userMarker.style.border = `2px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
       userMarker.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
 
-      const userPopup = new mapboxgl.Popup({ offset: 25 })
-        .setHTML(`<div style="padding: 8px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};"><strong>Your Location</strong></div>`);
+      const userPopup = new mapboxgl.Popup({ offset: 15 })
+        .setHTML(`<div style="padding: 4px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'}; font-size: 12px;"><strong>Your Location</strong></div>`);
 
       new mapboxgl.Marker(userMarker)
         .setLngLat(userLocation)
@@ -147,28 +164,28 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         if (!map.current) return;
 
         const employeeMarker = document.createElement('div');
-        employeeMarker.style.width = '20px';
-        employeeMarker.style.height = '20px';
+        employeeMarker.style.width = '14px';
+        employeeMarker.style.height = '14px';
         employeeMarker.style.borderRadius = '50%';
         employeeMarker.style.backgroundColor = employee.color;
-        employeeMarker.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
-        employeeMarker.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
+        employeeMarker.style.border = `2px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+        employeeMarker.style.boxShadow = theme === 'dark' ? '0 1px 3px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.3)';
         employeeMarker.style.cursor = 'pointer';
 
         if (employee.status === 'break') {
-          employeeMarker.style.border = `3px solid ${theme === 'dark' ? '#fbbf24' : '#f59e0b'}`;
+          employeeMarker.style.border = `2px solid ${theme === 'dark' ? '#fbbf24' : '#f59e0b'}`;
         } else if (employee.status === 'inactive') {
           employeeMarker.style.opacity = '0.5';
         }
 
         const employeePopupContent = `
-          <div style="padding: 12px; max-width: 200px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};">
-            <h3 style="font-weight: bold; margin: 0 0 8px 0;">${employee.name}</h3>
+          <div style="padding: 8px; max-width: 160px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'}; font-size: 11px;">
+            <h4 style="font-weight: bold; margin: 0 0 4px 0;">${employee.name}</h4>
             <span style="
               display: inline-block;
-              padding: 4px 8px;
-              font-size: 12px;
-              border-radius: 6px;
+              padding: 2px 6px;
+              font-size: 10px;
+              border-radius: 4px;
               background-color: ${employee.color}20;
               color: ${employee.color};
               font-weight: 500;
@@ -179,7 +196,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
           </div>
         `;
 
-        const employeePopup = new mapboxgl.Popup({ offset: 25 }).setHTML(employeePopupContent);
+        const employeePopup = new mapboxgl.Popup({ offset: 15 }).setHTML(employeePopupContent);
 
         new mapboxgl.Marker(employeeMarker)
           .setLngLat(employee.coordinates)
@@ -193,14 +210,14 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       if (!map.current) return;
 
       const markerEl = document.createElement('div');
-      markerEl.style.width = '24px';
-      markerEl.style.height = '24px';
-      markerEl.style.borderRadius = job.type === 'appointment' ? '4px' : '50%';
+      markerEl.style.width = compact ? '18px' : '24px';
+      markerEl.style.height = compact ? '18px' : '24px';
+      markerEl.style.borderRadius = job.type === 'appointment' ? '3px' : '50%';
       
       const markerColor = job.employeeColor || getMarkerColor(job.status, job.type);
       markerEl.style.backgroundColor = markerColor;
-      markerEl.style.border = `3px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
-      markerEl.style.boxShadow = theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.5)' : '0 2px 4px rgba(0,0,0,0.3)';
+      markerEl.style.border = `2px solid ${theme === 'dark' ? '#1f2937' : 'white'}`;
+      markerEl.style.boxShadow = theme === 'dark' ? '0 1px 3px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
 
       if (job.type === 'appointment') {
@@ -208,14 +225,14 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       }
 
       const popupContent = `
-        <div style="padding: 12px; max-width: 250px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'};">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-            <h3 style="font-weight: bold; margin: 0;">${job.title}</h3>
+        <div style="padding: 8px; max-width: 200px; color: ${theme === 'dark' ? '#f3f4f6' : '#1f2937'}; font-size: 11px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <h4 style="font-weight: bold; margin: 0;">${job.title}</h4>
             <span style="
               display: inline-block;
-              padding: 2px 6px;
-              font-size: 10px;
-              border-radius: 4px;
+              padding: 1px 4px;
+              font-size: 9px;
+              border-radius: 3px;
               background-color: ${job.type === 'appointment' ? '#8B5CF6' : '#3b82f6'};
               color: white;
               text-transform: uppercase;
@@ -224,14 +241,14 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
               ${job.type}
             </span>
           </div>
-          <p style="margin: 4px 0; color: ${theme === 'dark' ? '#d1d5db' : '#666'}; font-size: 14px;">${job.customer}</p>
-          <p style="margin: 4px 0; font-size: 14px;">${job.address}</p>
-          <p style="margin: 4px 0; font-size: 12px; color: ${theme === 'dark' ? '#d1d5db' : '#666'};">${job.time}</p>
+          <p style="margin: 2px 0; color: ${theme === 'dark' ? '#d1d5db' : '#666'}; font-size: 10px;">${job.customer}</p>
+          <p style="margin: 2px 0; font-size: 10px;">${job.address}</p>
+          <p style="margin: 2px 0; font-size: 9px; color: ${theme === 'dark' ? '#d1d5db' : '#666'};">${job.time}</p>
           <span style="
             display: inline-block;
-            padding: 4px 8px;
-            font-size: 12px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 9px;
+            border-radius: 4px;
             background-color: ${markerColor}20;
             color: ${markerColor};
             font-weight: 500;
@@ -242,7 +259,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         </div>
       `;
 
-      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent);
+      const popup = new mapboxgl.Popup({ offset: 15 }).setHTML(popupContent);
 
       new mapboxgl.Marker(markerEl)
         .setLngLat([job.coordinates[0], job.coordinates[1]])
@@ -267,6 +284,14 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       }
     };
   }, [jobs, userLocation, mapboxToken, theme]);
+
+  if (compact) {
+    return (
+      <div className={`w-full ${height} rounded-lg border overflow-hidden`}>
+        <div ref={mapContainer} className="w-full h-full" />
+      </div>
+    );
+  }
 
   const jobStats = jobs.reduce((acc, job) => {
     if (job.type === 'job') {
@@ -320,7 +345,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
           </div>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="w-full h-80 rounded-lg border overflow-hidden mb-4">
+          <div className={`w-full ${height} rounded-lg border overflow-hidden mb-4`}>
             <div ref={mapContainer} className="w-full h-full" />
           </div>
           

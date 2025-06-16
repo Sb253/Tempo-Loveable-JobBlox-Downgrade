@@ -11,7 +11,6 @@ import { DashboardCustomization } from "./DashboardCustomization";
 import { ThemeToggle } from "./ThemeToggle";
 import { EditableQuickActions } from "./EditableQuickActions";
 import { MapView } from "./MapView";
-import { JobLocationsList } from "./JobLocationsList";
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface DashboardWidget {
@@ -329,7 +328,7 @@ export const Dashboard = () => {
               <Label className="text-lg font-semibold">Recent Jobs & Locations</Label>
               <Badge variant="outline">Live Map</Badge>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="shadow-lg">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -370,65 +369,65 @@ export const Dashboard = () => {
                 </CardContent>
               </Card>
               
-              <div className="space-y-2">
-                <Label className="text-sm font-medium flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Live Locations Map
-                </Label>
-                <Card className="h-64">
-                  <CardContent className="p-2">
-                    <MapView 
-                      jobs={recentJobs} 
-                      employees={employeeLocations}
-                      showEmployeeLocations={true}
-                    />
-                  </CardContent>
-                </Card>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span>Jobs</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span>Appointments</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-                    <span>Employees</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-                    <span>Active</span>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Live Locations Map
+                  </Label>
+                  <MapView 
+                    jobs={recentJobs} 
+                    employees={employeeLocations}
+                    showEmployeeLocations={true}
+                    compact={true}
+                    height="h-48"
+                  />
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <span>Jobs</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
+                      <span>Appointments</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span>Employees</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+                      <span>Active</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Employee Status</Label>
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      {employeeLocations.map((employee) => (
-                        <div key={employee.id} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
-                              style={{ backgroundColor: employee.color }}
-                            ></div>
-                            <span className="text-sm font-medium">{employee.name}</span>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Employee Status</Label>
+                  <Card>
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        {employeeLocations.map((employee) => (
+                          <div key={employee.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: employee.color }}
+                              ></div>
+                              <span className="text-sm font-medium">{employee.name}</span>
+                            </div>
+                            <Badge 
+                              variant={employee.status === 'active' ? 'default' : 'secondary'}
+                              className="text-xs"
+                            >
+                              {employee.status}
+                            </Badge>
                           </div>
-                          <Badge 
-                            variant={employee.status === 'active' ? 'default' : 'secondary'}
-                            className="text-xs"
-                          >
-                            {employee.status}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
