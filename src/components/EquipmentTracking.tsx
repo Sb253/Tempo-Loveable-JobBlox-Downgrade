@@ -1,106 +1,159 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { businessDataManager, type Equipment } from '../utils/businessDataManager';
 import { useToast } from "@/hooks/use-toast";
-import { Wrench, Calendar, AlertTriangle, CheckCircle, Clock, DollarSign, Truck } from "lucide-react";
-
-interface Equipment {
-  id: string;
-  name: string;
-  type: string;
-  status: 'available' | 'in-use' | 'maintenance' | 'repair';
-  location: string;
-  assignedTo?: string;
-  purchaseDate: string;
-  purchasePrice: number;
-  lastMaintenance: string;
-  nextMaintenance: string;
-  maintenanceHistory: MaintenanceRecord[];
-}
-
-interface MaintenanceRecord {
-  id: string;
-  date: string;
-  type: 'routine' | 'repair' | 'inspection';
-  description: string;
-  cost: number;
-  technician: string;
-  notes: string;
-}
+import { Wrench, Calendar, AlertTriangle, CheckCircle, Clock, DollarSign, Truck, Plus, MapPin } from "lucide-react";
 
 export const EquipmentTracking = () => {
   const { toast } = useToast();
-  const [equipment, setEquipment] = useState<Equipment[]>([
-    {
-      id: '1',
-      name: 'Excavator CAT 320',
-      type: 'Heavy Machinery',
-      status: 'in-use',
-      location: 'Job Site A',
-      assignedTo: 'John Smith',
-      purchaseDate: '2022-03-15',
-      purchasePrice: 125000,
-      lastMaintenance: '2024-11-15',
-      nextMaintenance: '2024-12-15',
-      maintenanceHistory: [
-        {
-          id: '1',
-          date: '2024-11-15',
-          type: 'routine',
-          description: 'Oil change and filter replacement',
-          cost: 350,
-          technician: 'Mike Johnson',
-          notes: 'All systems operating normally'
-        }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Concrete Mixer Truck',
-      type: 'Vehicle',
-      status: 'maintenance',
-      location: 'Maintenance Shop',
-      purchaseDate: '2021-08-20',
-      purchasePrice: 85000,
-      lastMaintenance: '2024-12-01',
-      nextMaintenance: '2025-01-01',
-      maintenanceHistory: [
-        {
-          id: '2',
-          date: '2024-12-01',
-          type: 'repair',
-          description: 'Hydraulic system repair',
-          cost: 1200,
-          technician: 'Sarah Wilson',
-          notes: 'Replaced hydraulic pump and seals'
-        }
-      ]
-    },
-    {
-      id: '3',
-      name: 'Generator 50kW',
-      type: 'Power Equipment',
-      status: 'available',
-      location: 'Equipment Yard',
-      purchaseDate: '2023-01-10',
-      purchasePrice: 15000,
-      lastMaintenance: '2024-10-01',
-      nextMaintenance: '2025-01-01',
-      maintenanceHistory: []
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showMaintenanceDialog, setShowMaintenanceDialog] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<string>('');
+  const [newEquipment, setNewEquipment] = useState({
+    name: '',
+    model: '',
+    serialNumber: '',
+    category: '',
+    location: '',
+    purchaseDate: new Date().toISOString().split('T')[0],
+    purchasePrice: 0,
+    warrantyExpiration: '',
+    notes: ''
+  });
+  const [newMaintenance, setNewMaintenance] = useState({
+    type: 'routine',
+    description: '',
+    scheduledDate: new Date().toISOString().split('T')[0],
+    estimatedCost: 0,
+    assignedTechnician: '',
+    notes: ''
+  });
+
+  const employees = businessDataManager.getAllEmployees();
+  const categories = ['Heavy Machinery', 'Vehicles', 'Power Tools', 'Safety Equipment', 'Measuring Tools', 'Other'];
+
+  useEffect(() => {
+    loadEquipment();
+  }, []);
+
+  const loadEquipment = () => {
+    const data = businessDataManager.getAllEquipment();
+    setEquipment(data);
+  };
+
+  const handleCreateEquipment = () => {
+    if (!newEquipment.name || !newEquipment.serialNumber) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in required fields",
+        variant: "destructive"
+      });
+      return;
     }
-  ]);
+
+    businessDataManager.createEquipment({
+      ...newEquipment,
+      status: 'available'
+    });
+
+    loadEquipment();
+    setShowCreateDialog(false);
+    setNewEquipment({
+      name: '',
+      model: '',
+      serialNumber: '',
+      category: '',
+      location: '',
+      purchaseDate: new Date().toISOString().split('T')[0],
+      purchasePrice: 0,
+      warrantyExpiration: '',
+      notes: ''
+    });
+
+    toast({
+      title: "Equipment Added",
+      description: "New equipment has been added to inventory"
+    });
+  };
+
+  const handleScheduleMaintenance = () => {
+    if (!selectedEquipment || !newMaintenance.description) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const equipment = businessDataManager.getEquipment(selectedEquipment);
+    if (!equipment) return;
+
+    const maintenanceRecord = {
+      id: `maint-${Date.now()}`,
+      equipmentId: selectedEquipment,
+      equipmentName: equipment.name,
+      type: newMaintenance.type as 'routine' | 'repair' | 'inspection',
+      description: newMaintenance.description,
+      scheduledDate: newMaintenance.scheduledDate,
+      estimatedCost: newMaintenance.estimatedCost,
+      assignedTechnician: newMaintenance.assignedTechnician,
+      status: 'scheduled' as const,
+      notes: newMaintenance.notes,
+      createdAt: new Date().toISOString()
+    };
+
+    businessDataManager.createMaintenanceRecord(maintenanceRecord);
+
+    // Update equipment next maintenance date
+    businessDataManager.updateEquipment(selectedEquipment, {
+      nextMaintenanceDate: newMaintenance.scheduledDate,
+      status: 'maintenance'
+    });
+
+    loadEquipment();
+    setShowMaintenanceDialog(false);
+    setNewMaintenance({
+      type: 'routine',
+      description: '',
+      scheduledDate: new Date().toISOString().split('T')[0],
+      estimatedCost: 0,
+      assignedTechnician: '',
+      notes: ''
+    });
+
+    toast({
+      title: "Maintenance Scheduled",
+      description: `Maintenance scheduled for ${equipment.name}`
+    });
+  };
+
+  const handleStatusUpdate = (equipmentId: string, newStatus: Equipment['status']) => {
+    businessDataManager.updateEquipment(equipmentId, { status: newStatus });
+    loadEquipment();
+
+    toast({
+      title: "Status Updated",
+      description: `Equipment status changed to ${newStatus}`
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available': return 'bg-green-100 text-green-800';
       case 'in-use': return 'bg-blue-100 text-blue-800';
       case 'maintenance': return 'bg-yellow-100 text-yellow-800';
-      case 'repair': return 'bg-red-100 text-red-800';
+      case 'retired': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -110,41 +163,225 @@ export const EquipmentTracking = () => {
       case 'available': return <CheckCircle className="h-4 w-4 text-green-600" />;
       case 'in-use': return <Truck className="h-4 w-4 text-blue-600" />;
       case 'maintenance': return <Wrench className="h-4 w-4 text-yellow-600" />;
-      case 'repair': return <AlertTriangle className="h-4 w-4 text-red-600" />;
+      case 'retired': return <AlertTriangle className="h-4 w-4 text-red-600" />;
       default: return <Clock className="h-4 w-4" />;
     }
   };
 
-  const handleScheduleMaintenance = (equipmentId: string) => {
-    toast({
-      title: "Maintenance Scheduled",
-      description: "Equipment maintenance has been scheduled.",
-    });
-  };
-
-  const handleUpdateStatus = (equipmentId: string, newStatus: Equipment['status']) => {
-    setEquipment(prev => prev.map(item => 
-      item.id === equipmentId ? { ...item, status: newStatus } : item
-    ));
-    
-    toast({
-      title: "Status Updated",
-      description: `Equipment status changed to ${newStatus}.`,
-    });
-  };
-
   const totalValue = equipment.reduce((sum, item) => sum + item.purchasePrice, 0);
   const availableCount = equipment.filter(item => item.status === 'available').length;
-  const maintenanceCount = equipment.filter(item => item.status === 'maintenance' || item.status === 'repair').length;
+  const maintenanceCount = equipment.filter(item => item.status === 'maintenance').length;
+  const maintenanceRecords = businessDataManager.getAllMaintenanceRecords();
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Equipment Maintenance Tracking</h2>
-        <Button>
-          <Wrench className="h-4 w-4 mr-2" />
-          Schedule Maintenance
-        </Button>
+        <h2 className="text-2xl font-bold">Equipment Tracking</h2>
+        <div className="flex gap-2">
+          <Dialog open={showMaintenanceDialog} onOpenChange={setShowMaintenanceDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Calendar className="h-4 w-4 mr-2" />
+                Schedule Maintenance
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Schedule Maintenance</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Equipment</Label>
+                  <Select value={selectedEquipment} onValueChange={setSelectedEquipment}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select equipment" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {equipment.map(item => (
+                        <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Maintenance Type</Label>
+                  <Select value={newMaintenance.type} onValueChange={(value) => setNewMaintenance(prev => ({ ...prev, type: value }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="routine">Routine</SelectItem>
+                      <SelectItem value="repair">Repair</SelectItem>
+                      <SelectItem value="inspection">Inspection</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={newMaintenance.description}
+                    onChange={(e) => setNewMaintenance(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Describe the maintenance work"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Scheduled Date</Label>
+                    <Input
+                      type="date"
+                      value={newMaintenance.scheduledDate}
+                      onChange={(e) => setNewMaintenance(prev => ({ ...prev, scheduledDate: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Estimated Cost</Label>
+                    <Input
+                      type="number"
+                      value={newMaintenance.estimatedCost}
+                      onChange={(e) => setNewMaintenance(prev => ({ ...prev, estimatedCost: parseFloat(e.target.value) || 0 }))}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Assigned Technician</Label>
+                  <Select value={newMaintenance.assignedTechnician} onValueChange={(value) => setNewMaintenance(prev => ({ ...prev, assignedTechnician: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select technician" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {employees.map(emp => (
+                        <SelectItem key={emp.id} value={emp.name}>{emp.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setShowMaintenanceDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleScheduleMaintenance}>
+                    Schedule
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Equipment
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Equipment</DialogTitle>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Name *</Label>
+                  <Input
+                    value={newEquipment.name}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Equipment name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Model</Label>
+                  <Input
+                    value={newEquipment.model}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, model: e.target.value }))}
+                    placeholder="Model number"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Serial Number *</Label>
+                  <Input
+                    value={newEquipment.serialNumber}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, serialNumber: e.target.value }))}
+                    placeholder="Serial number"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Select value={newEquipment.category} onValueChange={(value) => setNewEquipment(prev => ({ ...prev, category: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Location</Label>
+                  <Input
+                    value={newEquipment.location}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, location: e.target.value }))}
+                    placeholder="Current location"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Purchase Date</Label>
+                  <Input
+                    type="date"
+                    value={newEquipment.purchaseDate}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, purchaseDate: e.target.value }))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Purchase Price</Label>
+                  <Input
+                    type="number"
+                    value={newEquipment.purchasePrice}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, purchasePrice: parseFloat(e.target.value) || 0 }))}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Warranty Expiration</Label>
+                  <Input
+                    type="date"
+                    value={newEquipment.warrantyExpiration}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, warrantyExpiration: e.target.value }))}
+                  />
+                </div>
+
+                <div className="space-y-2 col-span-2">
+                  <Label>Notes</Label>
+                  <Textarea
+                    value={newEquipment.notes}
+                    onChange={(e) => setNewEquipment(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Additional notes"
+                  />
+                </div>
+
+                <div className="col-span-2 flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateEquipment}>
+                    Add Equipment
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Overview Stats */}
@@ -215,7 +452,7 @@ export const EquipmentTracking = () => {
                       {getStatusIcon(item.status)}
                       <div>
                         <h3 className="font-semibold">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground">{item.type}</p>
+                        <p className="text-sm text-muted-foreground">{item.model}</p>
                       </div>
                     </div>
                     <Badge className={getStatusColor(item.status)}>
@@ -226,20 +463,23 @@ export const EquipmentTracking = () => {
                 <CardContent className="space-y-3">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
+                      <p className="text-muted-foreground">Serial Number</p>
+                      <p className="font-medium">{item.serialNumber}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Category</p>
+                      <p className="font-medium">{item.category}</p>
+                    </div>
+                    <div>
                       <p className="text-muted-foreground">Location</p>
-                      <p className="font-medium">{item.location}</p>
+                      <p className="font-medium flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        {item.location || 'Unassigned'}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Assigned To</p>
-                      <p className="font-medium">{item.assignedTo || 'Unassigned'}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Last Maintenance</p>
-                      <p className="font-medium">{item.lastMaintenance}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Next Maintenance</p>
-                      <p className="font-medium">{item.nextMaintenance}</p>
+                      <p className="text-muted-foreground">Purchase Date</p>
+                      <p className="font-medium">{item.purchaseDate}</p>
                     </div>
                   </div>
 
@@ -247,7 +487,10 @@ export const EquipmentTracking = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => handleScheduleMaintenance(item.id)}
+                      onClick={() => {
+                        setSelectedEquipment(item.id);
+                        setShowMaintenanceDialog(true);
+                      }}
                     >
                       <Calendar className="h-3 w-3 mr-1" />
                       Schedule
@@ -256,7 +499,7 @@ export const EquipmentTracking = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleUpdateStatus(item.id, 'in-use')}
+                        onClick={() => handleStatusUpdate(item.id, 'in-use')}
                       >
                         Assign
                       </Button>
@@ -265,7 +508,7 @@ export const EquipmentTracking = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleUpdateStatus(item.id, 'available')}
+                        onClick={() => handleStatusUpdate(item.id, 'available')}
                       >
                         Return
                       </Button>
@@ -280,26 +523,29 @@ export const EquipmentTracking = () => {
         <TabsContent value="maintenance" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Upcoming Maintenance</CardTitle>
+              <CardTitle>Scheduled Maintenance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {equipment
-                  .filter(item => new Date(item.nextMaintenance) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))
-                  .map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
+                {maintenanceRecords
+                  .filter(record => record.status === 'scheduled')
+                  .map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
                         <Calendar className="h-5 w-5 text-blue-600" />
                         <div>
-                          <h3 className="font-semibold">{item.name}</h3>
+                          <h3 className="font-semibold">{record.equipmentName}</h3>
                           <p className="text-sm text-muted-foreground">
-                            Due: {item.nextMaintenance}
+                            {record.description} - Due: {record.scheduledDate}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Assigned to: {record.assignedTechnician}
                           </p>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Schedule Now
-                      </Button>
+                      <Badge variant="outline">
+                        {record.type}
+                      </Badge>
                     </div>
                   ))}
               </div>
@@ -310,32 +556,28 @@ export const EquipmentTracking = () => {
         <TabsContent value="history" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Maintenance History</CardTitle>
+              <CardTitle>Maintenance History</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {equipment.flatMap(item => 
-                  item.maintenanceHistory.map(record => ({
-                    ...record,
-                    equipmentName: item.name
-                  }))
-                ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .map((record) => (
-                  <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <h3 className="font-semibold">{record.equipmentName}</h3>
-                      <p className="text-sm text-muted-foreground">{record.description}</p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                        <span>{record.date}</span>
-                        <span>By: {record.technician}</span>
-                        <span>${record.cost}</span>
+                {maintenanceRecords
+                  .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <h3 className="font-semibold">{record.equipmentName}</h3>
+                        <p className="text-sm text-muted-foreground">{record.description}</p>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+                          <span>{record.scheduledDate}</span>
+                          <span>By: {record.assignedTechnician}</span>
+                          <span>${record.estimatedCost}</span>
+                        </div>
                       </div>
+                      <Badge variant="outline">
+                        {record.type}
+                      </Badge>
                     </div>
-                    <Badge variant="outline">
-                      {record.type}
-                    </Badge>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>

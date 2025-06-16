@@ -510,6 +510,146 @@ class BusinessDataManager {
     localStorage.setItem(`${this.storagePrefix}invoices`, JSON.stringify(invoices));
   }
   
+  // Equipment Management
+  createEquipment(equipmentData: Omit<Equipment, 'id'>): Equipment {
+    const equipment: Equipment = {
+      ...equipmentData,
+      id: `equip-${Date.now()}`
+    };
+    
+    this.saveEquipment(equipment);
+    console.log('Equipment created:', equipment);
+    return equipment;
+  }
+  
+  updateEquipment(id: string, updates: Partial<Equipment>): Equipment | null {
+    const equipment = this.getEquipment(id);
+    if (!equipment) return null;
+    
+    const updatedEquipment = { ...equipment, ...updates };
+    this.saveEquipment(updatedEquipment);
+    console.log('Equipment updated:', updatedEquipment);
+    return updatedEquipment;
+  }
+  
+  getEquipment(id: string): Equipment | null {
+    const equipment = this.getAllEquipment();
+    return equipment.find(e => e.id === id) || null;
+  }
+  
+  getAllEquipment(): Equipment[] {
+    const data = localStorage.getItem(`${this.storagePrefix}equipment`);
+    return data ? JSON.parse(data) : this.getDefaultEquipment();
+  }
+  
+  saveEquipment(equipment: Equipment): void {
+    const equipmentList = this.getAllEquipment();
+    const index = equipmentList.findIndex(e => e.id === equipment.id);
+    
+    if (index >= 0) {
+      equipmentList[index] = equipment;
+    } else {
+      equipmentList.push(equipment);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}equipment`, JSON.stringify(equipmentList));
+  }
+
+  // Maintenance Records Management
+  createMaintenanceRecord(record: any): any {
+    const records = this.getAllMaintenanceRecords();
+    records.push(record);
+    localStorage.setItem(`${this.storagePrefix}maintenanceRecords`, JSON.stringify(records));
+    console.log('Maintenance record created:', record);
+    return record;
+  }
+
+  getAllMaintenanceRecords(): any[] {
+    const data = localStorage.getItem(`${this.storagePrefix}maintenanceRecords`);
+    return data ? JSON.parse(data) : [];
+  }
+
+  // Chat Management
+  createChatRoom(chatRoom: any): any {
+    this.saveChatRoom(chatRoom);
+    console.log('Chat room created:', chatRoom);
+    return chatRoom;
+  }
+
+  getAllChatRooms(): any[] {
+    const data = localStorage.getItem(`${this.storagePrefix}chatRooms`);
+    return data ? JSON.parse(data) : this.getDefaultChatRooms();
+  }
+
+  saveChatRoom(chatRoom: any): void {
+    const chatRooms = this.getAllChatRooms();
+    const index = chatRooms.findIndex(r => r.id === chatRoom.id);
+    
+    if (index >= 0) {
+      chatRooms[index] = chatRoom;
+    } else {
+      chatRooms.push(chatRoom);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}chatRooms`, JSON.stringify(chatRooms));
+  }
+
+  createChatMessage(message: any): any {
+    const messages = this.getAllChatMessages();
+    messages.push(message);
+    localStorage.setItem(`${this.storagePrefix}chatMessages`, JSON.stringify(messages));
+    console.log('Chat message created:', message);
+    return message;
+  }
+
+  getAllChatMessages(): any[] {
+    const data = localStorage.getItem(`${this.storagePrefix}chatMessages`);
+    return data ? JSON.parse(data) : [];
+  }
+
+  // Safety Management
+  createSafetyIncident(incidentData: Omit<SafetyIncident, 'id'>): SafetyIncident {
+    const incident: SafetyIncident = {
+      ...incidentData,
+      id: `incident-${Date.now()}`
+    };
+    
+    this.saveSafetyIncident(incident);
+    console.log('Safety incident created:', incident);
+    return incident;
+  }
+
+  getAllSafetyIncidents(): SafetyIncident[] {
+    const data = localStorage.getItem(`${this.storagePrefix}safetyIncidents`);
+    return data ? JSON.parse(data) : [];
+  }
+
+  saveSafetyIncident(incident: SafetyIncident): void {
+    const incidents = this.getAllSafetyIncidents();
+    const index = incidents.findIndex(i => i.id === incident.id);
+    
+    if (index >= 0) {
+      incidents[index] = incident;
+    } else {
+      incidents.push(incident);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}safetyIncidents`, JSON.stringify(incidents));
+  }
+
+  createSafetyChecklist(checklist: any): any {
+    const checklists = this.getAllSafetyChecklists();
+    checklists.push(checklist);
+    localStorage.setItem(`${this.storagePrefix}safetyChecklists`, JSON.stringify(checklists));
+    console.log('Safety checklist created:', checklist);
+    return checklist;
+  }
+
+  getAllSafetyChecklists(): any[] {
+    const data = localStorage.getItem(`${this.storagePrefix}safetyChecklists`);
+    return data ? JSON.parse(data) : [];
+  }
+
   // Analytics and Reporting
   getBusinessMetrics() {
     const customers = this.getAllCustomers();
@@ -779,6 +919,44 @@ class BusinessDataManager {
         paidAmount: 0,
         createdAt: '2024-12-16T08:00:00Z',
         updatedAt: '2024-12-16T08:00:00Z'
+      }
+    ];
+  }
+
+  private getDefaultEquipment(): Equipment[] {
+    return [
+      {
+        id: 'equip-1',
+        name: 'Excavator CAT 320',
+        model: 'CAT 320DL',
+        serialNumber: 'CAT123456',
+        category: 'Heavy Machinery',
+        status: 'in-use',
+        assignedTo: 'John Smith',
+        location: 'Job Site A',
+        purchaseDate: '2022-03-15',
+        purchasePrice: 125000,
+        warrantyExpiration: '2025-03-15',
+        lastMaintenanceDate: '2024-11-15',
+        nextMaintenanceDate: '2024-12-15',
+        notes: 'Regular maintenance schedule'
+      }
+    ];
+  }
+
+  private getDefaultChatRooms(): any[] {
+    return [
+      {
+        id: 'chat-1',
+        name: 'Mike Johnson',
+        type: 'direct',
+        participants: ['emp-1', 'current-user'],
+        participantNames: ['Mike Johnson', 'You'],
+        lastMessage: 'Heading to the kitchen renovation site now',
+        lastMessageTime: '10:30 AM',
+        unreadCount: 2,
+        status: 'online',
+        createdAt: new Date().toISOString()
       }
     ];
   }
