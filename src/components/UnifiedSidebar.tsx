@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -74,7 +73,7 @@ export const UnifiedSidebar = ({
 }: UnifiedSidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [openGroups, setOpenGroups] = useState<string[]>(['dashboard']);
+  const [openGroups, setOpenGroups] = useState<string[]>(['customers']);
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'JobBlox',
     logo: null,
@@ -126,15 +125,8 @@ export const UnifiedSidebar = ({
     localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups));
   }, [openGroups]);
 
-  // Define menu groups with proper organization
+  // Define menu groups without dashboard group
   const menuGroups: MenuGroup[] = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard & Overview',
-      icon: Home,
-      defaultOpen: true,
-      sections: sections.filter(s => ['home', 'dashboard'].includes(s.id))
-    },
     {
       id: 'customers',
       label: 'Customer Management',
@@ -302,6 +294,24 @@ export const UnifiedSidebar = ({
           </div>
         </div>
       )}
+
+      {/* Home Button */}
+      <div className="p-2 border-b border-border/40">
+        <Button
+          variant={activeSection === 'home' ? "default" : "ghost"}
+          size={isCollapsed ? "icon" : "default"}
+          className={cn(
+            "w-full",
+            isCollapsed ? "h-12 px-0" : "justify-start gap-3 h-10",
+            activeSection === 'home' && "bg-primary text-primary-foreground"
+          )}
+          onClick={() => handleSectionClick('home')}
+          title={isCollapsed ? "Home" : undefined}
+        >
+          <Home className="h-5 w-5" />
+          {!isCollapsed && <span>Home</span>}
+        </Button>
+      </div>
 
       {/* Navigation */}
       <ScrollArea className="flex-1 px-2 py-4">
