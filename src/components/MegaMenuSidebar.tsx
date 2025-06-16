@@ -42,6 +42,7 @@ export const MegaMenuSidebar = ({
   collapsed = false,
   onToggleCollapse
 }: MegaMenuSidebarProps) => {
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'JobBlox',
     logo: null
@@ -58,17 +59,6 @@ export const MegaMenuSidebar = ({
       });
     }
   }, []);
-
-  // If collapsed, render the CollapsedSidebar component
-  if (collapsed) {
-    return (
-      <CollapsedSidebar 
-        activeSection={activeSection}
-        onSectionChange={onSectionChange}
-        sections={sections}
-      />
-    );
-  }
 
   // Group sections into logical categories
   const menuGroups: SidebarGroup[] = [
@@ -155,6 +145,19 @@ export const MegaMenuSidebar = ({
       setOpenGroups(prev => [...prev, activeGroup.label]);
     }
   }, [activeSection]);
+
+  // NOW WE CAN SAFELY HAVE CONDITIONAL RETURNS AFTER ALL HOOKS
+  
+  // If collapsed, render the CollapsedSidebar component
+  if (collapsed) {
+    return (
+      <CollapsedSidebar 
+        activeSection={activeSection}
+        onSectionChange={onSectionChange}
+        sections={sections}
+      />
+    );
+  }
 
   const toggleGroup = (groupLabel: string) => {
     setOpenGroups(prev => 
