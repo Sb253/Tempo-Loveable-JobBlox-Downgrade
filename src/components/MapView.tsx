@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -61,7 +60,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         case 'scheduled':
           return theme === 'dark' ? '#60a5fa' : '#3b82f6';
         case 'in-progress':
-          return theme === 'dark' ? '#fbbf24' : '#f59e0b';
+          return theme === 'dark' ? '#fb923c' : '#f97316';
         case 'completed':
           return theme === 'dark' ? '#34d399' : '#10b981';
         default:
@@ -94,7 +93,6 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
             title: "Location Error",
             description: "Could not get your current location. Using default location.",
           });
-          // Default to NYC if location fails
           setUserLocation([-74.006, 40.7128]);
         }
       );
@@ -280,14 +278,14 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
   }, { jobs: {} as Record<string, number>, appointments: {} as Record<string, number> });
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Live Locations Map
-          </CardTitle>
-          <div className="flex gap-2">
+    <div className="w-full max-w-full">
+      <Card className="w-full">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-5 w-5" />
+              Live Locations Map
+            </CardTitle>
             <Button
               variant="outline"
               size="sm"
@@ -298,60 +296,60 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
               My Location
             </Button>
           </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-            <span>Jobs</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
-            <span>Appointments</span>
-          </div>
-          {showEmployeeLocations && (
+          
+          <div className="flex flex-wrap gap-3 text-sm">
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-green-500"></div>
-              <span>Employees</span>
+              <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+              <span>Jobs</span>
             </div>
-          )}
-          <div className="flex gap-4">
-            <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">Scheduled</Badge>
-            <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950">In Progress</Badge>
-            <Badge variant="outline" className="bg-green-50 dark:bg-green-950">Completed</Badge>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="w-full h-96 rounded-lg border overflow-hidden">
-          <div ref={mapContainer} className="w-full h-full" />
-        </div>
-        
-        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <h4 className="font-medium mb-2">Jobs</h4>
-            <div className="space-y-1">
-              {Object.entries(jobStats.jobs).map(([status, count]) => (
-                <div key={status} className="flex justify-between">
-                  <span className="capitalize">{status.replace('-', ' ')}:</span>
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-purple-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}></div>
+              <span>Appointments</span>
+            </div>
+            {showEmployeeLocations && (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span>Employees</span>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <Badge variant="outline" className="text-xs">Scheduled</Badge>
+              <Badge variant="outline" className="text-xs">In Progress</Badge>
+              <Badge variant="outline" className="text-xs">Completed</Badge>
             </div>
           </div>
-          <div>
-            <h4 className="font-medium mb-2">Appointments</h4>
-            <div className="space-y-1">
-              {Object.entries(jobStats.appointments).map(([status, count]) => (
-                <div key={status} className="flex justify-between">
-                  <span className="capitalize">{status.replace('-', ' ')}:</span>
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="w-full h-80 rounded-lg border overflow-hidden mb-4">
+            <div ref={mapContainer} className="w-full h-full" />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <h4 className="font-medium mb-2">Jobs</h4>
+              <div className="space-y-1">
+                {Object.entries(jobStats.jobs).map(([status, count]) => (
+                  <div key={status} className="flex justify-between">
+                    <span className="capitalize">{status.replace('-', ' ')}:</span>
+                    <span className="font-medium">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Appointments</h4>
+              <div className="space-y-1">
+                {Object.entries(jobStats.appointments).map(([status, count]) => (
+                  <div key={status} className="flex justify-between">
+                    <span className="capitalize">{status.replace('-', ' ')}:</span>
+                    <span className="font-medium">{count}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };

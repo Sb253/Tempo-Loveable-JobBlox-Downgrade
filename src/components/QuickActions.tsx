@@ -62,7 +62,7 @@ export const QuickActions = ({
       title: 'Initial Consultation',
       description: 'Schedule first meeting',
       icon: Calendar,
-      color: 'from-blue-500 to-blue-600',
+      color: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
       onClick: onInitialConsultation || (() => {})
     },
     {
@@ -70,7 +70,7 @@ export const QuickActions = ({
       title: 'Site Assessment',
       description: 'Property evaluation',
       icon: Home,
-      color: 'from-green-500 to-green-600',
+      color: 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700',
       onClick: onSiteAssessment || (() => {})
     },
     {
@@ -78,7 +78,7 @@ export const QuickActions = ({
       title: 'Client Information',
       description: 'Collect details',
       icon: UserPlus,
-      color: 'from-purple-500 to-purple-600',
+      color: 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700',
       onClick: onClientInformation || (() => {})
     },
     {
@@ -86,7 +86,7 @@ export const QuickActions = ({
       title: 'Project Proposal',
       description: 'Create proposal',
       icon: FileCheck,
-      color: 'from-orange-500 to-orange-600',
+      color: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700',
       onClick: onProjectProposal || (() => {})
     }
   ];
@@ -95,33 +95,33 @@ export const QuickActions = ({
     {
       id: 'schedule',
       title: 'Schedule Job',
-      description: 'Book new appointment',
+      description: 'Book appointment',
       icon: Calendar,
-      color: 'from-blue-500 to-blue-600',
+      color: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
       onClick: onScheduleJob || (() => {})
     },
     {
       id: 'customer',
       title: 'Add Customer',
-      description: 'New client record',
+      description: 'New client',
       icon: Users,
-      color: 'from-green-500 to-green-600',
+      color: 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700',
       onClick: onAddCustomer || (() => {})
     },
     {
       id: 'estimate',
       title: 'Create Estimate',
-      description: 'New project quote',
+      description: 'Project quote',
       icon: Calculator,
-      color: 'from-purple-500 to-purple-600',
+      color: 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700',
       onClick: onCreateEstimate || (() => {})
     },
     {
       id: 'invoice',
       title: 'Create Invoice',
-      description: 'Bill for services',
+      description: 'Bill services',
       icon: FileText,
-      color: 'from-orange-500 to-orange-600',
+      color: 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700',
       onClick: onCreateInvoice || (() => {})
     },
     {
@@ -129,7 +129,7 @@ export const QuickActions = ({
       title: 'Process Payment',
       description: 'Accept payment',
       icon: CreditCard,
-      color: 'from-emerald-500 to-emerald-600',
+      color: 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700',
       onClick: onProcessPayment || (() => {})
     },
     {
@@ -137,7 +137,7 @@ export const QuickActions = ({
       title: 'View Map',
       description: 'Job locations',
       icon: MapPin,
-      color: 'from-red-500 to-red-600',
+      color: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
       onClick: onViewMap || (() => {})
     },
     {
@@ -145,44 +145,44 @@ export const QuickActions = ({
       title: 'Create Quote',
       description: 'Project proposal',
       icon: ClipboardList,
-      color: 'from-indigo-500 to-indigo-600',
+      color: 'bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700',
       onClick: onCreateQuote || (() => {})
     },
     {
       id: 'jobs',
       title: 'Manage Jobs',
-      description: 'View all projects',
+      description: 'View projects',
       icon: Wrench,
-      color: 'from-cyan-500 to-cyan-600',
+      color: 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700',
       onClick: onManageJobs || (() => {})
     }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Client Intake Section */}
-      <Card className="bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            <UserPlus className="h-5 w-5 text-primary" />
+    <div className="space-y-4">
+      <Card className="border border-primary/20 shadow-md">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <UserPlus className="h-4 w-4 text-primary" />
             Client Intake
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {clientIntakeActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.id}
                   variant="outline"
-                  className={`h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${action.color} text-white border-0 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl`}
+                  size="sm"
+                  className={`h-16 flex flex-col items-center justify-center gap-1 ${action.color} text-white border-0 hover:scale-105 transition-all duration-200 shadow-sm text-xs`}
                   onClick={action.onClick}
                 >
-                  <Icon className="h-5 w-5" />
-                  <div className="text-center">
-                    <div className="text-xs font-semibold">{action.title}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
+                  <Icon className="h-3 w-3" />
+                  <div className="text-center leading-tight">
+                    <div className="font-medium">{action.title}</div>
+                    <div className="opacity-90 text-[10px]">{action.description}</div>
                   </div>
                 </Button>
               );
@@ -191,29 +191,29 @@ export const QuickActions = ({
         </CardContent>
       </Card>
 
-      {/* General Quick Actions */}
-      <Card className="bg-gradient-to-br from-card/50 to-card border-2 border-primary/20 shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            <Wrench className="h-5 w-5 text-primary" />
+      <Card className="border border-primary/20 shadow-md">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Wrench className="h-4 w-4 text-primary" />
             Quick Actions
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.id}
                   variant="outline"
-                  className={`h-20 flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${action.color} text-white border-0 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl`}
+                  size="sm"
+                  className={`h-16 flex flex-col items-center justify-center gap-1 ${action.color} text-white border-0 hover:scale-105 transition-all duration-200 shadow-sm text-xs`}
                   onClick={action.onClick}
                 >
-                  <Icon className="h-5 w-5" />
-                  <div className="text-center">
-                    <div className="text-xs font-semibold">{action.title}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
+                  <Icon className="h-3 w-3" />
+                  <div className="text-center leading-tight">
+                    <div className="font-medium">{action.title}</div>
+                    <div className="opacity-90 text-[10px]">{action.description}</div>
                   </div>
                 </Button>
               );

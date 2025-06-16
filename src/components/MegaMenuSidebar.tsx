@@ -101,6 +101,14 @@ export const MegaMenuSidebar = ({
       )
     },
     {
+      label: 'AI Features',
+      icon: sections.find(s => s.id === 'ai-chat')?.icon || Building2,
+      defaultOpen: false,
+      items: sections.filter(s => 
+        ['ai-chat', 'smart-document-generator', 'predictive-analytics', 'ai-settings'].includes(s.id)
+      )
+    },
+    {
       label: 'Integrations',
       icon: sections.find(s => s.id === 'quickbooks-integration')?.icon || Building2,
       defaultOpen: false,
@@ -191,6 +199,7 @@ export const MegaMenuSidebar = ({
             collapsed && "justify-center px-2"
           )}
           onClick={() => onSectionChange('home')}
+          title={collapsed ? "Home" : undefined}
         >
           <Building2 className="h-5 w-5" />
           {!collapsed && <span>Home</span>}
@@ -207,24 +216,32 @@ export const MegaMenuSidebar = ({
             const GroupIcon = group.icon;
             
             if (collapsed) {
-              // In collapsed mode, show only icons for groups that have active items
-              const hasActiveItem = group.items.some(item => item.id === activeSection);
-              if (!hasActiveItem) return null;
-              
-              const activeItem = group.items.find(item => item.id === activeSection);
-              if (!activeItem) return null;
-              
-              const ActiveIcon = activeItem.icon;
+              // In collapsed mode, show icons for each menu item in the group
               return (
-                <div key={group.label} className="flex justify-center py-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 bg-blue-600 text-white hover:bg-blue-700"
-                    title={activeItem.label}
-                  >
-                    <ActiveIcon className="h-5 w-5" />
-                  </Button>
+                <div key={group.label} className="space-y-1">
+                  {group.items.map((section) => {
+                    const Icon = section.icon;
+                    const isActive = activeSection === section.id;
+                    
+                    return (
+                      <Button
+                        key={section.id}
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          "w-full h-10 text-slate-400 hover:text-white hover:bg-slate-800",
+                          isActive && "bg-blue-600 text-white hover:bg-blue-700"
+                        )}
+                        onClick={() => {
+                          console.log('MegaMenuSidebar: Section clicked:', section.id);
+                          onSectionChange(section.id);
+                        }}
+                        title={section.label}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </Button>
+                    );
+                  })}
                 </div>
               );
             }

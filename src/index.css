@@ -70,7 +70,7 @@
   }
 }
 
-/* Enhanced colorful UI styles - no more yellow */
+/* Enhanced colorful UI styles - no yellow */
 .colorful-text {
   background: linear-gradient(135deg, #8B5CF6, #EC4899, #3B82F6, #10B981);
   -webkit-background-clip: text;
@@ -127,4 +127,41 @@
   75% {
     background: linear-gradient(135deg, #10B981, #8B5CF6, #EC4899, #3B82F6);
   }
+}
+
+/* Light mode improvements - removing yellow/amber */
+.light {
+  --primary: 262 83% 58%;
+  --secondary: 210 40% 96%;
+  --accent: 210 40% 96%;
+  --muted: 210 40% 96%;
+  --card: 0 0% 100%;
+  --border: 214.3 31.8% 91.4%;
+}
+
+/* Enhanced light mode color palette */
+:root {
+  --vibrant-blue: #3B82F6;
+  --vibrant-purple: #8B5CF6;
+  --vibrant-green: #10B981;
+  --vibrant-red: #EF4444;
+  --vibrant-pink: #EC4899;
+  --vibrant-indigo: #6366F1;
+  --vibrant-cyan: #06B6D4;
+  --vibrant-orange: #F97316;
+  --vibrant-emerald: #059669;
+  --vibrant-teal: #0D9488;
+}
+
+/* Remove all yellow/amber references and replace with better colors */
+.bg-yellow-500, .bg-amber-500 {
+  background-color: var(--vibrant-orange) !important;
+}
+
+.text-yellow-500, .text-amber-500 {
+  color: var(--vibrant-orange) !important;
+}
+
+.border-yellow-500, .border-amber-500 {
+  border-color: var(--vibrant-orange) !important;
 }
