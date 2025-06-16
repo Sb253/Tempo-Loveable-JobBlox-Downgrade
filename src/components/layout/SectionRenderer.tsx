@@ -2,8 +2,6 @@
 import { Dashboard } from "../Dashboard";
 import { CustomerList } from "../CustomerList";
 import { JobList } from "../JobList";
-import { CustomerForm } from "../CustomerForm";
-import { JobForm } from "../JobForm";
 import { EstimateList } from "../EstimateList";
 import { InvoiceList } from "../InvoiceList";
 import { ScheduleView } from "../ScheduleView";
@@ -46,6 +44,7 @@ import { KPIDashboard } from "../KPIDashboard";
 import { AdvancedAnalytics } from "../AdvancedAnalytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Construction, AlertCircle } from "lucide-react";
+import { demoDataService } from "../../services/demoDataService";
 
 interface SectionRendererProps {
   activeSection: string;
@@ -91,6 +90,9 @@ const SectionNotFound = ({ sectionName }: { sectionName: string }) => (
 export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
   console.log('SectionRenderer: Rendering section:', activeSection);
 
+  // Get demo jobs data for map view
+  const demoJobs = demoDataService.getJobs();
+
   // Map of all available sections to their components
   const sectionComponents: Record<string, JSX.Element> = {
     // Core sections
@@ -99,7 +101,6 @@ export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
     
     // Customer Management
     'customers': <CustomerList />,
-    'customer-form': <CustomerForm />,
     'pipeline': <Pipeline />,
     'client-appointment': <ClientAppointment />,
     'communication': <RealTimeChat />,
@@ -107,7 +108,6 @@ export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
     
     // Job Management
     'jobs': <JobList />,
-    'job-form': <JobForm />,
     'schedule': <ScheduleView />,
     'time-tracking': <TimeTracking />,
     'photos': <PhotoDocumentation />,
@@ -149,7 +149,7 @@ export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
     // Reports & Analytics
     'reports': <ReportsView />,
     'analytics': <AdvancedAnalytics />,
-    'map-view': <MapView />,
+    'map-view': <MapView jobs={demoJobs} />,
     'advanced-reporting': <AdvancedReporting />,
     
     // Communication
