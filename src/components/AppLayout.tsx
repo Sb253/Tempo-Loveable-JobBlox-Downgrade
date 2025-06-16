@@ -315,67 +315,23 @@ const JobForm = () => (
   </div>
 );
 
-const ExpenseList = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Expenses</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Expense tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const TimeTracking = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Time Tracking</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Time tracking and reporting system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const MaterialInventory = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Material Inventory</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Inventory management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const EquipmentTracking = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Equipment Tracking</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Equipment management and tracking system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const EmployeeChat = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Employee Communication</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Internal communication and messaging system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
 const ReviewManagement = () => (
   <div className="p-6">
     <h2 className="text-2xl font-bold mb-4">Review Management</h2>
     <Card>
       <CardContent className="p-6">
         <p>Customer review management system will be implemented here.</p>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const QualityControl = () => (
+  <div className="p-6">
+    <h2 className="text-2xl font-bold mb-4">Quality Control</h2>
+    <Card>
+      <CardContent className="p-6">
+        <p>Quality control and assurance system will be implemented here.</p>
       </CardContent>
     </Card>
   </div>
@@ -431,17 +387,6 @@ const VehicleManagement = () => (
     <Card>
       <CardContent className="p-6">
         <p>Vehicle tracking and management system will be implemented here.</p>
-      </CardContent>
-    </Card>
-  </div>
-);
-
-const SafetyManagement = () => (
-  <div className="p-6">
-    <h2 className="text-2xl font-bold mb-4">Safety Management</h2>
-    <Card>
-      <CardContent className="p-6">
-        <p>Safety protocols and incident management system.</p>
       </CardContent>
     </Card>
   </div>
