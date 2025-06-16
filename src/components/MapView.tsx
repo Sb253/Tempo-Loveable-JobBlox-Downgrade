@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "./ThemeProvider";
 
 interface Job {
   id: string;
@@ -37,6 +38,7 @@ interface MapViewProps {
 
 export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmployeeLocations = false }) => {
   const { toast } = useToast();
+  const { theme } = useTheme();
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
@@ -46,23 +48,22 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
     if (type === 'appointment') {
       switch (status) {
         case 'scheduled':
-          return '#8B5CF6'; // Purple for scheduled appointments
+          return '#8B5CF6';
         case 'in-progress':
-          return '#EC4899'; // Pink for in-progress appointments
+          return '#EC4899';
         case 'completed':
-          return '#059669'; // Green for completed appointments
+          return '#059669';
         default:
           return '#6b7280';
       }
     } else {
-      // Job colors
       switch (status) {
         case 'scheduled':
-          return '#3b82f6'; // Blue for scheduled jobs
+          return '#3b82f6';
         case 'in-progress':
-          return '#f59e0b'; // Orange for in-progress jobs
+          return '#f59e0b';
         case 'completed':
-          return '#10b981'; // Emerald for completed jobs
+          return '#10b981';
         default:
           return '#6b7280';
       }
@@ -111,18 +112,16 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
 
     mapboxgl.accessToken = mapboxToken;
 
-    // Use user location or default center
     const center: [number, number] = userLocation || 
       (jobs.length > 0 ? [jobs[0].coordinates[0], jobs[0].coordinates[1]] : [-74.006, 40.7128]);
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: theme === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/light-v11',
       center: center,
       zoom: userLocation ? 12 : 10
     });
 
-    // Add navigation controls
     map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
     // Add user location marker if available
@@ -158,9 +157,8 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         employeeMarker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
         employeeMarker.style.cursor = 'pointer';
 
-        // Add status indicator
         if (employee.status === 'break') {
-          employeeMarker.style.border = '3px solid orange';
+          employeeMarker.style.border = '3px solid #f59e0b';
         } else if (employee.status === 'inactive') {
           employeeMarker.style.opacity = '0.5';
         }
@@ -201,14 +199,12 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
       markerEl.style.height = '24px';
       markerEl.style.borderRadius = job.type === 'appointment' ? '4px' : '50%';
       
-      // Use employee color if assigned, otherwise use default colors
       const markerColor = job.employeeColor || getMarkerColor(job.status, job.type);
       markerEl.style.backgroundColor = markerColor;
       markerEl.style.border = '3px solid white';
       markerEl.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
 
-      // Add icon indicator for type
       if (job.type === 'appointment') {
         markerEl.style.clipPath = 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)';
       }
@@ -257,6 +253,42 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
     });
   };
 
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation([longitude, latitude]);
+          if (map.current) {
+            map.current.flyTo({
+              center: [longitude, latitude],
+              zoom: 12,
+              essential: true
+            });
+          }
+          toast({
+            title: "Location Found",
+            description: "Map centered on your current location.",
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          toast({
+            title: "Location Error",
+            description: "Could not get your current location. Using default location.",
+          });
+          setUserLocation([-74.006, 40.7128]);
+        }
+      );
+    } else {
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser doesn't support geolocation. Using default location.",
+      });
+      setUserLocation([-74.006, 40.7128]);
+    }
+  };
+
   useEffect(() => {
     getCurrentLocation();
   }, []);
@@ -272,9 +304,8 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         map.current = null;
       }
     };
-  }, [jobs, userLocation, mapboxToken]);
+  }, [jobs, userLocation, mapboxToken, theme]);
 
-  // Count jobs and appointments by type and status
   const jobStats = jobs.reduce((acc, job) => {
     if (job.type === 'job') {
       acc.jobs[job.status] = (acc.jobs[job.status] || 0) + 1;
@@ -290,7 +321,7 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Job & Appointment Locations
+            Live Locations Map
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -305,7 +336,6 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
           </div>
         </div>
         
-        {/* Legend */}
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded-full bg-blue-500"></div>
@@ -322,9 +352,9 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
             </div>
           )}
           <div className="flex gap-4">
-            <Badge variant="outline" className="bg-blue-50">Scheduled</Badge>
-            <Badge variant="outline" className="bg-orange-50">In Progress</Badge>
-            <Badge variant="outline" className="bg-green-50">Completed</Badge>
+            <Badge variant="outline" className="bg-blue-50 dark:bg-blue-950">Scheduled</Badge>
+            <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950">In Progress</Badge>
+            <Badge variant="outline" className="bg-green-50 dark:bg-green-950">Completed</Badge>
           </div>
         </div>
       </CardHeader>
@@ -333,7 +363,6 @@ export const MapView: React.FC<MapViewProps> = ({ jobs, employees = [], showEmpl
           <div ref={mapContainer} className="w-full h-full" />
         </div>
         
-        {/* Stats */}
         <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
           <div>
             <h4 className="font-medium mb-2">Jobs</h4>

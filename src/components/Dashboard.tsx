@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette, MapPin, UserCheck, Building2, Plus, ArrowRight } from "lucide-react";
+import { Calendar, Users, DollarSign, Wrench, Settings, Clock, Palette, MapPin, UserCheck, Building2, Plus, ArrowRight, Edit, GripVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DashboardCustomization } from "./DashboardCustomization";
 import { ThemeToggle } from "./ThemeToggle";
-import { QuickActions } from "./QuickActions";
+import { EditableQuickActions } from "./EditableQuickActions";
 import { MapView } from "./MapView";
 import { JobLocationsList } from "./JobLocationsList";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface DashboardWidget {
   id: string;
@@ -95,9 +96,10 @@ export const Dashboard = () => {
   const [showTimezoneDialog, setShowTimezoneDialog] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   const [tempTimezone, setTempTimezone] = useState(timezone);
+  const [isEditingDashboard, setIsEditingDashboard] = useState(false);
 
   const [widgets, setWidgets] = useState<DashboardWidget[]>([
-    { id: 'stats', title: 'Statistics Cards', enabled: true, order: 0 },
+    { id: 'stats', title: 'Key Statistics', enabled: true, order: 0 },
     { id: 'calendar', title: 'Calendar & Appointments', enabled: true, order: 1 },
     { id: 'customer-management', title: 'Customer Management', enabled: true, order: 2 },
     { id: 'recent-jobs', title: 'Recent Jobs & Locations', enabled: true, order: 3 },
@@ -150,6 +152,27 @@ export const Dashboard = () => {
     });
   };
 
+  const handleDragEnd = (result: any) => {
+    if (!result.destination || result.source.droppableId !== 'dashboard-widgets') return;
+
+    const items = Array.from(widgets);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    const updatedItems = items.map((item, index) => ({
+      ...item,
+      order: index
+    }));
+
+    setWidgets(updatedItems);
+  };
+
+  const toggleWidget = (id: string) => {
+    setWidgets(widgets.map(widget => 
+      widget.id === id ? { ...widget, enabled: !widget.enabled } : widget
+    ));
+  };
+
   const getWidget = (id: string) => {
     switch (id) {
       case 'stats':
@@ -166,7 +189,7 @@ export const Dashboard = () => {
                   'from-purple-500 to-pink-500',
                   'from-blue-500 to-cyan-500', 
                   'from-green-500 to-emerald-500',
-                  'from-orange-500 to-red-500'
+                  'from-indigo-500 to-purple-500'
                 ];
                 return (
                   <Card key={index} className="relative overflow-hidden border-0 shadow-lg">
@@ -271,17 +294,17 @@ export const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">156</div>
-                    <div className="text-sm text-blue-700">Total Customers</div>
+                  <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">156</div>
+                    <div className="text-sm text-blue-700 dark:text-blue-300">Total Customers</div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">23</div>
-                    <div className="text-sm text-green-700">New This Month</div>
+                  <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">23</div>
+                    <div className="text-sm text-green-700 dark:text-green-300">New This Month</div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">12</div>
-                    <div className="text-sm text-purple-700">Pending Follow-up</div>
+                  <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">12</div>
+                    <div className="text-sm text-purple-700 dark:text-purple-300">Pending Follow-up</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -319,10 +342,10 @@ export const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {recentJobs.map((job, index) => {
+                    {recentJobs.map((job) => {
                       const statusColors = {
                         'scheduled': 'from-blue-500 to-indigo-500',
-                        'in-progress': 'from-orange-500 to-red-500',
+                        'in-progress': 'from-indigo-500 to-purple-500',
                         'completed': 'from-green-500 to-emerald-500'
                       };
                       return (
@@ -375,7 +398,7 @@ export const Dashboard = () => {
                     <span>Employees</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
                     <span>Active</span>
                   </div>
                 </div>
@@ -412,45 +435,7 @@ export const Dashboard = () => {
         );
       
       case 'quick-actions':
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label className="text-lg font-semibold">Quick Actions</Label>
-              <Badge variant="outline">Shortcuts</Badge>
-            </div>
-            <Card className="shadow-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ArrowRight className="h-5 w-5 text-blue-500" />
-                  Quick Actions
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {[
-                    { text: 'Schedule New Job', icon: Calendar, gradient: 'from-purple-500 to-pink-500' },
-                    { text: 'Add New Customer', icon: Users, gradient: 'from-blue-500 to-cyan-500' },
-                    { text: 'Create Estimate', icon: DollarSign, gradient: 'from-green-500 to-emerald-500' },
-                    { text: 'Upload Photos', icon: UserCheck, gradient: 'from-orange-500 to-red-500' },
-                    { text: 'Track Time', icon: Clock, gradient: 'from-indigo-500 to-purple-500' },
-                    { text: 'View Reports', icon: Wrench, gradient: 'from-teal-500 to-blue-500' }
-                  ].map((action, index) => {
-                    const Icon = action.icon;
-                    return (
-                      <button 
-                        key={index}
-                        className={`p-4 text-left rounded-lg bg-gradient-to-r ${action.gradient} text-white font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3`}
-                      >
-                        <Icon className="h-5 w-5" />
-                        <span className="text-sm">{action.text}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
+        return <EditableQuickActions />;
       
       default:
         return null;
@@ -514,6 +499,14 @@ export const Dashboard = () => {
             <ThemeToggle />
             <Button 
               variant="outline" 
+              onClick={() => setIsEditingDashboard(!isEditingDashboard)}
+              className="flex items-center gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              {isEditingDashboard ? 'Done Editing' : 'Edit Dashboard'}
+            </Button>
+            <Button 
+              variant="outline" 
               onClick={() => setShowCustomization(true)}
               className="flex items-center gap-2"
             >
@@ -523,13 +516,70 @@ export const Dashboard = () => {
           </div>
         </div>
         
-        <div className="space-y-6">
-          {enabledWidgets.map((widget) => (
-            <div key={widget.id}>
-              {getWidget(widget.id)}
-            </div>
-          ))}
-        </div>
+        {isEditingDashboard ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="dashboard-widgets">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-6">
+                  {widgets.map((widget, index) => (
+                    <Draggable 
+                      key={widget.id} 
+                      draggableId={widget.id} 
+                      index={index}
+                      isDragDisabled={widget.id === 'stats'}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`border-2 border-dashed rounded-lg p-4 ${
+                            snapshot.isDragging ? 'border-primary bg-muted' : 'border-muted'
+                          } ${widget.id === 'stats' ? 'opacity-50' : ''}`}
+                        >
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                              {widget.id !== 'stats' && (
+                                <div {...provided.dragHandleProps}>
+                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                              )}
+                              <span className="font-medium">{widget.title}</span>
+                              {widget.id === 'stats' && (
+                                <Badge variant="secondary">Static</Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={widget.enabled}
+                                onChange={() => toggleWidget(widget.id)}
+                                className="rounded"
+                                disabled={widget.id === 'stats'}
+                              />
+                              <span className="text-sm text-muted-foreground">
+                                {widget.enabled ? 'Visible' : 'Hidden'}
+                              </span>
+                            </div>
+                          </div>
+                          {widget.enabled && getWidget(widget.id)}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          <div className="space-y-6">
+            {enabledWidgets.map((widget) => (
+              <div key={widget.id}>
+                {getWidget(widget.id)}
+              </div>
+            ))}
+          </div>
+        )}
 
         {showTimezoneDialog && (
           <Dialog open={true} onOpenChange={setShowTimezoneDialog}>
