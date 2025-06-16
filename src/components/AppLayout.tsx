@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Receipt, UserCog } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,7 +40,6 @@ interface SidebarSection {
 }
 
 const sections: SidebarSection[] = [
-  { id: 'home', label: 'Home', icon: Home },
   { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'customers', label: 'Customers', icon: Users },
@@ -260,13 +260,13 @@ export const AppLayout = () => {
     }
   };
 
-  const sidebarWidth = sidebarCollapsed ? 80 : 320;
+  const sidebarWidth = sidebarCollapsed ? 64 : 256;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AppHeader />
+      <AppHeader onSectionChange={setActiveSection} />
       
-      <div className="flex flex-1 pt-16">
+      <div className="flex flex-1">
         <MegaMenuSidebar
           activeSection={activeSection}
           onSectionChange={setActiveSection}
@@ -276,7 +276,10 @@ export const AppLayout = () => {
           onToggleCollapse={handleSidebarToggle}
         />
 
-        <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
+        <main 
+          className="flex-1 transition-all duration-300 pt-16" 
+          style={{ marginLeft: `${sidebarWidth}px` }}
+        >
           {renderSection()}
         </main>
       </div>

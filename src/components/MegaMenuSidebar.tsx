@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { LucideIcon, Building2, ChevronDown, ChevronRight, Menu, X, Zap } from "lucide-react";
 
 interface SidebarSection {
   id: string;
@@ -42,7 +42,7 @@ export const MegaMenuSidebar = ({
   onToggleCollapse
 }: MegaMenuSidebarProps) => {
   const [companyData, setCompanyData] = useState<CompanyData>({
-    name: 'Construction CRM',
+    name: 'JobBlox',
     logo: null
   });
   const [openGroups, setOpenGroups] = useState<string[]>([]);
@@ -52,7 +52,7 @@ export const MegaMenuSidebar = ({
     if (savedCompanyData) {
       const data = JSON.parse(savedCompanyData);
       setCompanyData({
-        name: data.name || 'Construction CRM',
+        name: data.name || 'JobBlox',
         logo: data.logo || null
       });
     }
@@ -60,12 +60,6 @@ export const MegaMenuSidebar = ({
 
   // Group sections into logical categories
   const menuGroups: SidebarGroup[] = [
-    {
-      label: 'Dashboard',
-      icon: Building2,
-      defaultOpen: true,
-      items: sections.filter(s => s.id === 'dashboard')
-    },
     {
       label: 'Customer Management',
       icon: sections.find(s => s.id === 'customers')?.icon || Building2,
@@ -127,7 +121,7 @@ export const MegaMenuSidebar = ({
       icon: sections.find(s => s.id === 'settings')?.icon || Building2,
       defaultOpen: false,
       items: sections.filter(s => 
-        ['company-settings', 'settings', 'mobile-settings', 'branch-management'].includes(s.id)
+        ['company-settings', 'back-office', 'mobile-settings', 'branch-management'].includes(s.id)
       )
     }
   ];
@@ -164,37 +158,47 @@ export const MegaMenuSidebar = ({
 
   return (
     <div className={cn(
-      "fixed left-0 top-0 h-full bg-card border-r border-border z-40 flex flex-col transition-all duration-300",
-      collapsed ? "w-20" : "w-80"
+      "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-slate-900 border-r border-slate-700 z-40 flex flex-col transition-all duration-300",
+      collapsed ? "w-16" : "w-64"
     )}>
       {/* Header */}
-      <div className="p-6 border-b border-border flex items-center justify-between">
+      <div className="p-4 border-b border-slate-700 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {companyData.logo ? (
-            <img 
-              src={companyData.logo} 
-              alt="Company Logo" 
-              className="h-8 w-8 object-contain"
-            />
-          ) : (
-            <Building2 className="h-8 w-8 text-primary" />
-          )}
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+            <Zap className="h-5 w-5 text-white" />
+          </div>
           {!collapsed && (
-            <h1 className="text-xl font-bold text-primary">{companyData.name}</h1>
+            <h1 className="text-lg font-bold text-white">{companyData.name}</h1>
           )}
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={handleToggleCollapse}
-          className="h-8 w-8"
+          className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800"
         >
-          {collapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </Button>
+      </div>
+
+      {/* Home Button */}
+      <div className="p-2">
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-start gap-3 text-slate-300 hover:text-white hover:bg-slate-800",
+            activeSection === 'home' && "bg-blue-600 text-white hover:bg-blue-700",
+            collapsed && "justify-center px-2"
+          )}
+          onClick={() => onSectionChange('home')}
+        >
+          <Building2 className="h-5 w-5" />
+          {!collapsed && <span>Home</span>}
         </Button>
       </div>
       
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-4 py-2">
+      <ScrollArea className="flex-1 px-2">
         <div className="space-y-2">
           {menuGroups.map((group) => {
             if (group.items.length === 0) return null;
@@ -216,7 +220,7 @@ export const MegaMenuSidebar = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 bg-primary text-primary-foreground"
+                    className="h-10 w-10 bg-blue-600 text-white hover:bg-blue-700"
                     title={activeItem.label}
                   >
                     <ActiveIcon className="h-5 w-5" />
@@ -230,7 +234,7 @@ export const MegaMenuSidebar = ({
                 <CollapsibleTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="w-full justify-between p-3 h-auto font-medium text-left hover:bg-accent"
+                    className="w-full justify-between p-3 h-auto font-medium text-left text-slate-300 hover:text-white hover:bg-slate-800"
                   >
                     <div className="flex items-center gap-3">
                       <GroupIcon className="h-4 w-4" />
@@ -252,10 +256,10 @@ export const MegaMenuSidebar = ({
                     return (
                       <Button
                         key={section.id}
-                        variant={isActive ? "default" : "ghost"}
+                        variant="ghost"
                         className={cn(
-                          "w-full justify-start gap-3 text-sm h-9",
-                          isActive && "bg-primary text-primary-foreground"
+                          "w-full justify-start gap-3 text-sm h-9 text-slate-400 hover:text-white hover:bg-slate-800",
+                          isActive && "bg-blue-600 text-white hover:bg-blue-700"
                         )}
                         onClick={() => {
                           console.log('MegaMenuSidebar: Section clicked:', section.id);

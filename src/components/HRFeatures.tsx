@@ -1,268 +1,166 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { UserCog, Users, Calendar, FileText, DollarSign, Clock, Award, AlertTriangle } from "lucide-react";
-
-interface Employee {
-  id: string;
-  name: string;
-  position: string;
-  department: string;
-  salary: number;
-  hireDate: string;
-  email: string;
-  phone: string;
-  status: 'active' | 'inactive' | 'on-leave';
-}
+import { Button } from "@/components/ui/button";
+import { Users, Clock, Calendar, TrendingUp, UserCheck, Award, FileText, DollarSign } from "lucide-react";
 
 export const HRFeatures = () => {
-  const [employees] = useState<Employee[]>([
-    {
-      id: '1',
-      name: 'John Smith',
-      position: 'Project Manager',
-      department: 'Operations',
-      salary: 75000,
-      hireDate: '2023-01-15',
-      email: 'john.smith@company.com',
-      phone: '(555) 123-4567',
-      status: 'active'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      position: 'Site Supervisor',
-      department: 'Field Operations',
-      salary: 65000,
-      hireDate: '2022-08-20',
-      email: 'sarah.johnson@company.com',
-      phone: '(555) 234-5678',
-      status: 'active'
-    },
-    {
-      id: '3',
-      name: 'Mike Wilson',
-      position: 'Equipment Operator',
-      department: 'Field Operations',
-      salary: 45000,
-      hireDate: '2023-03-10',
-      email: 'mike.wilson@company.com',
-      phone: '(555) 345-6789',
-      status: 'on-leave'
-    }
-  ]);
-
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      active: { color: 'bg-green-100 text-green-800', label: 'Active' },
-      inactive: { color: 'bg-red-100 text-red-800', label: 'Inactive' },
-      'on-leave': { color: 'bg-yellow-100 text-yellow-800', label: 'On Leave' }
-    };
-    
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return (
-      <Badge className={config.color}>
-        {config.label}
-      </Badge>
-    );
-  };
-
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">HR Features</h1>
-          <p className="text-muted-foreground">Manage employee records, payroll, and HR processes</p>
-        </div>
-        <Button>
-          <UserCog className="mr-2 h-4 w-4" />
-          Add Employee
-        </Button>
+      <div>
+        <h2 className="text-3xl font-bold mb-2">HR Features</h2>
+        <p className="text-muted-foreground">Manage your workforce with comprehensive HR tools</p>
       </div>
 
-      <Tabs defaultValue="employees" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="employees">Employee Directory</TabsTrigger>
-          <TabsTrigger value="payroll">Payroll</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="benefits">Benefits</TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Employee Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Employee Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Complete employee profiles, contact information, and role management
+            </p>
+            <Button className="w-full">Manage Employees</Button>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="employees" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Employee Directory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {employees.map((employee) => (
-                  <div key={employee.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
-                        {employee.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{employee.name}</h3>
-                        <p className="text-sm text-muted-foreground">{employee.position}</p>
-                        <p className="text-sm text-muted-foreground">{employee.department}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      {getStatusBadge(employee.status)}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" onClick={() => setSelectedEmployee(employee)}>
-                            View Profile
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-2xl">
-                          <DialogHeader>
-                            <DialogTitle>Employee Profile</DialogTitle>
-                          </DialogHeader>
-                          {selectedEmployee && (
-                            <div className="space-y-6">
-                              <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                  <Label>Full Name</Label>
-                                  <Input value={selectedEmployee.name} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Position</Label>
-                                  <Input value={selectedEmployee.position} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Department</Label>
-                                  <Input value={selectedEmployee.department} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Email</Label>
-                                  <Input value={selectedEmployee.email} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Phone</Label>
-                                  <Input value={selectedEmployee.phone} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Hire Date</Label>
-                                  <Input value={selectedEmployee.hireDate} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Salary</Label>
-                                  <Input value={`$${selectedEmployee.salary.toLocaleString()}`} readOnly />
-                                </div>
-                                <div>
-                                  <Label>Status</Label>
-                                  <div className="pt-2">
-                                    {getStatusBadge(selectedEmployee.status)}
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex gap-2 pt-4">
-                                <Button>Edit Profile</Button>
-                                <Button variant="outline">View Documents</Button>
-                                <Button variant="outline">Performance History</Button>
-                              </div>
-                            </div>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                    </div>
-                  </div>
-                ))}
+        {/* Time & Attendance */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Time & Attendance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Track work hours, breaks, overtime, and attendance patterns
+            </p>
+            <Button className="w-full">View Timesheets</Button>
+          </CardContent>
+        </Card>
+
+        {/* Leave Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Leave Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Handle vacation requests, sick leave, and time-off approvals
+            </p>
+            <Button className="w-full">Manage Leave</Button>
+          </CardContent>
+        </Card>
+
+        {/* Performance Tracking */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Performance Tracking
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Monitor employee performance, goals, and review cycles
+            </p>
+            <Button className="w-full">View Performance</Button>
+          </CardContent>
+        </Card>
+
+        {/* Certification Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5" />
+              Certifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Track licenses, certifications, and training requirements
+            </p>
+            <Button className="w-full">Manage Certs</Button>
+          </CardContent>
+        </Card>
+
+        {/* Payroll Integration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Payroll Integration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Connect with payroll systems for seamless wage calculation
+            </p>
+            <Button className="w-full">Setup Payroll</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Employees</p>
+                <p className="text-2xl font-bold">24</p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <Users className="h-8 w-8 text-blue-500" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="payroll" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Payroll</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$185,000</div>
-                <p className="text-xs text-muted-foreground">Monthly total</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Employees</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">24</div>
-                <p className="text-xs text-muted-foreground">Full-time staff</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Overtime Hours</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">156</div>
-                <p className="text-xs text-muted-foreground">This month</p>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Active Today</p>
+                <p className="text-2xl font-bold">18</p>
+              </div>
+              <UserCheck className="h-8 w-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="attendance" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Attendance Tracking
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Attendance tracking system will be implemented here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Pending Leave</p>
+                <p className="text-2xl font-bold">3</p>
+              </div>
+              <Calendar className="h-8 w-8 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
 
-        <TabsContent value="performance" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="h-5 w-5" />
-                Performance Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Performance review and evaluation system will be implemented here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="benefits" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Benefits Administration
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Employee benefits management system will be implemented here.</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Cert Expiring</p>
+                <p className="text-2xl font-bold">2</p>
+              </div>
+              <Award className="h-8 w-8 text-red-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

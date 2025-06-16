@@ -5,12 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Search, Bell, Settings, User, LogOut, Building2, Zap } from "lucide-react";
+import { Search, Bell, Settings, User, LogOut, Building2, Zap, Map } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
-export const AppHeader = () => {
+interface AppHeaderProps {
+  onSectionChange?: (section: string) => void;
+}
+
+export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
   const [searchValue, setSearchValue] = useState('');
   const [notifications] = useState(3);
+
+  const handleNotificationClick = () => {
+    if (onSectionChange) {
+      onSectionChange('notifications');
+    }
+  };
+
+  const handleMapClick = () => {
+    if (onSectionChange) {
+      onSectionChange('map-view');
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 z-50">
@@ -45,30 +61,31 @@ export const AppHeader = () => {
 
         {/* Right side - User info and actions */}
         <div className="flex items-center gap-3">
-          {/* Energy/Credits */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-full border border-yellow-500/20">
-            <Zap className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-            <span className="text-sm font-medium">1,247</span>
-          </div>
-
-          {/* Score/Points */}
-          <div className="hidden sm:flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-xs text-white font-bold">★</span>
-            </div>
-            <span className="text-sm font-medium">113.6K</span>
-          </div>
-
           <ThemeToggle />
 
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
+          {/* Notifications Bell */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative"
+            onClick={handleNotificationClick}
+          >
             <Bell className="h-5 w-5" />
             {notifications > 0 && (
               <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-xs bg-red-500 hover:bg-red-500">
                 {notifications}
               </Badge>
             )}
+          </Button>
+
+          {/* Maps Button */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={handleMapClick}
+            className="relative"
+          >
+            <Map className="h-5 w-5" />
           </Button>
 
           {/* User Profile Dropdown */}
