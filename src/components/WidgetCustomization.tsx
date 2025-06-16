@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +18,7 @@ interface WidgetConfig {
   refreshInterval: number;
   style: 'default' | 'gradient' | 'minimal' | 'bordered';
   color: string;
+  type: 'stats' | 'activity' | 'actions' | 'jobs' | 'chart';
 }
 
 interface WidgetCustomizationProps {
@@ -37,7 +37,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'large',
       refreshInterval: 30,
       style: 'gradient',
-      color: 'blue'
+      color: 'blue',
+      type: 'stats'
     },
     {
       id: '2',
@@ -47,7 +48,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'full-width',
       refreshInterval: 60,
       style: 'default',
-      color: 'green'
+      color: 'green',
+      type: 'jobs'
     },
     {
       id: '3',
@@ -57,7 +59,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'medium',
       refreshInterval: 120,
       style: 'bordered',
-      color: 'purple'
+      color: 'purple',
+      type: 'actions'
     },
     {
       id: '4',
@@ -67,7 +70,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'large',
       refreshInterval: 180,
       style: 'minimal',
-      color: 'orange'
+      color: 'orange',
+      type: 'chart'
     },
     {
       id: '5',
@@ -77,7 +81,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'medium',
       refreshInterval: 45,
       style: 'gradient',
-      color: 'red'
+      color: 'red',
+      type: 'activity'
     },
     {
       id: '6',
@@ -87,7 +92,8 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'small',
       refreshInterval: 90,
       style: 'default',
-      color: 'pink'
+      color: 'pink',
+      type: 'chart'
     }
   ];
 
