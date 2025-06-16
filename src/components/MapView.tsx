@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -15,7 +14,7 @@ interface Job {
   customer: string;
   address: string;
   coordinates: [number, number];
-  status: 'scheduled' | 'in-progress' | 'completed';
+  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
   type: 'job' | 'appointment';
   time: string;
   assignedTo?: string;
@@ -61,6 +60,8 @@ export const MapView: React.FC<MapViewProps> = ({
           return '#EC4899';
         case 'completed':
           return '#059669';
+        case 'cancelled':
+          return '#6b7280';
         default:
           return '#6b7280';
       }
@@ -72,6 +73,8 @@ export const MapView: React.FC<MapViewProps> = ({
           return theme === 'dark' ? '#fb923c' : '#f97316';
         case 'completed':
           return theme === 'dark' ? '#34d399' : '#10b981';
+        case 'cancelled':
+          return theme === 'dark' ? '#9ca3af' : '#6b7280';
         default:
           return theme === 'dark' ? '#9ca3af' : '#6b7280';
       }
@@ -220,6 +223,11 @@ export const MapView: React.FC<MapViewProps> = ({
       markerEl.style.boxShadow = theme === 'dark' ? '0 1px 3px rgba(0,0,0,0.5)' : '0 1px 3px rgba(0,0,0,0.3)';
       markerEl.style.cursor = 'pointer';
 
+      // Add opacity for cancelled jobs
+      if (job.status === 'cancelled') {
+        markerEl.style.opacity = '0.6';
+      }
+
       if (job.type === 'appointment') {
         markerEl.style.clipPath = 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)';
       }
@@ -341,6 +349,7 @@ export const MapView: React.FC<MapViewProps> = ({
               <Badge variant="outline" className="text-xs">Scheduled</Badge>
               <Badge variant="outline" className="text-xs">In Progress</Badge>
               <Badge variant="outline" className="text-xs">Completed</Badge>
+              <Badge variant="outline" className="text-xs">Cancelled</Badge>
             </div>
           </div>
         </CardHeader>
