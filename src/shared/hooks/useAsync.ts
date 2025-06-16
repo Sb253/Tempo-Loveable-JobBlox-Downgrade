@@ -11,7 +11,7 @@ export interface UseAsyncOptions {
   immediate?: boolean;
 }
 
-export function useAsync<T, Args extends any[]>(
+export function useAsync<T, Args extends any[] = []>(
   asyncFunction: (...args: Args) => Promise<T>,
   options: UseAsyncOptions = {}
 ) {
@@ -44,7 +44,8 @@ export function useAsync<T, Args extends any[]>(
 
   useEffect(() => {
     if (options.immediate) {
-      execute();
+      // Only execute immediately if the function doesn't require arguments
+      execute([] as any as Args);
     }
   }, [execute, options.immediate]);
 
