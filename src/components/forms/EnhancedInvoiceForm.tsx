@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -157,12 +156,32 @@ export const EnhancedInvoiceForm = ({ invoice, onSave, onCancel }: EnhancedInvoi
     }));
   };
 
-  const updateLineItem = (index: number, field: string, value: any) => {
+  const updateLineItem = (index: number, field: keyof InvoiceLineItem, value: string | number | boolean) => {
     setFormData(prev => {
       const lineItems = [...(prev.lineItems || [])];
       const item = { ...lineItems[index] };
       
-      item[field as keyof InvoiceLineItem] = value;
+      // Type-safe assignment based on field type
+      switch (field) {
+        case 'description':
+          item.description = value as string;
+          break;
+        case 'quantity':
+          item.quantity = value as number;
+          break;
+        case 'rate':
+          item.rate = value as number;
+          break;
+        case 'amount':
+          item.amount = value as number;
+          break;
+        case 'taxable':
+          item.taxable = value as boolean;
+          break;
+        case 'id':
+          item.id = value as string;
+          break;
+      }
       
       // Recalculate amount when quantity or rate changes
       if (field === 'quantity' || field === 'rate') {
