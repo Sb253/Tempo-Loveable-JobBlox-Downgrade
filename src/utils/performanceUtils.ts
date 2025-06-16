@@ -1,5 +1,5 @@
 
-import { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Performance monitoring utility
 export const usePerformanceMonitor = (componentName: string) => {
@@ -63,8 +63,3 @@ export const logBundleMetrics = () => {
     });
   }
 };
-
-// Add missing useState import
-import { useState, useEffect as useEffectImport } from 'react';
-const useEffect = useEffectImport;
-const useState = require('react').useState;

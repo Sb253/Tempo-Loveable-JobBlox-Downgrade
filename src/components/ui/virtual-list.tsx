@@ -11,7 +11,7 @@ interface VirtualListProps<T> {
   overscan?: number;
 }
 
-export const VirtualList = memo(<T,>({
+const VirtualListComponent = <T,>({
   items,
   itemHeight,
   containerHeight,
@@ -77,6 +77,6 @@ export const VirtualList = memo(<T,>({
       </div>
     </div>
   );
-}) as <T>(props: VirtualListProps<T>) => JSX.Element;
+};
 
-VirtualList.displayName = 'VirtualList';
+export const VirtualList = memo(VirtualListComponent) as <T>(props: VirtualListProps<T>) => JSX.Element;
