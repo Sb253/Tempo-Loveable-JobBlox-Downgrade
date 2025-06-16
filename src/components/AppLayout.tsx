@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { LucideIcon, Building, Users, FileText, Calendar, Settings, DollarSign, TrendingUp, Wrench, Map, CreditCard, Clock, Database, Bell, Palette, BarChart3, UserPlus, PieChart, Activity, Package, Truck, FileImage, MessageSquare, Star, AlertTriangle, CheckCircle, Target, Briefcase, Home, UserCheck, Hammer, Calculator, Receipt, UserCog } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AppHeader } from "./AppHeader";
 import { Dashboard } from "./Dashboard";
 import { CompanySettings } from "./CompanySettings";
 import { TeamManagement } from "./TeamManagement";
@@ -30,6 +30,7 @@ import { CustomerRegistrationForm } from "./CustomerRegistrationForm";
 import { HRFeatures } from "./HRFeatures";
 import { MaterialsAndServices } from "./MaterialsAndServices";
 import { TaxAndFinancialSection } from "./TaxAndFinancialSection";
+import { BackOfficeSettings } from "./BackOfficeSettings";
 
 interface SidebarSection {
   id: string;
@@ -38,7 +39,7 @@ interface SidebarSection {
 }
 
 const sections: SidebarSection[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: Home },
+  { id: 'home', label: 'Home', icon: Home },
   { id: 'client-appointment', label: 'Client Appointment', icon: Calendar },
   { id: 'pipeline', label: 'Pipeline', icon: TrendingUp },
   { id: 'customers', label: 'Customers', icon: Users },
@@ -70,7 +71,7 @@ const sections: SidebarSection[] = [
   { id: 'mobile-settings', label: 'Mobile App', icon: Activity },
   { id: 'company-settings', label: 'Company Settings', icon: Building },
   { id: 'branch-management', label: 'Branch Management', icon: Building },
-  { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'back-office', label: 'Back Office Settings', icon: Settings },
   { id: 'team-chat', label: 'Team Chat', icon: MessageSquare },
   { id: 'advanced-inventory', label: 'Advanced Inventory', icon: Package },
   { id: 'financial-analytics', label: 'Financial Analytics', icon: TrendingUp },
@@ -129,7 +130,7 @@ const jobsAndAppointments = [
 ];
 
 export const AppLayout = () => {
-  const [activeSection, setActiveSection] = useState('client-appointment');
+  const [activeSection, setActiveSection] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
@@ -146,7 +147,7 @@ export const AppLayout = () => {
 
   const renderSection = () => {
     switch (activeSection) {
-      case 'dashboard':
+      case 'home':
         return <Dashboard />;
       case 'client-appointment':
         return <ClientAppointment />;
@@ -212,8 +213,8 @@ export const AppLayout = () => {
         return <HRFeatures />;
       case 'subcontractor-management':
         return <SubcontractorManagement />;
-      case 'settings':
-        return <SettingsView />;
+      case 'back-office':
+        return <BackOfficeSettings />;
       case 'team-chat':
         return <RealTimeChat />;
       case 'advanced-inventory':
@@ -262,19 +263,23 @@ export const AppLayout = () => {
   const sidebarWidth = sidebarCollapsed ? 80 : 320;
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <MegaMenuSidebar
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-        sections={sections}
-        isVisible={true}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={handleSidebarToggle}
-      />
+    <div className="min-h-screen bg-background flex flex-col">
+      <AppHeader />
+      
+      <div className="flex flex-1 pt-16">
+        <MegaMenuSidebar
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+          sections={sections}
+          isVisible={true}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={handleSidebarToggle}
+        />
 
-      <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
-        {renderSection()}
-      </main>
+        <main className="flex-1 transition-all duration-300" style={{ marginLeft: `${sidebarWidth}px` }}>
+          {renderSection()}
+        </main>
+      </div>
     </div>
   );
 };
