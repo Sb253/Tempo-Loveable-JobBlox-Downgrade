@@ -33,7 +33,6 @@ interface SidebarSection {
   id: string;
   label: string;
   icon: LucideIcon;
-  category: string;
 }
 
 interface CollapsedSidebarProps {
@@ -67,6 +66,15 @@ const getCategoryIcon = (category: string): LucideIcon => {
   }
 };
 
+const getCategoryForSection = (sectionId: string): string | null => {
+  for (const [category, sectionIds] of Object.entries(sectionCategories)) {
+    if (sectionIds.includes(sectionId)) {
+      return category;
+    }
+  }
+  return null;
+};
+
 export const CollapsedSidebar = ({ activeSection, onSectionChange, sections }: CollapsedSidebarProps) => {
   const companySettings = useCompanySettings();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
@@ -79,16 +87,7 @@ export const CollapsedSidebar = ({ activeSection, onSectionChange, sections }: C
     return acc;
   }, {} as Record<string, SidebarSection[]>);
 
-  const getActiveCategoryForSection = (sectionId: string): string | null => {
-    for (const [category, sectionIds] of Object.entries(sectionCategories)) {
-      if (sectionIds.includes(sectionId)) {
-        return category;
-      }
-    }
-    return null;
-  };
-
-  const activeCategory = getActiveCategoryForSection(activeSection);
+  const activeCategory = getCategoryForSection(activeSection);
 
   return (
     <div className="fixed left-0 top-0 h-full w-16 bg-card border-r border-border/40 z-40 flex flex-col">
