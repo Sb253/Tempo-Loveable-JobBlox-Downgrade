@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,10 +14,35 @@ interface AppHeaderProps {
   onSectionChange?: (section: string) => void;
 }
 
+interface CompanyData {
+  companyName?: string;
+  name?: string;
+  logo?: string;
+}
+
 export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
   const [searchValue, setSearchValue] = useState('');
   const [notifications] = useState(3);
   const [showMeetings, setShowMeetings] = useState(false);
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    companyName: 'JobBlox',
+    logo: undefined
+  });
+
+  useEffect(() => {
+    const savedCompanyData = localStorage.getItem('companySettings');
+    if (savedCompanyData) {
+      try {
+        const data = JSON.parse(savedCompanyData);
+        setCompanyData({
+          companyName: data.companyName || data.name || 'JobBlox',
+          logo: data.logo
+        });
+      } catch (error) {
+        console.error('Error parsing company settings:', error);
+      }
+    }
+  }, []);
 
   const handleNotificationClick = () => {
     if (onSectionChange) {
@@ -31,6 +56,12 @@ export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
     }
   };
 
+  const handleCompanySettingsClick = () => {
+    if (onSectionChange) {
+      onSectionChange('company-settings');
+    }
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 z-50">
@@ -39,11 +70,19 @@ export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Zap className="h-5 w-5 text-white" />
+                {companyData.logo ? (
+                  <img 
+                    src={companyData.logo} 
+                    alt="Company Logo" 
+                    className="w-6 h-6 object-contain"
+                  />
+                ) : (
+                  <Zap className="h-5 w-5 text-white" />
+                )}
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  JobBlox
+                  {companyData.companyName}
                 </h1>
               </div>
             </div>
@@ -122,7 +161,7 @@ export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
                   <User className="mr-2 h-4 w-4" />
                   Profile Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleCompanySettingsClick}>
                   <Building2 className="mr-2 h-4 w-4" />
                   Company Settings
                 </DropdownMenuItem>
