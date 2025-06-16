@@ -1,4 +1,3 @@
-
 import { Dashboard } from "../Dashboard";
 import { CustomerList } from "../CustomerList";
 import { JobList } from "../JobList";
@@ -44,11 +43,31 @@ import { KPIDashboard } from "../KPIDashboard";
 import { AdvancedAnalytics } from "../AdvancedAnalytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Construction, AlertCircle } from "lucide-react";
-import { demoDataService } from "../../services/demoDataService";
+import { demoDataService, DemoJob } from "../../services/demoDataService";
 
 interface SectionRendererProps {
   activeSection: string;
 }
+
+// Transform DemoJob to Job interface for MapView component
+const transformDemoJobsToMapJobs = (demoJobs: DemoJob[]) => {
+  return demoJobs.map(job => ({
+    id: job.id,
+    title: job.title,
+    customer: job.customerName, // Map customerName to customer
+    address: job.location, // Map location to address
+    coordinates: job.coordinates,
+    status: job.status,
+    type: 'job' as const, // All demo jobs are of type 'job'
+    time: new Date(job.startDate).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    })
+  }));
+};
 
 // Component for sections that are under development
 const UnderDevelopment = ({ sectionName }: { sectionName: string }) => (
@@ -90,8 +109,9 @@ const SectionNotFound = ({ sectionName }: { sectionName: string }) => (
 export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
   console.log('SectionRenderer: Rendering section:', activeSection);
 
-  // Get demo jobs data for map view
+  // Get demo jobs data and transform for map view
   const demoJobs = demoDataService.getJobs();
+  const transformedJobs = transformDemoJobsToMapJobs(demoJobs);
 
   // Map of all available sections to their components
   const sectionComponents: Record<string, JSX.Element> = {
@@ -149,7 +169,7 @@ export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
     // Reports & Analytics
     'reports': <ReportsView />,
     'analytics': <AdvancedAnalytics />,
-    'map-view': <MapView jobs={demoJobs} />,
+    'map-view': <MapView jobs={transformedJobs} />,
     'advanced-reporting': <AdvancedReporting />,
     
     // Communication
