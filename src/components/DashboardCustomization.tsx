@@ -20,7 +20,6 @@ interface DashboardWidget {
   refreshInterval?: number;
   style?: 'default' | 'gradient' | 'minimal' | 'bordered';
   color?: string;
-  type?: 'stats' | 'activity' | 'actions' | 'jobs' | 'chart';
 }
 
 interface DashboardTheme {
@@ -106,14 +105,13 @@ export const DashboardCustomization = ({
 }: DashboardCustomizationProps) => {
   const [localTheme, setLocalTheme] = useState<DashboardTheme>(theme);
 
-  // Convert widgets to the new format with defaults including type
-  const enhancedWidgets = widgets.map((widget, index) => ({
+  // Convert widgets to the new format with defaults
+  const enhancedWidgets = widgets.map(widget => ({
     ...widget,
     size: widget.size || 'medium' as const,
     refreshInterval: widget.refreshInterval || 30,
-    style: widget.style || 'gradient' as const,
-    color: widget.color || 'blue',
-    type: widget.type || (['stats', 'activity', 'actions', 'jobs', 'chart'][index % 5] as 'stats' | 'activity' | 'actions' | 'jobs' | 'chart')
+    style: widget.style || 'default' as const,
+    color: widget.color || 'blue'
   }));
 
   const handleSave = () => {
@@ -131,9 +129,8 @@ export const DashboardCustomization = ({
       order: index,
       size: 'medium' as const,
       refreshInterval: 30,
-      style: 'gradient' as const,
-      color: 'blue',
-      type: (['stats', 'activity', 'actions', 'jobs', 'chart'][index % 5] as 'stats' | 'activity' | 'actions' | 'jobs' | 'chart')
+      style: 'default' as const,
+      color: 'blue'
     }));
     onWidgetsChange(defaultWidgets);
     setLocalTheme(availableThemes[0]);

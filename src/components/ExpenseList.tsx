@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Calendar, DollarSign, FileText } from "lucide-react";
+import { Search, Plus, FileText, DollarSign, Calendar } from "lucide-react";
 import { ExpenseForm } from "./ExpenseForm";
 
 interface Expense {
@@ -15,38 +15,40 @@ interface Expense {
   category: string;
   date: string;
   vendor: string;
-  jobId?: string;
-  status: 'pending' | 'approved' | 'reimbursed';
+  jobReference: string;
+  status: 'pending' | 'approved' | 'paid';
 }
 
 const mockExpenses: Expense[] = [
   {
     id: '1',
-    description: 'Lumber for kitchen project',
-    amount: 450.00,
-    category: 'materials',
+    description: 'Lumber and Building Materials',
+    amount: 2450.75,
+    category: 'Materials',
     date: '2024-12-15',
     vendor: 'Home Depot',
-    jobId: 'kitchen-001',
-    status: 'approved'
+    jobReference: 'Kitchen Renovation',
+    status: 'paid'
   },
   {
     id: '2',
-    description: 'Fuel for work truck',
-    amount: 85.50,
-    category: 'transportation',
+    description: 'Plumbing Fixtures',
+    amount: 890.00,
+    category: 'Materials',
     date: '2024-12-14',
-    vendor: 'Shell Gas Station',
-    status: 'pending'
+    vendor: 'Plumbing Supply Co.',
+    jobReference: 'Bathroom Remodel',
+    status: 'approved'
   },
   {
     id: '3',
-    description: 'Safety equipment',
-    amount: 120.00,
-    category: 'equipment',
+    description: 'Equipment Rental - Excavator',
+    amount: 450.00,
+    category: 'Equipment',
     date: '2024-12-13',
-    vendor: 'Safety Supply Co',
-    status: 'reimbursed'
+    vendor: 'ABC Rentals',
+    jobReference: 'Deck Installation',
+    status: 'pending'
   }
 ];
 
@@ -54,28 +56,21 @@ export const ExpenseList = () => {
   const [expenses] = useState<Expense[]>(mockExpenses);
   const [searchTerm, setSearchTerm] = useState('');
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const filteredExpenses = expenses.filter(expense =>
-    expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredExpenses = expenses.filter(expense => {
+    const matchesSearch = expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         expense.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         expense.jobReference.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || expense.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'reimbursed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'materials': return 'bg-purple-100 text-purple-800';
-      case 'labor': return 'bg-blue-100 text-blue-800';
-      case 'equipment': return 'bg-orange-100 text-orange-800';
-      case 'transportation': return 'bg-green-100 text-green-800';
+      case 'approved': return 'bg-blue-100 text-blue-800';
+      case 'paid': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -83,63 +78,46 @@ export const ExpenseList = () => {
   const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Expense Management</h2>
+        <h2 className="text-2xl font-bold">Expense Tracking</h2>
         <Button onClick={() => setShowExpenseForm(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Add Expense
         </Button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-green-600" />
-              <div>
-                <p className="text-2xl font-bold">${totalExpenses.toFixed(2)}</p>
-                <p className="text-sm text-muted-foreground">Total Expenses</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalExpenses.toLocaleString()}</div>
           </CardContent>
         </Card>
-        
+
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <FileText className="h-8 w-8 text-blue-600" />
-              <div>
-                <p className="text-2xl font-bold">{expenses.length}</p>
-                <p className="text-sm text-muted-foreground">Total Records</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${expenses.filter(e => e.date.startsWith('2024-12')).reduce((sum, e) => sum + e.amount, 0).toLocaleString()}
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-8 w-8 text-orange-600" />
-              <div>
-                <p className="text-2xl font-bold">{expenses.filter(e => e.status === 'pending').length}</p>
-                <p className="text-sm text-muted-foreground">Pending Approval</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold">
-                  ${expenses.filter(e => e.status === 'approved').reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
-                </p>
-                <p className="text-sm text-muted-foreground">Approved Amount</p>
-              </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {expenses.filter(e => e.status === 'pending').length}
             </div>
           </CardContent>
         </Card>
@@ -147,15 +125,28 @@ export const ExpenseList = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Search Expenses</CardTitle>
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by description, vendor, or category..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+          <CardTitle>Filter & Search</CardTitle>
+          <div className="flex gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search expenses..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <select 
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-3 py-2 border rounded-md"
+            >
+              <option value="all">All Categories</option>
+              <option value="Materials">Materials</option>
+              <option value="Labor">Labor</option>
+              <option value="Equipment">Equipment</option>
+              <option value="Transportation">Transportation</option>
+            </select>
           </div>
         </CardHeader>
       </Card>
@@ -172,6 +163,7 @@ export const ExpenseList = () => {
                 <TableHead>Amount</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Vendor</TableHead>
+                <TableHead>Job Reference</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
@@ -184,21 +176,13 @@ export const ExpenseList = () => {
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <DollarSign className="h-3 w-3" />
-                      {expense.amount.toFixed(2)}
+                      {expense.amount.toLocaleString()}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <Badge className={getCategoryColor(expense.category)}>
-                      {expense.category}
-                    </Badge>
-                  </TableCell>
+                  <TableCell>{expense.category}</TableCell>
                   <TableCell>{expense.vendor}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(expense.date).toLocaleDateString()}
-                    </div>
-                  </TableCell>
+                  <TableCell>{expense.jobReference}</TableCell>
+                  <TableCell>{new Date(expense.date).toLocaleDateString()}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(expense.status)}>
                       {expense.status}
@@ -206,8 +190,13 @@ export const ExpenseList = () => {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="outline" size="sm">View</Button>
+                      <Button variant="outline" size="sm">
+                        <FileText className="h-3 w-3 mr-1" />
+                        View
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>

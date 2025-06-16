@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,6 @@ interface WidgetConfig {
   refreshInterval: number;
   style: 'default' | 'gradient' | 'minimal' | 'bordered';
   color: string;
-  type: 'stats' | 'activity' | 'actions' | 'jobs' | 'chart';
 }
 
 interface WidgetCustomizationProps {
@@ -37,8 +37,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'large',
       refreshInterval: 30,
       style: 'gradient',
-      color: 'blue',
-      type: 'stats'
+      color: 'blue'
     },
     {
       id: '2',
@@ -48,8 +47,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'full-width',
       refreshInterval: 60,
       style: 'default',
-      color: 'green',
-      type: 'jobs'
+      color: 'green'
     },
     {
       id: '3',
@@ -59,8 +57,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'medium',
       refreshInterval: 120,
       style: 'bordered',
-      color: 'purple',
-      type: 'actions'
+      color: 'purple'
     },
     {
       id: '4',
@@ -70,8 +67,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'large',
       refreshInterval: 180,
       style: 'minimal',
-      color: 'orange',
-      type: 'chart'
+      color: 'orange'
     },
     {
       id: '5',
@@ -81,8 +77,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'medium',
       refreshInterval: 45,
       style: 'gradient',
-      color: 'red',
-      type: 'activity'
+      color: 'red'
     },
     {
       id: '6',
@@ -92,8 +87,7 @@ export const WidgetCustomization = ({ widgets: propWidgets, onWidgetsChange }: W
       size: 'small',
       refreshInterval: 90,
       style: 'default',
-      color: 'pink',
-      type: 'chart'
+      color: 'pink'
     }
   ];
 

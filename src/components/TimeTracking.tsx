@@ -2,10 +2,11 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Play, Pause, Square, Clock, Calendar, User } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Clock, Play, Pause, Square, Timer, CalendarDays } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface TimeEntry {
   id: string;
@@ -14,149 +15,158 @@ interface TimeEntry {
   startTime: string;
   endTime?: string;
   duration: number;
-  description: string;
-  status: 'active' | 'completed';
+  status: 'active' | 'paused' | 'completed';
+  date: string;
 }
 
 const mockTimeEntries: TimeEntry[] = [
   {
     id: '1',
-    employee: 'John Smith',
+    employee: 'Mike Johnson',
     job: 'Kitchen Renovation',
-    startTime: '2024-12-16T08:00:00',
-    endTime: '2024-12-16T17:00:00',
-    duration: 8,
-    description: 'Cabinet installation',
-    status: 'completed'
+    startTime: '08:00 AM',
+    endTime: '12:00 PM',
+    duration: 240,
+    status: 'completed',
+    date: '2024-01-15'
   },
   {
     id: '2',
-    employee: 'Mike Johnson',
+    employee: 'Sarah Davis',
     job: 'Bathroom Repair',
-    startTime: '2024-12-16T09:00:00',
-    duration: 3.5,
-    description: 'Plumbing work',
-    status: 'active'
+    startTime: '09:30 AM',
+    duration: 90,
+    status: 'active',
+    date: '2024-01-15'
+  },
+  {
+    id: '3',
+    employee: 'Tom Wilson',
+    job: 'Deck Installation',
+    startTime: '10:15 AM',
+    endTime: '11:45 AM',
+    duration: 90,
+    status: 'paused',
+    date: '2024-01-15'
   }
 ];
 
 export const TimeTracking = () => {
-  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>(mockTimeEntries);
-  const [activeTimer, setActiveTimer] = useState<string | null>('2');
+  const { toast } = useToast();
+  const [timeEntries] = useState<TimeEntry[]>(mockTimeEntries);
+  const [selectedEmployee, setSelectedEmployee] = useState('all');
+  const [selectedDate, setSelectedDate] = useState('today');
 
-  const startTimer = (entryId: string) => {
-    setActiveTimer(entryId);
-    setTimeEntries(prev => prev.map(entry => 
-      entry.id === entryId 
-        ? { ...entry, status: 'active' as const, startTime: new Date().toISOString() }
-        : entry
-    ));
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'paused': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const stopTimer = (entryId: string) => {
-    setActiveTimer(null);
-    setTimeEntries(prev => prev.map(entry => 
-      entry.id === entryId 
-        ? { 
-            ...entry, 
-            status: 'completed' as const, 
-            endTime: new Date().toISOString(),
-            duration: calculateDuration(entry.startTime, new Date().toISOString())
-          }
-        : entry
-    ));
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
   };
 
-  const calculateDuration = (start: string, end: string): number => {
-    const startTime = new Date(start);
-    const endTime = new Date(end);
-    return Math.round(((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)) * 10) / 10;
+  const handleTimeAction = (action: string, entryId: string) => {
+    console.log(`${action} time tracking for entry ${entryId}`);
+    toast({
+      title: "Time Tracking Updated",
+      description: `Time tracking ${action}ed successfully.`,
+    });
   };
 
-  const formatTime = (hours: number): string => {
-    const h = Math.floor(hours);
-    const m = Math.round((hours - h) * 60);
-    return `${h}h ${m}m`;
-  };
+  const totalHoursToday = timeEntries
+    .filter(entry => entry.date === '2024-01-15')
+    .reduce((total, entry) => total + entry.duration, 0);
 
-  const totalHours = timeEntries.reduce((sum, entry) => sum + entry.duration, 0);
-  const activeEntries = timeEntries.filter(entry => entry.status === 'active').length;
+  const activeEmployees = timeEntries.filter(entry => entry.status === 'active').length;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Time Tracking</h2>
+        <h2 className="text-2xl font-bold">Employee Time Tracking</h2>
         <Button className="flex items-center gap-2">
           <Play className="h-4 w-4" />
           Start New Timer
         </Button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Clock className="h-8 w-8 text-blue-600" />
-              <div>
-                <p className="text-2xl font-bold">{formatTime(totalHours)}</p>
-                <p className="text-sm text-muted-foreground">Total Hours</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Play className="h-8 w-8 text-green-600" />
-              <div>
-                <p className="text-2xl font-bold">{activeEntries}</p>
-                <p className="text-sm text-muted-foreground">Active Timers</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Hours Today</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatDuration(totalHoursToday)}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <User className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold">{new Set(timeEntries.map(e => e.employee)).size}</p>
-                <p className="text-sm text-muted-foreground">Employees</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Timers</CardTitle>
+            <Timer className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{activeEmployees}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Calendar className="h-8 w-8 text-orange-600" />
-              <div>
-                <p className="text-2xl font-bold">{timeEntries.length}</p>
-                <p className="text-sm text-muted-foreground">Entries Today</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Daily Hours</CardTitle>
+            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">7.5h</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Overtime Hours</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">2.5h</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Start Timer */}
+      {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle>Quick Start</CardTitle>
+          <CardTitle>Filter Time Entries</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input placeholder="Employee name" />
-            <Input placeholder="Job/Project" />
-            <Button className="flex items-center gap-2">
-              <Play className="h-4 w-4" />
-              Start Timer
-            </Button>
-          </div>
+        <CardContent className="flex gap-4">
+          <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select employee" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Employees</SelectItem>
+              <SelectItem value="mike">Mike Johnson</SelectItem>
+              <SelectItem value="sarah">Sarah Davis</SelectItem>
+              <SelectItem value="tom">Tom Wilson</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedDate} onValueChange={setSelectedDate}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Select date range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
 
@@ -170,11 +180,11 @@ export const TimeTracking = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Employee</TableHead>
-                <TableHead>Job/Project</TableHead>
+                <TableHead>Job</TableHead>
                 <TableHead>Start Time</TableHead>
+                <TableHead>End Time</TableHead>
                 <TableHead>Duration</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Description</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -183,45 +193,43 @@ export const TimeTracking = () => {
                 <TableRow key={entry.id}>
                   <TableCell className="font-medium">{entry.employee}</TableCell>
                   <TableCell>{entry.job}</TableCell>
+                  <TableCell>{entry.startTime}</TableCell>
+                  <TableCell>{entry.endTime || 'In Progress'}</TableCell>
+                  <TableCell>{formatDuration(entry.duration)}</TableCell>
                   <TableCell>
-                    {new Date(entry.startTime).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formatTime(entry.duration)}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={entry.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge className={getStatusColor(entry.status)}>
                       {entry.status}
                     </Badge>
                   </TableCell>
-                  <TableCell>{entry.description}</TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      {entry.status === 'active' ? (
-                        <Button 
-                          variant="outline" 
+                    <div className="flex gap-1">
+                      {entry.status === 'active' && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTimeAction('pause', entry.id)}
+                          >
+                            <Pause className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleTimeAction('stop', entry.id)}
+                          >
+                            <Square className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                      {entry.status === 'paused' && (
+                        <Button
+                          variant="outline"
                           size="sm"
-                          onClick={() => stopTimer(entry.id)}
-                          className="flex items-center gap-1"
-                        >
-                          <Square className="h-3 w-3" />
-                          Stop
-                        </Button>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => startTimer(entry.id)}
-                          className="flex items-center gap-1"
+                          onClick={() => handleTimeAction('resume', entry.id)}
                         >
                           <Play className="h-3 w-3" />
-                          Start
                         </Button>
                       )}
-                      <Button variant="outline" size="sm">Edit</Button>
                     </div>
                   </TableCell>
                 </TableRow>
