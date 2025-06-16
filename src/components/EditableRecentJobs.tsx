@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { MapView } from "./MapView";
 
-interface Job {
+export interface Job {
   id: string;
   title: string;
   customer: string;
