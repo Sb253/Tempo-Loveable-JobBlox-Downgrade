@@ -1,49 +1,54 @@
-import { Dashboard } from "../Dashboard";
-import { CustomerList } from "../CustomerList";
-import { JobList } from "../JobList";
-import { EstimateList } from "../EstimateList";
-import { InvoiceList } from "../InvoiceList";
-import { ScheduleView } from "../ScheduleView";
-import { ExpenseList } from "../ExpenseList";
-import { TimeTracking } from "../TimeTracking";
-import { MaterialsAndServices } from "../MaterialsAndServices";
-import { MaterialInventory } from "../MaterialInventory";
-import { EquipmentTracking } from "../EquipmentTracking";
-import { PhotoDocumentation } from "../PhotoDocumentation";
-import { ReviewManagement } from "../ReviewManagement";
-import { SafetyManagement } from "../SafetyManagement";
-import { ReportsView } from "../ReportsView";
-import { TaxAndFinancialSection } from "../TaxAndFinancialSection";
-import { NotificationCenter } from "../NotificationCenter";
-import { MapView } from "../MapView";
-import { TeamManagement } from "../TeamManagement";
-import { HRFeatures } from "../HRFeatures";
-import { SubcontractorManagement } from "../SubcontractorManagement";
-import { MobileSettings } from "../MobileSettings";
-import { CompanySettings } from "../CompanySettings";
-import { BranchManagement } from "../BranchManagement";
-import { BackOfficeSettings } from "../BackOfficeSettings";
-import { RealTimeChat } from "../RealTimeChat";
-import { AdvancedInventorySystem } from "../AdvancedInventorySystem";
-import { FinancialAnalyticsDashboard } from "../FinancialAnalyticsDashboard";
-import { PaymentIntegrationHub } from "../PaymentIntegrationHub";
-import { ProfitMarginAnalysis } from "../ProfitMarginAnalysis";
-import { PredictiveAnalyticsDashboard } from "../PredictiveAnalyticsDashboard";
-import { AdvancedReporting } from "../AdvancedReporting";
-import { QuickBooksIntegration } from "../QuickBooksIntegration";
-import { AccountingIntegration } from "../AccountingIntegration";
-import { RadiusAssignment } from "../RadiusAssignment";
-import { EmployeeLocationManager } from "../EmployeeLocationManager";
-import { EnhancedAIChatAssistant } from "../EnhancedAIChatAssistant";
-import { EnhancedSmartDocumentGenerator } from "../EnhancedSmartDocumentGenerator";
-import { EnhancedAISettings } from "../EnhancedAISettings";
-import { ClientAppointment } from "../ClientAppointment";
-import { Pipeline } from "../Pipeline";
-import { KPIDashboard } from "../KPIDashboard";
-import { AdvancedAnalytics } from "../AdvancedAnalytics";
+import React, { Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Construction, AlertCircle } from "lucide-react";
+import { ErrorBoundary } from "../../shared/components/ErrorBoundary";
+import { LoadingSpinner } from "../../shared/components/LoadingSpinner";
 import { demoDataService, DemoJob } from "../../services/demoDataService";
+
+// Lazy load components for better performance
+const Dashboard = React.lazy(() => import("../Dashboard").then(m => ({ default: m.Dashboard })));
+const CustomerList = React.lazy(() => import("../CustomerList").then(m => ({ default: m.CustomerList })));
+const JobList = React.lazy(() => import("../JobList").then(m => ({ default: m.JobList })));
+const EstimateList = React.lazy(() => import("../EstimateList").then(m => ({ default: m.EstimateList })));
+const InvoiceList = React.lazy(() => import("../InvoiceList").then(m => ({ default: m.InvoiceList })));
+const ScheduleView = React.lazy(() => import("../ScheduleView").then(m => ({ default: m.ScheduleView })));
+const ExpenseList = React.lazy(() => import("../ExpenseList").then(m => ({ default: m.ExpenseList })));
+const TimeTracking = React.lazy(() => import("../TimeTracking").then(m => ({ default: m.TimeTracking })));
+const MaterialsAndServices = React.lazy(() => import("../MaterialsAndServices").then(m => ({ default: m.MaterialsAndServices })));
+const MaterialInventory = React.lazy(() => import("../MaterialInventory").then(m => ({ default: m.MaterialInventory })));
+const EquipmentTracking = React.lazy(() => import("../EquipmentTracking").then(m => ({ default: m.EquipmentTracking })));
+const PhotoDocumentation = React.lazy(() => import("../PhotoDocumentation").then(m => ({ default: m.PhotoDocumentation })));
+const ReviewManagement = React.lazy(() => import("../ReviewManagement").then(m => ({ default: m.ReviewManagement })));
+const SafetyManagement = React.lazy(() => import("../SafetyManagement").then(m => ({ default: m.SafetyManagement })));
+const ReportsView = React.lazy(() => import("../ReportsView").then(m => ({ default: m.ReportsView })));
+const TaxAndFinancialSection = React.lazy(() => import("../TaxAndFinancialSection").then(m => ({ default: m.TaxAndFinancialSection })));
+const NotificationCenter = React.lazy(() => import("../NotificationCenter").then(m => ({ default: m.NotificationCenter })));
+const MapView = React.lazy(() => import("../MapView").then(m => ({ default: m.MapView })));
+const TeamManagement = React.lazy(() => import("../TeamManagement").then(m => ({ default: m.TeamManagement })));
+const HRFeatures = React.lazy(() => import("../HRFeatures").then(m => ({ default: m.HRFeatures })));
+const SubcontractorManagement = React.lazy(() => import("../SubcontractorManagement").then(m => ({ default: m.SubcontractorManagement })));
+const MobileSettings = React.lazy(() => import("../MobileSettings").then(m => ({ default: m.MobileSettings })));
+const CompanySettings = React.lazy(() => import("../CompanySettings").then(m => ({ default: m.CompanySettings })));
+const BranchManagement = React.lazy(() => import("../BranchManagement").then(m => ({ default: m.BranchManagement })));
+const BackOfficeSettings = React.lazy(() => import("../BackOfficeSettings").then(m => ({ default: m.BackOfficeSettings })));
+const RealTimeChat = React.lazy(() => import("../RealTimeChat").then(m => ({ default: m.RealTimeChat })));
+const AdvancedInventorySystem = React.lazy(() => import("../AdvancedInventorySystem").then(m => ({ default: m.AdvancedInventorySystem })));
+const FinancialAnalyticsDashboard = React.lazy(() => import("../FinancialAnalyticsDashboard").then(m => ({ default: m.FinancialAnalyticsDashboard })));
+const PaymentIntegrationHub = React.lazy(() => import("../PaymentIntegrationHub").then(m => ({ default: m.PaymentIntegrationHub })));
+const ProfitMarginAnalysis = React.lazy(() => import("../ProfitMarginAnalysis").then(m => ({ default: m.ProfitMarginAnalysis })));
+const PredictiveAnalyticsDashboard = React.lazy(() => import("../PredictiveAnalyticsDashboard").then(m => ({ default: m.PredictiveAnalyticsDashboard })));
+const AdvancedReporting = React.lazy(() => import("../AdvancedReporting").then(m => ({ default: m.AdvancedReporting })));
+const QuickBooksIntegration = React.lazy(() => import("../QuickBooksIntegration").then(m => ({ default: m.QuickBooksIntegration })));
+const AccountingIntegration = React.lazy(() => import("../AccountingIntegration").then(m => ({ default: m.AccountingIntegration })));
+const RadiusAssignment = React.lazy(() => import("../RadiusAssignment").then(m => ({ default: m.RadiusAssignment })));
+const EmployeeLocationManager = React.lazy(() => import("../EmployeeLocationManager").then(m => ({ default: m.EmployeeLocationManager })));
+const EnhancedAIChatAssistant = React.lazy(() => import("../EnhancedAIChatAssistant").then(m => ({ default: m.EnhancedAIChatAssistant })));
+const EnhancedSmartDocumentGenerator = React.lazy(() => import("../EnhancedSmartDocumentGenerator").then(m => ({ default: m.EnhancedSmartDocumentGenerator })));
+const EnhancedAISettings = React.lazy(() => import("../EnhancedAISettings").then(m => ({ default: m.EnhancedAISettings })));
+const ClientAppointment = React.lazy(() => import("../ClientAppointment").then(m => ({ default: m.ClientAppointment })));
+const Pipeline = React.lazy(() => import("../Pipeline").then(m => ({ default: m.Pipeline })));
+const KPIDashboard = React.lazy(() => import("../KPIDashboard").then(m => ({ default: m.KPIDashboard })));
+const AdvancedAnalytics = React.lazy(() => import("../AdvancedAnalytics").then(m => ({ default: m.AdvancedAnalytics })));
 
 interface SectionRendererProps {
   activeSection: string;
@@ -54,11 +59,11 @@ const transformDemoJobsToMapJobs = (demoJobs: DemoJob[]) => {
   return demoJobs.map(job => ({
     id: job.id,
     title: job.title,
-    customer: job.customerName, // Map customerName to customer
-    address: job.location, // Map location to address
+    customer: job.customerName,
+    address: job.location,
     coordinates: job.coordinates,
     status: job.status,
-    type: 'job' as const, // All demo jobs are of type 'job'
+    type: 'job' as const,
     time: new Date(job.startDate).toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
@@ -106,15 +111,12 @@ const SectionNotFound = ({ sectionName }: { sectionName: string }) => (
   </div>
 );
 
-export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
-  console.log('SectionRenderer: Rendering section:', activeSection);
-
-  // Get demo jobs data and transform for map view
+// Registry pattern for section components
+const createSectionRegistry = () => {
   const demoJobs = demoDataService.getJobs();
   const transformedJobs = transformDemoJobsToMapJobs(demoJobs);
 
-  // Map of all available sections to their components
-  const sectionComponents: Record<string, JSX.Element> = {
+  return {
     // Core sections
     'home': <Dashboard />,
     'dashboard': <Dashboard />,
@@ -182,20 +184,30 @@ export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
     'mobile-settings': <MobileSettings />,
     'branch-management': <BranchManagement />
   };
+};
 
-  // Get the component for the active section
-  const component = sectionComponents[activeSection];
+export const SectionRenderer = ({ activeSection }: SectionRendererProps) => {
+  console.log('SectionRenderer: Rendering section:', activeSection);
+
+  const sectionRegistry = createSectionRegistry();
+  const component = sectionRegistry[activeSection as keyof typeof sectionRegistry];
   
-  // If component exists, render it
   if (component) {
     return (
       <div className="p-6">
-        {component}
+        <ErrorBoundary>
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-96">
+              <LoadingSpinner size="lg" text="Loading..." />
+            </div>
+          }>
+            {component}
+          </Suspense>
+        </ErrorBoundary>
       </div>
     );
   }
   
-  // If section is not found, show appropriate message
   return (
     <div className="p-6">
       <SectionNotFound sectionName={activeSection} />
