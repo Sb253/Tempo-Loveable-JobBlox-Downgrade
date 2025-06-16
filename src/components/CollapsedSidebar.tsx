@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -139,7 +138,7 @@ export const CollapsedSidebar = ({ activeSection, onSectionChange, sections }: C
                 <DropdownMenuContent 
                   side="right" 
                   align="start"
-                  className="w-56 ml-2"
+                  className="w-56 ml-2 bg-background border border-border shadow-lg z-[9999]"
                   sideOffset={4}
                 >
                   <DropdownMenuLabel className="flex items-center gap-2">
@@ -166,11 +165,6 @@ export const CollapsedSidebar = ({ activeSection, onSectionChange, sections }: C
                       >
                         <Icon className="h-4 w-4" />
                         <span>{section.label}</span>
-                        {isActive && (
-                          <Badge variant="secondary" className="ml-auto">
-                            Active
-                          </Badge>
-                        )}
                       </DropdownMenuItem>
                     );
                   })}
