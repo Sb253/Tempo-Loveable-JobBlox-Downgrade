@@ -11,6 +11,25 @@ export interface UseAsyncOptions {
   immediate?: boolean;
 }
 
+// Overload for functions with no arguments that support immediate execution
+export function useAsync<T>(
+  asyncFunction: () => Promise<T>,
+  options?: UseAsyncOptions & { immediate?: boolean }
+): AsyncState<T> & {
+  execute: () => Promise<T>;
+  reset: () => void;
+};
+
+// Overload for functions with arguments that don't support immediate execution
+export function useAsync<T, Args extends any[]>(
+  asyncFunction: (...args: Args) => Promise<T>,
+  options?: Omit<UseAsyncOptions, 'immediate'>
+): AsyncState<T> & {
+  execute: (...args: Args) => Promise<T>;
+  reset: () => void;
+};
+
+// Implementation
 export function useAsync<T, Args extends any[] = []>(
   asyncFunction: (...args: Args) => Promise<T>,
   options: UseAsyncOptions = {}
@@ -44,8 +63,8 @@ export function useAsync<T, Args extends any[] = []>(
 
   useEffect(() => {
     if (options.immediate) {
-      // Only execute immediately if the function doesn't require arguments
-      execute([] as any as Args);
+      // This will only be called for the no-argument overload
+      (execute as () => Promise<T>)();
     }
   }, [execute, options.immediate]);
 
