@@ -31,6 +31,19 @@ import { HRFeatures } from "./HRFeatures";
 import { MaterialsAndServices } from "./MaterialsAndServices";
 import { TaxAndFinancialSection } from "./TaxAndFinancialSection";
 import { BackOfficeSettings } from "./BackOfficeSettings";
+import { KPIDashboard } from "./KPIDashboard";
+import { MaterialInventory } from "./MaterialInventory";
+import { ReviewManagement } from "./ReviewManagement";
+import { JobForm } from "./JobForm";
+import { ExpenseForm } from "./ExpenseForm";
+import { ExpenseList } from "./ExpenseList";
+import { TimeTracking } from "./TimeTracking";
+import { EquipmentTracking } from "./EquipmentTracking";
+import { VehicleManagement } from "./VehicleManagement";
+import { SafetyManagement } from "./SafetyManagement";
+import { QualityControl } from "./QualityControl";
+import { ReportsView } from "./ReportsView";
+import { NotificationCenter } from "./NotificationCenter";
 
 interface SidebarSection {
   id: string;
@@ -51,6 +64,7 @@ const sections: SidebarSection[] = [
   { id: 'expenses', label: 'Expenses', icon: CreditCard },
   { id: 'time-tracking', label: 'Time Tracking', icon: Clock },
   { id: 'materials-services', label: 'Materials & Services', icon: Package },
+  { id: 'inventory', label: 'Inventory', icon: Package },
   { id: 'equipment', label: 'Equipment', icon: Package },
   { id: 'vehicles', label: 'Vehicles', icon: Truck },
   { id: 'photos', label: 'Photos', icon: FileImage },
@@ -161,7 +175,7 @@ export const AppLayout = () => {
       case 'customer-form':
         return <CustomerRegistrationForm />;
       case 'job-form':
-        return <JobForm />;
+        return <JobForm onClose={() => setActiveSection('jobs')} />;
       case 'estimates':
         return <EstimateList />;
       case 'invoices':
@@ -187,7 +201,7 @@ export const AppLayout = () => {
       case 'reviews':
         return <ReviewManagement />;
       case 'safety':
-        return <SaftyManagement />;
+        return <SafetyManagement />;
       case 'quality':
         return <QualityControl />;
       case 'goals':

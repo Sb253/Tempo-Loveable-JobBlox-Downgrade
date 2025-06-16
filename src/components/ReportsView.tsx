@@ -4,282 +4,240 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { TrendingUp, TrendingDown, DollarSign, Users, Briefcase, Calendar, FileText, Download } from "lucide-react";
+import { Download, Calendar, DollarSign, TrendingUp, Users } from "lucide-react";
 
-const monthlyRevenue = [
-  { month: 'Jan', revenue: 45000, expenses: 28000, profit: 17000 },
-  { month: 'Feb', revenue: 52000, expenses: 31000, profit: 21000 },
-  { month: 'Mar', revenue: 48000, expenses: 29000, profit: 19000 },
-  { month: 'Apr', revenue: 61000, expenses: 35000, profit: 26000 },
-  { month: 'May', revenue: 58000, expenses: 33000, profit: 25000 },
-  { month: 'Jun', revenue: 67000, expenses: 38000, profit: 29000 },
+const revenueData = [
+  { month: 'Jan', revenue: 45000, projects: 12 },
+  { month: 'Feb', revenue: 52000, projects: 15 },
+  { month: 'Mar', revenue: 48000, projects: 13 },
+  { month: 'Apr', revenue: 61000, projects: 18 },
+  { month: 'May', revenue: 55000, projects: 16 },
+  { month: 'Jun', revenue: 67000, projects: 20 }
 ];
 
-const projectTypes = [
-  { name: 'Kitchen Renovations', value: 35, color: '#8884d8' },
-  { name: 'Bathroom Remodels', value: 25, color: '#82ca9d' },
-  { name: 'Deck Installations', value: 20, color: '#ffc658' },
-  { name: 'General Repairs', value: 15, color: '#ff7300' },
-  { name: 'Other', value: 5, color: '#0088fe' }
-];
-
-const customerSatisfaction = [
-  { month: 'Jan', satisfaction: 4.2 },
-  { month: 'Feb', satisfaction: 4.5 },
-  { month: 'Mar', satisfaction: 4.3 },
-  { month: 'Apr', satisfaction: 4.7 },
-  { month: 'May', satisfaction: 4.6 },
-  { month: 'Jun', satisfaction: 4.8 }
+const projectsByType = [
+  { name: 'Kitchen Renovation', value: 35, color: '#8884d8' },
+  { name: 'Bathroom Remodel', value: 25, color: '#82ca9d' },
+  { name: 'Roofing', value: 20, color: '#ffc658' },
+  { name: 'Flooring', value: 15, color: '#ff7c7c' },
+  { name: 'Other', value: 5, color: '#8dd1e1' }
 ];
 
 export const ReportsView = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('last6months');
-  const [selectedReport, setSelectedReport] = useState('financial');
+  const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [selectedReport, setSelectedReport] = useState('revenue');
 
-  const currentMonth = monthlyRevenue[monthlyRevenue.length - 1];
-  const previousMonth = monthlyRevenue[monthlyRevenue.length - 2];
-  const revenueChange = ((currentMonth.revenue - previousMonth.revenue) / previousMonth.revenue * 100).toFixed(1);
-  const profitChange = ((currentMonth.profit - previousMonth.profit) / previousMonth.profit * 100).toFixed(1);
-
-  const renderFinancialReport = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentMonth.revenue.toLocaleString()}</div>
-            <div className={`text-xs flex items-center ${Number(revenueChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {Number(revenueChange) >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-              {revenueChange}% from last month
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Net Profit</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentMonth.profit.toLocaleString()}</div>
-            <div className={`text-xs flex items-center ${Number(profitChange) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {Number(profitChange) >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-              {profitChange}% from last month
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Profit Margin</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {((currentMonth.profit / currentMonth.revenue) * 100).toFixed(1)}%
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Industry avg: 15-20%
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${currentMonth.expenses.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">
-              {((currentMonth.expenses / currentMonth.revenue) * 100).toFixed(1)}% of revenue
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue vs Expenses</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
-                <Bar dataKey="revenue" fill="#8884d8" name="Revenue" />
-                <Bar dataKey="expenses" fill="#82ca9d" name="Expenses" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Profit Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
-                <Line type="monotone" dataKey="profit" stroke="#8884d8" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-
-  const renderProjectReport = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-            <Briefcase className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">47</div>
-            <div className="text-xs text-green-600 flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +12% from last month
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">23</div>
-            <div className="text-xs text-muted-foreground">
-              49% of total projects
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">89%</div>
-            <div className="text-xs text-green-600 flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +5% from last month
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Project Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$14,250</div>
-            <div className="text-xs text-green-600 flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +8% from last month
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Project Types Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={projectTypes}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {projectTypes.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Customer Satisfaction</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={customerSatisfaction}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis domain={[1, 5]} />
-                <Tooltip formatter={(value) => `${Number(value).toFixed(1)} stars`} />
-                <Line type="monotone" dataKey="satisfaction" stroke="#82ca9d" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  const renderChart = () => {
+    switch (selectedReport) {
+      case 'revenue':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={revenueData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
+              <Bar dataKey="revenue" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+      case 'projects':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={revenueData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip formatter={(value) => [value, 'Projects']} />
+              <Line type="monotone" dataKey="projects" stroke="#82ca9d" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      case 'distribution':
+        return (
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={projectsByType}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {projectsByType.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Business Reports</h2>
+        <h2 className="text-2xl font-bold">Reports & Analytics</h2>
         <div className="flex gap-4">
-          <Select value={selectedReport} onValueChange={setSelectedReport}>
-            <SelectTrigger className="w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="financial">Financial</SelectItem>
-              <SelectItem value="projects">Projects</SelectItem>
-            </SelectContent>
-          </Select>
           <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="last30days">Last 30 Days</SelectItem>
-              <SelectItem value="last3months">Last 3 Months</SelectItem>
-              <SelectItem value="last6months">Last 6 Months</SelectItem>
-              <SelectItem value="lastyear">Last Year</SelectItem>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
           <Button className="flex items-center gap-2">
             <Download className="h-4 w-4" />
-            Export
+            Export Report
           </Button>
         </div>
       </div>
 
-      {selectedReport === 'financial' ? renderFinancialReport() : renderProjectReport()}
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <DollarSign className="h-8 w-8 text-green-600" />
+              <div>
+                <p className="text-2xl font-bold">$328,000</p>
+                <p className="text-sm text-muted-foreground">Total Revenue</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="h-8 w-8 text-blue-600" />
+              <div>
+                <p className="text-2xl font-bold">99</p>
+                <p className="text-sm text-muted-foreground">Projects Completed</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <TrendingUp className="h-8 w-8 text-purple-600" />
+              <div>
+                <p className="text-2xl font-bold">18.5%</p>
+                <p className="text-sm text-muted-foreground">Profit Margin</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Users className="h-8 w-8 text-orange-600" />
+              <div>
+                <p className="text-2xl font-bold">156</p>
+                <p className="text-sm text-muted-foreground">Active Customers</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Chart Selection */}
+      <div className="flex gap-2">
+        <Button 
+          variant={selectedReport === 'revenue' ? 'default' : 'outline'}
+          onClick={() => setSelectedReport('revenue')}
+        >
+          Revenue Trends
+        </Button>
+        <Button 
+          variant={selectedReport === 'projects' ? 'default' : 'outline'}
+          onClick={() => setSelectedReport('projects')}
+        >
+          Project Volume
+        </Button>
+        <Button 
+          variant={selectedReport === 'distribution' ? 'default' : 'outline'}
+          onClick={() => setSelectedReport('distribution')}
+        >
+          Project Distribution
+        </Button>
+      </div>
+
+      {/* Chart Display */}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {selectedReport === 'revenue' && 'Revenue Analysis'}
+            {selectedReport === 'projects' && 'Project Volume Trends'}
+            {selectedReport === 'distribution' && 'Project Type Distribution'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {renderChart()}
+        </CardContent>
+      </Card>
+
+      {/* Quick Reports */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Performing Projects</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[
+                { name: 'Smith Kitchen Renovation', value: '$45,000', profit: '+22%' },
+                { name: 'Johnson Bathroom Remodel', value: '$28,000', profit: '+18%' },
+                { name: 'Wilson Deck Installation', value: '$35,000', profit: '+25%' }
+              ].map((project, index) => (
+                <div key={index} className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <p className="font-medium">{project.name}</p>
+                    <p className="text-sm text-muted-foreground">{project.value}</p>
+                  </div>
+                  <div className="text-green-600 font-medium">{project.profit}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {[
+                { action: 'Project completed', detail: 'Kitchen Renovation - Smith', time: '2 hours ago' },
+                { action: 'Invoice sent', detail: 'Invoice #INV-001 to Johnson', time: '4 hours ago' },
+                { action: 'Estimate approved', detail: 'Bathroom remodel estimate', time: '1 day ago' }
+              ].map((activity, index) => (
+                <div key={index} className="flex justify-between items-start p-3 border rounded">
+                  <div>
+                    <p className="font-medium">{activity.action}</p>
+                    <p className="text-sm text-muted-foreground">{activity.detail}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
