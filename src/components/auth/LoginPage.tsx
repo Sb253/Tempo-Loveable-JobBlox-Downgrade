@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Eye, EyeOff } from "lucide-react";
+import { Building2, Eye, EyeOff, Zap } from "lucide-react";
 import { useAuth } from '../../contexts/AuthContext';
 import { LoginCredentials } from '../../types/auth';
 
@@ -13,7 +13,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, isDemoMode, enableDemoMode } = useAuth();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
     password: ''
@@ -47,6 +47,13 @@ export const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
     if (success) {
       onLoginSuccess();
     }
+  };
+
+  const handleDemoLogin = () => {
+    if (!isDemoMode) {
+      enableDemoMode();
+    }
+    onLoginSuccess();
   };
 
   return (
@@ -108,8 +115,34 @@ export const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
             </Button>
           </form>
           
+          <div className="mt-6 space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
+              </div>
+            </div>
+            
+            <Button 
+              type="button"
+              variant="outline" 
+              className="w-full flex items-center gap-2"
+              onClick={handleDemoLogin}
+            >
+              <Zap className="h-4 w-4" />
+              Demo Access (No Login Required)
+            </Button>
+          </div>
+          
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Need an account? Contact your administrator for an invitation.</p>
+            {isDemoMode && (
+              <p className="mt-2 text-blue-600 font-medium">Demo Mode Active</p>
+            )}
           </div>
         </CardContent>
       </Card>

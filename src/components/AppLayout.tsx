@@ -22,6 +22,13 @@ export const AppLayout = () => {
     if (token && window.location.pathname === '/accept-invitation') {
       setInvitationToken(token);
       setIsInvitationFlow(true);
+      return;
+    }
+
+    // Load saved active section or default to home
+    const savedSection = localStorage.getItem('activeSection');
+    if (savedSection && sections.find(s => s.id === savedSection)) {
+      setActiveSection(savedSection);
     }
 
     // Listen for sidebar width changes
@@ -45,11 +52,46 @@ export const AppLayout = () => {
     };
   }, []);
 
+  // Save active section when it changes
+  useEffect(() => {
+    if (activeSection) {
+      localStorage.setItem('activeSection', activeSection);
+      console.log('AppLayout: Active section changed to:', activeSection);
+    }
+  }, [activeSection]);
+
+  const handleSectionChange = (section: string) => {
+    console.log('AppLayout: Section change requested:', section);
+    setActiveSection(section);
+    
+    // Update URL without full page reload
+    const newUrl = section === 'home' ? '/' : `/${section}`;
+    window.history.pushState({ section }, '', newUrl);
+  };
+
   const handleInvitationComplete = () => {
     setIsInvitationFlow(false);
     // Redirect to login
     window.history.pushState({}, '', '/');
   };
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      const path = window.location.pathname;
+      if (path === '/') {
+        setActiveSection('home');
+      } else {
+        const section = path.slice(1); // Remove leading slash
+        if (sections.find(s => s.id === section)) {
+          setActiveSection(section);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   if (isInvitationFlow) {
     return (
@@ -66,12 +108,12 @@ export const AppLayout = () => {
     <AuthProvider>
       <ProtectedRoute>
         <div className="min-h-screen bg-background flex flex-col">
-          <AppHeader onSectionChange={setActiveSection} />
+          <AppHeader onSectionChange={handleSectionChange} />
           
           <div className="flex flex-1">
             <UnifiedSidebar
               activeSection={activeSection}
-              onSectionChange={setActiveSection}
+              onSectionChange={handleSectionChange}
               sections={sections}
               isVisible={true}
             />

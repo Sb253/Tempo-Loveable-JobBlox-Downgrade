@@ -1,128 +1,132 @@
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, AuthState, LoginCredentials } from '../types/auth';
-import { useToast } from '@/hooks/use-toast';
+import { defaultDemoConfig } from '../types/demo';
+import { useToast } from '../hooks/use-toast';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
-  updateUser: (user: User) => void;
+  isDemoMode: boolean;
+  enableDemoMode: () => void;
+  disableDemoMode: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
-  const [authState, setAuthState] = useState<AuthState>({
-    user: null,
-    isAuthenticated: false,
-    isLoading: true
-  });
 
   useEffect(() => {
-    // Check for existing session on app load
-    const checkSession = () => {
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          setAuthState({
-            user,
-            isAuthenticated: true,
-            isLoading: false
-          });
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          localStorage.removeItem('currentUser');
-          setAuthState(prev => ({ ...prev, isLoading: false }));
-        }
-      } else {
-        setAuthState(prev => ({ ...prev, isLoading: false }));
+    // Check for demo mode setting
+    const demoMode = localStorage.getItem('demoMode') === 'true';
+    const savedUser = localStorage.getItem('authUser');
+    
+    if (demoMode || defaultDemoConfig.enabled) {
+      setIsDemoMode(true);
+      if (defaultDemoConfig.autoLogin) {
+        setUser(defaultDemoConfig.demoUser);
+        setIsAuthenticated(true);
+        localStorage.setItem('authUser', JSON.stringify(defaultDemoConfig.demoUser));
       }
-    };
-
-    checkSession();
+    } else if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Error parsing saved user data:', error);
+        localStorage.removeItem('authUser');
+      }
+    }
+    
+    setIsLoading(false);
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
-    setAuthState(prev => ({ ...prev, isLoading: true }));
-
+    setIsLoading(true);
+    
     try {
-      // Simulate API call - replace with actual authentication
-      const users = JSON.parse(localStorage.getItem('employees') || '[]');
-      const user = users.find((u: any) => 
-        u.email === credentials.email && 
-        u.password === credentials.password &&
-        u.invitationStatus === 'accepted'
-      );
-
-      if (user) {
-        const authUser: User = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          permissions: user.permissions,
-          status: 'active',
-          lastLogin: new Date().toISOString(),
-          createdAt: user.createdAt || new Date().toISOString()
-        };
-
-        localStorage.setItem('currentUser', JSON.stringify(authUser));
-        setAuthState({
-          user: authUser,
-          isAuthenticated: true,
-          isLoading: false
-        });
-
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // For demo purposes, accept any email/password combination
+      // In production, this would make an actual API call
+      if (isDemoMode || credentials.email === 'demo@jobblox.com') {
+        const userData = defaultDemoConfig.demoUser;
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('authUser', JSON.stringify(userData));
+        
         toast({
           title: "Login Successful",
-          description: `Welcome back, ${user.name}!`,
-        });
-
-        return true;
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid email or password.",
-          variant: "destructive"
+          description: `Welcome back, ${userData.name}!`,
         });
         
-        setAuthState(prev => ({ ...prev, isLoading: false }));
-        return false;
+        return true;
       }
+      
+      // Mock validation for other credentials
+      if (credentials.email && credentials.password) {
+        const userData: User = {
+          id: 'user-' + Date.now(),
+          email: credentials.email,
+          name: credentials.email.split('@')[0],
+          role: 'admin',
+          permissions: ['view_dashboard', 'manage_customers', 'manage_jobs', 'view_reports'],
+          status: 'active',
+          lastLogin: new Date().toISOString(),
+          createdAt: new Date().toISOString()
+        };
+        
+        setUser(userData);
+        setIsAuthenticated(true);
+        localStorage.setItem('authUser', JSON.stringify(userData));
+        
+        toast({
+          title: "Login Successful",
+          description: `Welcome, ${userData.name}!`,
+        });
+        
+        return true;
+      }
+      
+      toast({
+        title: "Login Failed",
+        description: "Please check your credentials and try again.",
+        variant: "destructive"
+      });
+      
+      return false;
     } catch (error) {
       console.error('Login error:', error);
       toast({
         title: "Login Error",
-        description: "An error occurred during login.",
+        description: "An error occurred during login. Please try again.",
         variant: "destructive"
       });
-      
-      setAuthState(prev => ({ ...prev, isLoading: false }));
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('currentUser');
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      isLoading: false
-    });
+    setUser(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem('authUser');
     
     toast({
       title: "Logged Out",
@@ -130,18 +134,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
   };
 
-  const updateUser = (user: User) => {
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    setAuthState(prev => ({ ...prev, user }));
+  const enableDemoMode = () => {
+    setIsDemoMode(true);
+    localStorage.setItem('demoMode', 'true');
+    if (defaultDemoConfig.autoLogin) {
+      setUser(defaultDemoConfig.demoUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('authUser', JSON.stringify(defaultDemoConfig.demoUser));
+    }
+  };
+
+  const disableDemoMode = () => {
+    setIsDemoMode(false);
+    localStorage.removeItem('demoMode');
+    logout();
+  };
+
+  const value: AuthContextType = {
+    user,
+    isAuthenticated,
+    isLoading,
+    login,
+    logout,
+    isDemoMode,
+    enableDemoMode,
+    disableDemoMode
   };
 
   return (
-    <AuthContext.Provider value={{
-      ...authState,
-      login,
-      logout,
-      updateUser
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

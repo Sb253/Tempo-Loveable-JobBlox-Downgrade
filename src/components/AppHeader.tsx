@@ -1,207 +1,149 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Search, Bell, Settings, User, LogOut, Building2, Zap, Map, Video } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
-import { InternalMeetings } from "./InternalMeetings";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { 
+  Building2, 
+  Settings, 
+  User, 
+  LogOut, 
+  Bell,
+  Search,
+  Zap,
+  ShieldCheck
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { useAuth } from '../contexts/AuthContext';
 
 interface AppHeaderProps {
-  onSectionChange?: (section: string) => void;
-}
-
-interface CompanyData {
-  companyName: string;
-  logo?: string;
+  onSectionChange: (section: string) => void;
 }
 
 export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
-  const [searchValue, setSearchValue] = useState('');
-  const [notifications] = useState(3);
-  const [showMeetings, setShowMeetings] = useState(false);
-  const [companyData, setCompanyData] = useState<CompanyData>({
-    companyName: 'JobBlox',
-    logo: undefined
-  });
+  const { user, logout, isDemoMode, disableDemoMode } = useAuth();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const savedCompanyData = localStorage.getItem('companySettings');
-    if (savedCompanyData) {
-      try {
-        const data = JSON.parse(savedCompanyData);
-        setCompanyData({
-          companyName: data.name || data.companyName || 'JobBlox',
-          logo: data.logo
-        });
-      } catch (error) {
-        console.error('Error parsing company settings:', error);
-      }
-    }
-
-    // Listen for company settings changes
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'companySettings' && e.newValue) {
-        try {
-          const data = JSON.parse(e.newValue);
-          setCompanyData({
-            companyName: data.name || data.companyName || 'JobBlox',
-            logo: data.logo
-          });
-        } catch (error) {
-          console.error('Error parsing updated company settings:', error);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  const handleNotificationClick = () => {
-    if (onSectionChange) {
-      onSectionChange('notifications');
-    }
+  const handleLogout = () => {
+    logout();
   };
 
-  const handleMapClick = () => {
-    if (onSectionChange) {
-      onSectionChange('map-view');
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // In a real app, this would trigger a global search
+      console.log('Searching for:', searchQuery);
     }
   };
 
   return (
-    <>
-      <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 z-50">
-        <div className="flex items-center justify-between h-full px-6">
-          {/* Left side - Company Logo & Name */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              {companyData.logo ? (
-                <img 
-                  src={companyData.logo} 
-                  alt="Company Logo" 
-                  className="w-8 h-8 object-contain"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Zap className="h-5 w-5 text-white" />
-                </div>
-              )}
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  {companyData.companyName}
-                </h1>
-              </div>
-            </div>
+    <header className="fixed top-0 left-0 right-0 h-16 bg-background border-b border-border/40 z-50 px-6">
+      <div className="flex items-center justify-between h-full">
+        {/* Left side - Logo and Search */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Building2 className="h-8 w-8 text-primary" />
+            <h1 className="text-xl font-bold">JobBlox</h1>
+            {isDemoMode && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                Demo Mode
+              </Badge>
+            )}
           </div>
-
-          {/* Center - Search */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
+          
+          <form onSubmit={handleSearch} className="hidden md:flex">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search jobs, customers, or projects..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                className="pl-10 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-ring"
+                type="search"
+                placeholder="Search customers, jobs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 w-64"
               />
             </div>
-          </div>
-
-          {/* Right side - Actions */}
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-
-            {/* Internal Meetings */}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setShowMeetings(true)}
-              className="relative"
-            >
-              <Video className="h-5 w-5" />
-            </Button>
-
-            {/* Notifications Bell */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative"
-              onClick={handleNotificationClick}
-            >
-              <Bell className="h-5 w-5" />
-              {notifications > 0 && (
-                <Badge className="absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-xs bg-red-500 hover:bg-red-500">
-                  {notifications}
-                </Badge>
-              )}
-            </Button>
-
-            {/* Maps Button */}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleMapClick}
-              className="relative"
-            >
-              <Map className="h-5 w-5" />
-            </Button>
-
-            {/* User Profile Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 px-2 gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder.svg" alt="Profile" />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                      JD
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="hidden md:block text-left">
-                    <p className="text-sm font-medium">John Doe</p>
-                    <p className="text-xs text-muted-foreground">Project Manager</p>
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onSectionChange?.('company-settings')}>
-                  <Building2 className="mr-2 h-4 w-4" />
-                  Company Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Preferences
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          </form>
         </div>
-      </header>
 
-      {/* Internal Meetings Dialog */}
-      {showMeetings && (
-        <Dialog open={true} onOpenChange={setShowMeetings}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Internal Meetings</DialogTitle>
-            </DialogHeader>
-            <InternalMeetings />
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+        {/* Right side - Notifications and User Menu */}
+        <div className="flex items-center gap-3">
+          {/* Notifications */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => onSectionChange('notifications')}
+          >
+            <Bell className="h-5 w-5" />
+          </Button>
+
+          {/* Settings */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => onSectionChange('company-settings')}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-sm font-medium">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3" />
+                      {user?.role}
+                    </p>
+                  </div>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuItem onClick={() => onSectionChange('team-management')}>
+                <User className="mr-2 h-4 w-4" />
+                Profile Settings
+              </DropdownMenuItem>
+              
+              <DropdownMenuItem onClick={() => onSectionChange('company-settings')}>
+                <Settings className="mr-2 h-4 w-4" />
+                Company Settings
+              </DropdownMenuItem>
+              
+              {isDemoMode && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={disableDemoMode}>
+                    <Zap className="mr-2 h-4 w-4" />
+                    Exit Demo Mode
+                  </DropdownMenuItem>
+                </>
+              )}
+              
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </header>
   );
 };
