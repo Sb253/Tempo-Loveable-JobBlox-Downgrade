@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,16 @@ interface Job {
   type: 'job' | 'appointment';
   time: string;
   priority?: 'high' | 'medium' | 'low';
+}
+
+interface NewJobForm {
+  title: string;
+  customer: string;
+  address: string;
+  status: 'scheduled' | 'in-progress' | 'completed';
+  type: 'job' | 'appointment';
+  priority: 'high' | 'medium' | 'low';
+  time: string;
 }
 
 interface EditableRecentJobsProps {
@@ -67,13 +76,13 @@ export const EditableRecentJobs = ({ initialJobs = [] }: EditableRecentJobsProps
 
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
-  const [newJob, setNewJob] = useState({
+  const [newJob, setNewJob] = useState<NewJobForm>({
     title: '',
     customer: '',
     address: '',
-    status: 'scheduled' as const,
-    type: 'job' as const,
-    priority: 'medium' as const,
+    status: 'scheduled',
+    type: 'job',
+    priority: 'medium',
     time: ''
   });
 
@@ -259,7 +268,7 @@ export const EditableRecentJobs = ({ initialJobs = [] }: EditableRecentJobsProps
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <Label htmlFor="type">Type</Label>
-                      <Select value={newJob.type} onValueChange={(value) => setNewJob(prev => ({ ...prev, type: value as 'job' | 'appointment' }))}>
+                      <Select value={newJob.type} onValueChange={(value: 'job' | 'appointment') => setNewJob(prev => ({ ...prev, type: value }))}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -271,7 +280,7 @@ export const EditableRecentJobs = ({ initialJobs = [] }: EditableRecentJobsProps
                     </div>
                     <div>
                       <Label htmlFor="status">Status</Label>
-                      <Select value={newJob.status} onValueChange={(value) => setNewJob(prev => ({ ...prev, status: value as 'scheduled' | 'in-progress' | 'completed' }))}>
+                      <Select value={newJob.status} onValueChange={(value: 'scheduled' | 'in-progress' | 'completed') => setNewJob(prev => ({ ...prev, status: value }))}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -284,7 +293,7 @@ export const EditableRecentJobs = ({ initialJobs = [] }: EditableRecentJobsProps
                     </div>
                     <div>
                       <Label htmlFor="priority">Priority</Label>
-                      <Select value={newJob.priority} onValueChange={(value) => setNewJob(prev => ({ ...prev, priority: value as 'high' | 'medium' | 'low' }))}>
+                      <Select value={newJob.priority} onValueChange={(value: 'high' | 'medium' | 'low') => setNewJob(prev => ({ ...prev, priority: value }))}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
