@@ -1,241 +1,360 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Play, Pause, Square, Timer, CalendarDays } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { businessDataManager, type TimeEntry } from '../utils/businessDataManager';
+import { Play, Pause, StopCircle, Clock, Plus, MapPin, User } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-interface TimeEntry {
-  id: string;
-  employee: string;
-  job: string;
-  startTime: string;
-  endTime?: string;
-  duration: number;
-  status: 'active' | 'paused' | 'completed';
-  date: string;
-}
-
-const mockTimeEntries: TimeEntry[] = [
-  {
-    id: '1',
-    employee: 'Mike Johnson',
-    job: 'Kitchen Renovation',
-    startTime: '08:00 AM',
-    endTime: '12:00 PM',
-    duration: 240,
-    status: 'completed',
-    date: '2024-01-15'
-  },
-  {
-    id: '2',
-    employee: 'Sarah Davis',
-    job: 'Bathroom Repair',
-    startTime: '09:30 AM',
-    duration: 90,
-    status: 'active',
-    date: '2024-01-15'
-  },
-  {
-    id: '3',
-    employee: 'Tom Wilson',
-    job: 'Deck Installation',
-    startTime: '10:15 AM',
-    endTime: '11:45 AM',
-    duration: 90,
-    status: 'paused',
-    date: '2024-01-15'
-  }
-];
 
 export const TimeTracking = () => {
   const { toast } = useToast();
-  const [timeEntries] = useState<TimeEntry[]>(mockTimeEntries);
-  const [selectedEmployee, setSelectedEmployee] = useState('all');
-  const [selectedDate, setSelectedDate] = useState('today');
+  const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
+  const [activeTimer, setActiveTimer] = useState<string | null>(null);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newEntry, setNewEntry] = useState({
+    employeeId: '',
+    jobId: '',
+    description: '',
+    startTime: new Date().toISOString().slice(0, 16)
+  });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const employees = businessDataManager.getAllEmployees();
+  const jobs = businessDataManager.getAllJobs();
+
+  useEffect(() => {
+    loadTimeEntries();
+  }, []);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeTimer) {
+      interval = setInterval(() => {
+        setTimerSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [activeTimer]);
+
+  const loadTimeEntries = () => {
+    const data = businessDataManager.getAllTimeEntries();
+    setTimeEntries(data);
+    
+    // Check for active timers
+    const activeEntry = data.find(entry => entry.status === 'in-progress');
+    if (activeEntry) {
+      setActiveTimer(activeEntry.id);
+      const startTime = new Date(activeEntry.startTime).getTime();
+      const now = new Date().getTime();
+      const elapsed = Math.floor((now - startTime) / 1000);
+      setTimerSeconds(elapsed);
     }
   };
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours}h ${mins}m`;
-  };
+  const startTimer = () => {
+    if (!newEntry.employeeId) {
+      toast({
+        title: "Validation Error",
+        description: "Please select an employee",
+        variant: "destructive"
+      });
+      return;
+    }
 
-  const handleTimeAction = (action: string, entryId: string) => {
-    console.log(`${action} time tracking for entry ${entryId}`);
+    const selectedEmployee = employees.find(emp => emp.id === newEntry.employeeId);
+    const selectedJob = jobs.find(job => job.id === newEntry.jobId);
+
+    const timeEntry = businessDataManager.createTimeEntry({
+      employeeId: newEntry.employeeId,
+      employeeName: selectedEmployee?.name || 'Unknown Employee',
+      jobId: newEntry.jobId || undefined,
+      jobTitle: selectedJob?.title || undefined,
+      startTime: new Date().toISOString(),
+      breakTime: 0,
+      totalHours: 0,
+      description: newEntry.description,
+      status: 'in-progress'
+    });
+
+    setActiveTimer(timeEntry.id);
+    setTimerSeconds(0);
+    setShowCreateDialog(false);
+    loadTimeEntries();
+
     toast({
-      title: "Time Tracking Updated",
-      description: `Time tracking ${action}ed successfully.`,
+      title: "Timer Started",
+      description: `Timer started for ${selectedEmployee?.name}`
     });
   };
 
-  const totalHoursToday = timeEntries
-    .filter(entry => entry.date === '2024-01-15')
-    .reduce((total, entry) => total + entry.duration, 0);
+  const stopTimer = (entryId: string) => {
+    const entry = timeEntries.find(t => t.id === entryId);
+    if (!entry) return;
 
-  const activeEmployees = timeEntries.filter(entry => entry.status === 'active').length;
+    const endTime = new Date().toISOString();
+    const startTime = new Date(entry.startTime).getTime();
+    const endTimeMs = new Date(endTime).getTime();
+    const totalHours = (endTimeMs - startTime - (entry.breakTime * 60 * 1000)) / (1000 * 60 * 60);
+
+    const updatedEntry = {
+      ...entry,
+      endTime,
+      totalHours: Math.round(totalHours * 100) / 100,
+      status: 'completed' as const
+    };
+
+    businessDataManager.saveTimeEntry(updatedEntry);
+    setActiveTimer(null);
+    setTimerSeconds(0);
+    loadTimeEntries();
+
+    toast({
+      title: "Timer Stopped",
+      description: `Logged ${totalHours.toFixed(2)} hours`
+    });
+  };
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatDuration = (hours: number) => {
+    if (hours < 1) {
+      return `${Math.round(hours * 60)}m`;
+    }
+    return `${hours.toFixed(1)}h`;
+  };
+
+  const todayEntries = timeEntries.filter(entry => 
+    new Date(entry.startTime).toDateString() === new Date().toDateString()
+  );
+
+  const totalHoursToday = todayEntries.reduce((sum, entry) => sum + entry.totalHours, 0);
+  const activeEntries = timeEntries.filter(entry => entry.status === 'in-progress').length;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Employee Time Tracking</h2>
-        <Button className="flex items-center gap-2">
-          <Play className="h-4 w-4" />
-          Start New Timer
-        </Button>
+        <h2 className="text-2xl font-bold">Time Tracking</h2>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button disabled={!!activeTimer}>
+              <Play className="h-4 w-4 mr-2" />
+              Start Timer
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Start Time Tracking</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="employee">Employee *</Label>
+                <Select value={newEntry.employeeId} onValueChange={(value) => setNewEntry(prev => ({ ...prev, employeeId: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select employee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {employees.map(emp => (
+                      <SelectItem key={emp.id} value={emp.id}>{emp.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="job">Job (Optional)</Label>
+                <Select value={newEntry.jobId} onValueChange={(value) => setNewEntry(prev => ({ ...prev, jobId: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No specific job</SelectItem>
+                    {jobs.map(job => (
+                      <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newEntry.description}
+                  onChange={(e) => setNewEntry(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="What work is being performed?"
+                  rows={2}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={startTimer}>
+                  <Play className="h-4 w-4 mr-2" />
+                  Start Timer
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Hours Today</CardTitle>
+            <CardTitle className="text-sm font-medium">Today's Hours</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatDuration(totalHoursToday)}</div>
+            <div className="text-2xl font-bold">{totalHoursToday.toFixed(1)}h</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Timers</CardTitle>
-            <Timer className="h-4 w-4 text-muted-foreground" />
+            <Play className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeEmployees}</div>
+            <div className="text-2xl font-bold text-green-600">{activeEntries}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Daily Hours</CardTitle>
-            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Current Timer</CardTitle>
+            <StopCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">7.5h</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overtime Hours</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">2.5h</div>
+            <div className="text-2xl font-bold text-red-600">
+              {activeTimer ? formatTime(timerSeconds) : '--:--:--'}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Active Timer Display */}
+      {activeTimer && (
+        <Card className="border-green-200 bg-green-50">
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="font-semibold">Timer Active</span>
+                </div>
+                <div className="text-3xl font-mono font-bold text-green-700">
+                  {formatTime(timerSeconds)}
+                </div>
+              </div>
+              <Button 
+                variant="destructive" 
+                onClick={() => activeTimer && stopTimer(activeTimer)}
+                size="lg"
+              >
+                <StopCircle className="h-4 w-4 mr-2" />
+                Stop Timer
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Time Entries List */}
       <Card>
         <CardHeader>
-          <CardTitle>Filter Time Entries</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Select value={selectedEmployee} onValueChange={setSelectedEmployee}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select employee" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Employees</SelectItem>
-              <SelectItem value="mike">Mike Johnson</SelectItem>
-              <SelectItem value="sarah">Sarah Davis</SelectItem>
-              <SelectItem value="tom">Tom Wilson</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={selectedDate} onValueChange={setSelectedDate}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select date range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-
-      {/* Time Entries Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Time Entries</CardTitle>
+          <CardTitle>Recent Time Entries</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead>Job</TableHead>
-                <TableHead>Start Time</TableHead>
-                <TableHead>End Time</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {timeEntries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="font-medium">{entry.employee}</TableCell>
-                  <TableCell>{entry.job}</TableCell>
-                  <TableCell>{entry.startTime}</TableCell>
-                  <TableCell>{entry.endTime || 'In Progress'}</TableCell>
-                  <TableCell>{formatDuration(entry.duration)}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(entry.status)}>
-                      {entry.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      {entry.status === 'active' && (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleTimeAction('pause', entry.id)}
-                          >
-                            <Pause className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleTimeAction('stop', entry.id)}
-                          >
-                            <Square className="h-3 w-3" />
-                          </Button>
-                        </>
-                      )}
-                      {entry.status === 'paused' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleTimeAction('resume', entry.id)}
-                        >
-                          <Play className="h-3 w-3" />
-                        </Button>
+          <div className="space-y-4">
+            {timeEntries.slice(0, 10).map((entry) => (
+              <div key={entry.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-semibold">{entry.employeeName}</span>
+                      </div>
+                      
+                      <Badge variant={entry.status === 'in-progress' ? 'default' : 'secondary'}>
+                        {entry.status === 'in-progress' ? (
+                          <>
+                            <Play className="h-3 w-3 mr-1" />
+                            Active
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="h-3 w-3 mr-1" />
+                            {formatDuration(entry.totalHours)}
+                          </>
+                        )}
+                      </Badge>
+
+                      {entry.jobTitle && (
+                        <Badge variant="outline">{entry.jobTitle}</Badge>
                       )}
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                      <div>
+                        <span className="font-medium">Started:</span> {new Date(entry.startTime).toLocaleString()}
+                      </div>
+                      {entry.endTime && (
+                        <div>
+                          <span className="font-medium">Ended:</span> {new Date(entry.endTime).toLocaleString()}
+                        </div>
+                      )}
+                      <div>
+                        <span className="font-medium">Duration:</span> 
+                        {entry.status === 'in-progress' ? (
+                          <span className="text-green-600 font-bold ml-1">
+                            {entry.id === activeTimer ? formatTime(timerSeconds) : 'Active'}
+                          </span>
+                        ) : (
+                          <span className="ml-1">{formatDuration(entry.totalHours)}</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {entry.description && (
+                      <p className="text-sm text-muted-foreground mt-2">{entry.description}</p>
+                    )}
+                  </div>
+
+                  {entry.status === 'in-progress' && entry.id !== activeTimer && (
+                    <Button 
+                      size="sm" 
+                      variant="destructive"
+                      onClick={() => stopTimer(entry.id)}
+                    >
+                      <StopCircle className="h-4 w-4 mr-1" />
+                      Stop
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {timeEntries.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No time entries found. Start tracking time to see entries here.
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

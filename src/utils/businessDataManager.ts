@@ -1,4 +1,3 @@
-
 // Business Data Manager - Centralized business logic and data management
 
 export interface Customer {
@@ -115,6 +114,106 @@ export interface Employee {
     phone: string;
     relationship: string;
   };
+  location?: {
+    latitude: number;
+    longitude: number;
+    lastUpdated: string;
+  };
+  availability: {
+    monday: { start: string; end: string; available: boolean };
+    tuesday: { start: string; end: string; available: boolean };
+    wednesday: { start: string; end: string; available: boolean };
+    thursday: { start: string; end: string; available: boolean };
+    friday: { start: string; end: string; available: boolean };
+    saturday: { start: string; end: string; available: boolean };
+    sunday: { start: string; end: string; available: boolean };
+  };
+}
+
+export interface Expense {
+  id: string;
+  description: string;
+  amount: number;
+  category: string;
+  jobId?: string;
+  employeeId: string;
+  employeeName: string;
+  date: string;
+  receiptUrl?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  approvedBy?: string;
+  notes: string;
+  isReimbursable: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Material {
+  id: string;
+  name: string;
+  description: string;
+  sku: string;
+  category: string;
+  supplier: string;
+  cost: number;
+  sellingPrice: number;
+  quantityInStock: number;
+  reorderPoint: number;
+  unit: string;
+  location: string;
+  lastOrderDate: string;
+  expirationDate?: string;
+}
+
+export interface Equipment {
+  id: string;
+  name: string;
+  model: string;
+  serialNumber: string;
+  category: string;
+  status: 'available' | 'in-use' | 'maintenance' | 'retired';
+  assignedTo?: string;
+  location?: string;
+  purchaseDate: string;
+  purchasePrice: number;
+  warrantyExpiration?: string;
+  lastMaintenanceDate?: string;
+  nextMaintenanceDate?: string;
+  notes: string;
+}
+
+export interface SafetyIncident {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'minor' | 'moderate' | 'serious' | 'critical';
+  location: string;
+  jobId?: string;
+  reportedBy: string;
+  date: string;
+  injuredPerson?: string;
+  witnessNames: string[];
+  correctiveActions: string;
+  status: 'reported' | 'investigating' | 'resolved';
+  photos: string[];
+}
+
+export interface TimeEntry {
+  id: string;
+  employeeId: string;
+  employeeName: string;
+  jobId?: string;
+  jobTitle?: string;
+  startTime: string;
+  endTime?: string;
+  breakTime: number;
+  totalHours: number;
+  description: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  status: 'in-progress' | 'completed' | 'approved';
 }
 
 class BusinessDataManager {
@@ -183,6 +282,128 @@ class BusinessDataManager {
     }
     
     return false;
+  }
+  
+  // Employee Management
+  createEmployee(employeeData: Omit<Employee, 'id'>): Employee {
+    const employee: Employee = {
+      ...employeeData,
+      id: `emp-${Date.now()}`
+    };
+    
+    this.saveEmployee(employee);
+    console.log('Employee created:', employee);
+    return employee;
+  }
+  
+  getAllEmployees(): Employee[] {
+    const data = localStorage.getItem(`${this.storagePrefix}employees`);
+    return data ? JSON.parse(data) : this.getDefaultEmployees();
+  }
+  
+  saveEmployee(employee: Employee): void {
+    const employees = this.getAllEmployees();
+    const index = employees.findIndex(e => e.id === employee.id);
+    
+    if (index >= 0) {
+      employees[index] = employee;
+    } else {
+      employees.push(employee);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}employees`, JSON.stringify(employees));
+  }
+  
+  // Expense Management
+  createExpense(expenseData: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>): Expense {
+    const expense: Expense = {
+      ...expenseData,
+      id: `exp-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    this.saveExpense(expense);
+    console.log('Expense created:', expense);
+    return expense;
+  }
+  
+  getAllExpenses(): Expense[] {
+    const data = localStorage.getItem(`${this.storagePrefix}expenses`);
+    return data ? JSON.parse(data) : this.getDefaultExpenses();
+  }
+  
+  saveExpense(expense: Expense): void {
+    const expenses = this.getAllExpenses();
+    const index = expenses.findIndex(e => e.id === expense.id);
+    
+    if (index >= 0) {
+      expenses[index] = expense;
+    } else {
+      expenses.push(expense);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}expenses`, JSON.stringify(expenses));
+  }
+  
+  // Material Management
+  createMaterial(materialData: Omit<Material, 'id'>): Material {
+    const material: Material = {
+      ...materialData,
+      id: `mat-${Date.now()}`
+    };
+    
+    this.saveMaterial(material);
+    console.log('Material created:', material);
+    return material;
+  }
+  
+  getAllMaterials(): Material[] {
+    const data = localStorage.getItem(`${this.storagePrefix}materials`);
+    return data ? JSON.parse(data) : this.getDefaultMaterials();
+  }
+  
+  saveMaterial(material: Material): void {
+    const materials = this.getAllMaterials();
+    const index = materials.findIndex(m => m.id === material.id);
+    
+    if (index >= 0) {
+      materials[index] = material;
+    } else {
+      materials.push(material);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}materials`, JSON.stringify(materials));
+  }
+  
+  // Time Entry Management
+  createTimeEntry(timeData: Omit<TimeEntry, 'id'>): TimeEntry {
+    const timeEntry: TimeEntry = {
+      ...timeData,
+      id: `time-${Date.now()}`
+    };
+    
+    this.saveTimeEntry(timeEntry);
+    console.log('Time entry created:', timeEntry);
+    return timeEntry;
+  }
+  
+  getAllTimeEntries(): TimeEntry[] {
+    const data = localStorage.getItem(`${this.storagePrefix}timeEntries`);
+    return data ? JSON.parse(data) : this.getDefaultTimeEntries();
+  }
+  
+  saveTimeEntry(timeEntry: TimeEntry): void {
+    const timeEntries = this.getAllTimeEntries();
+    const index = timeEntries.findIndex(t => t.id === timeEntry.id);
+    
+    if (index >= 0) {
+      timeEntries[index] = timeEntry;
+    } else {
+      timeEntries.push(timeEntry);
+    }
+    
+    localStorage.setItem(`${this.storagePrefix}timeEntries`, JSON.stringify(timeEntries));
   }
   
   // Job Management
@@ -294,6 +515,8 @@ class BusinessDataManager {
     const customers = this.getAllCustomers();
     const jobs = this.getAllJobs();
     const invoices = this.getAllInvoices();
+    const employees = this.getAllEmployees();
+    const expenses = this.getAllExpenses();
     
     const totalRevenue = invoices
       .filter(inv => inv.status === 'paid')
@@ -302,6 +525,10 @@ class BusinessDataManager {
     const pendingRevenue = invoices
       .filter(inv => inv.status === 'sent')
       .reduce((sum, inv) => sum + inv.total, 0);
+    
+    const totalExpenses = expenses
+      .filter(exp => exp.status === 'approved')
+      .reduce((sum, exp) => sum + exp.amount, 0);
     
     const activeJobs = jobs.filter(job => job.status === 'in-progress').length;
     const completedJobs = jobs.filter(job => job.status === 'completed').length;
@@ -315,6 +542,9 @@ class BusinessDataManager {
       totalInvoices: invoices.length,
       totalRevenue,
       pendingRevenue,
+      totalExpenses,
+      netProfit: totalRevenue - totalExpenses,
+      activeEmployees: employees.filter(e => e.status === 'active').length,
       averageJobValue: jobs.length > 0 ? jobs.reduce((sum, job) => sum + job.estimatedCost, 0) / jobs.length : 0
     };
   }
@@ -375,6 +605,96 @@ class BusinessDataManager {
         status: 'active',
         createdAt: '2024-02-01T09:00:00Z',
         updatedAt: '2024-12-16T14:20:00Z'
+      }
+    ];
+  }
+  
+  private getDefaultEmployees(): Employee[] {
+    return [
+      {
+        id: 'emp-1',
+        name: 'Mike Johnson',
+        email: 'mike@company.com',
+        phone: '(555) 234-5678',
+        role: 'Lead Technician',
+        department: 'Field Operations',
+        hourlyRate: 35,
+        skills: ['Plumbing', 'Electrical', 'HVAC'],
+        certifications: ['EPA 608', 'OSHA 10'],
+        status: 'active',
+        startDate: '2023-01-15',
+        emergencyContact: {
+          name: 'Sarah Johnson',
+          phone: '(555) 234-5679',
+          relationship: 'Spouse'
+        },
+        availability: {
+          monday: { start: '08:00', end: '17:00', available: true },
+          tuesday: { start: '08:00', end: '17:00', available: true },
+          wednesday: { start: '08:00', end: '17:00', available: true },
+          thursday: { start: '08:00', end: '17:00', available: true },
+          friday: { start: '08:00', end: '17:00', available: true },
+          saturday: { start: '09:00', end: '15:00', available: true },
+          sunday: { start: '00:00', end: '00:00', available: false }
+        }
+      }
+    ];
+  }
+  
+  private getDefaultExpenses(): Expense[] {
+    return [
+      {
+        id: 'exp-1',
+        description: 'Vehicle Fuel',
+        amount: 75.50,
+        category: 'Transportation',
+        jobId: 'job-1',
+        employeeId: 'emp-1',
+        employeeName: 'Mike Johnson',
+        date: '2024-12-16',
+        status: 'pending',
+        notes: 'Gas for service calls',
+        isReimbursable: true,
+        createdAt: '2024-12-16T08:00:00Z',
+        updatedAt: '2024-12-16T08:00:00Z'
+      }
+    ];
+  }
+  
+  private getDefaultMaterials(): Material[] {
+    return [
+      {
+        id: 'mat-1',
+        name: 'PVC Pipe 1/2"',
+        description: '1/2 inch PVC pipe for plumbing',
+        sku: 'PVC-050-10',
+        category: 'Plumbing',
+        supplier: 'Home Depot',
+        cost: 2.50,
+        sellingPrice: 4.00,
+        quantityInStock: 50,
+        reorderPoint: 10,
+        unit: 'feet',
+        location: 'Warehouse A-1',
+        lastOrderDate: '2024-12-01'
+      }
+    ];
+  }
+  
+  private getDefaultTimeEntries(): TimeEntry[] {
+    return [
+      {
+        id: 'time-1',
+        employeeId: 'emp-1',
+        employeeName: 'Mike Johnson',
+        jobId: 'job-1',
+        jobTitle: 'Kitchen Renovation',
+        startTime: '2024-12-16T08:00:00Z',
+        endTime: '2024-12-16T12:00:00Z',
+        breakTime: 30,
+        totalHours: 3.5,
+        description: 'Kitchen renovation work - plumbing installation',
+        status: 'completed'
       }
     ];
   }

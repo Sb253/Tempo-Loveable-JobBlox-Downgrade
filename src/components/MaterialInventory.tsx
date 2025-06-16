@@ -1,466 +1,435 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { businessDataManager, type Material } from '../utils/businessDataManager';
+import { Package, Plus, Search, AlertTriangle, TrendingDown, TrendingUp } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { Package, DollarSign, TrendingUp, AlertTriangle, Plus, Minus, ShoppingCart } from "lucide-react";
-
-interface Material {
-  id: string;
-  name: string;
-  category: string;
-  unit: string;
-  currentStock: number;
-  minStock: number;
-  maxStock: number;
-  unitCost: number;
-  supplier: string;
-  location: string;
-  lastOrdered: string;
-  status: 'in-stock' | 'low-stock' | 'out-of-stock' | 'on-order';
-}
-
-interface CostEntry {
-  id: string;
-  materialId: string;
-  materialName: string;
-  jobId: string;
-  jobName: string;
-  quantity: number;
-  unitCost: number;
-  totalCost: number;
-  date: string;
-  type: 'used' | 'wasted' | 'returned';
-}
 
 export const MaterialInventory = () => {
   const { toast } = useToast();
-  const [materials, setMaterials] = useState<Material[]>([
-    {
-      id: '1',
-      name: 'Portland Cement',
-      category: 'Concrete',
-      unit: 'bags',
-      currentStock: 45,
-      minStock: 20,
-      maxStock: 100,
-      unitCost: 12.50,
-      supplier: 'BuildMart Supply',
-      location: 'Warehouse A',
-      lastOrdered: '2024-12-01',
-      status: 'in-stock'
-    },
-    {
-      id: '2',
-      name: '2x4 Lumber (8ft)',
-      category: 'Lumber',
-      unit: 'pieces',
-      currentStock: 8,
-      minStock: 15,
-      maxStock: 200,
-      unitCost: 4.25,
-      supplier: 'Timber Direct',
-      location: 'Yard Storage',
-      lastOrdered: '2024-11-28',
-      status: 'low-stock'
-    },
-    {
-      id: '3',
-      name: 'Rebar #4',
-      category: 'Steel',
-      unit: 'feet',
-      currentStock: 0,
-      minStock: 500,
-      maxStock: 2000,
-      unitCost: 0.85,
-      supplier: 'Steel Solutions',
-      location: 'Warehouse B',
-      lastOrdered: '2024-12-10',
-      status: 'out-of-stock'
-    },
-    {
-      id: '4',
-      name: 'Roofing Shingles',
-      category: 'Roofing',
-      unit: 'bundles',
-      currentStock: 25,
-      minStock: 10,
-      maxStock: 50,
-      unitCost: 35.00,
-      supplier: 'Roof Pro Supply',
-      location: 'Warehouse A',
-      lastOrdered: '2024-12-05',
-      status: 'in-stock'
-    }
-  ]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({
+    name: '',
+    description: '',
+    sku: '',
+    category: '',
+    supplier: '',
+    cost: 0,
+    sellingPrice: 0,
+    quantityInStock: 0,
+    reorderPoint: 10,
+    unit: '',
+    location: ''
+  });
 
-  const [costEntries, setCostEntries] = useState<CostEntry[]>([
-    {
-      id: '1',
-      materialId: '1',
-      materialName: 'Portland Cement',
-      jobId: 'job-1',
-      jobName: 'Foundation - Smith House',
-      quantity: 15,
-      unitCost: 12.50,
-      totalCost: 187.50,
-      date: '2024-12-15',
-      type: 'used'
-    },
-    {
-      id: '2',
-      materialId: '2',
-      materialName: '2x4 Lumber (8ft)',
-      jobId: 'job-2',
-      jobName: 'Framing - Johnson Garage',
-      quantity: 30,
-      unitCost: 4.25,
-      totalCost: 127.50,
-      date: '2024-12-14',
-      type: 'used'
-    }
-  ]);
+  const categories = ['Plumbing', 'Electrical', 'HVAC', 'Flooring', 'Roofing', 'Hardware', 'Safety', 'Tools', 'Other'];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'in-stock': return 'bg-green-100 text-green-800';
-      case 'low-stock': return 'bg-yellow-100 text-yellow-800';
-      case 'out-of-stock': return 'bg-red-100 text-red-800';
-      case 'on-order': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  useEffect(() => {
+    loadMaterials();
+  }, []);
+
+  const loadMaterials = () => {
+    const data = businessDataManager.getAllMaterials();
+    setMaterials(data);
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'used': return 'bg-blue-100 text-blue-800';
-      case 'wasted': return 'bg-red-100 text-red-800';
-      case 'returned': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const filteredMaterials = materials.filter(material => {
+    const matchesSearch = material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         material.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         material.supplier.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || material.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleCreateMaterial = () => {
+    if (!newMaterial.name || !newMaterial.sku || !newMaterial.category) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
     }
+
+    businessDataManager.createMaterial({
+      ...newMaterial,
+      lastOrderDate: new Date().toISOString().split('T')[0]
+    });
+
+    loadMaterials();
+    setShowCreateDialog(false);
+    setNewMaterial({
+      name: '',
+      description: '',
+      sku: '',
+      category: '',
+      supplier: '',
+      cost: 0,
+      sellingPrice: 0,
+      quantityInStock: 0,
+      reorderPoint: 10,
+      unit: '',
+      location: ''
+    });
+
+    toast({
+      title: "Material Added",
+      description: "New material has been added to inventory"
+    });
   };
 
-  const handleAdjustStock = (materialId: string, adjustment: number) => {
-    setMaterials(prev => prev.map(material => {
-      if (material.id === materialId) {
-        const newStock = Math.max(0, material.currentStock + adjustment);
-        let newStatus: Material['status'] = 'in-stock';
-        
-        if (newStock === 0) newStatus = 'out-of-stock';
-        else if (newStock <= material.minStock) newStatus = 'low-stock';
-        
-        return { ...material, currentStock: newStock, status: newStatus };
-      }
-      return material;
-    }));
+  const handleStockUpdate = (materialId: string, newQuantity: number) => {
+    const material = materials.find(m => m.id === materialId);
+    if (!material) return;
+
+    const updatedMaterial = {
+      ...material,
+      quantityInStock: newQuantity
+    };
+
+    businessDataManager.saveMaterial(updatedMaterial);
+    loadMaterials();
 
     toast({
       title: "Stock Updated",
-      description: `Inventory has been ${adjustment > 0 ? 'increased' : 'decreased'}.`,
+      description: `${material.name} stock updated to ${newQuantity} ${material.unit}`
     });
   };
 
-  const handleReorderMaterial = (materialId: string) => {
-    setMaterials(prev => prev.map(material => 
-      material.id === materialId ? { ...material, status: 'on-order' as const } : material
-    ));
-    
-    toast({
-      title: "Reorder Initiated",
-      description: "Material has been added to the purchase order.",
-    });
+  const getStockStatus = (material: Material) => {
+    if (material.quantityInStock === 0) {
+      return { status: 'out-of-stock', color: 'bg-red-100 text-red-800', icon: AlertTriangle };
+    } else if (material.quantityInStock <= material.reorderPoint) {
+      return { status: 'low-stock', color: 'bg-yellow-100 text-yellow-800', icon: TrendingDown };
+    } else {
+      return { status: 'in-stock', color: 'bg-green-100 text-green-800', icon: TrendingUp };
+    }
   };
 
-  const totalInventoryValue = materials.reduce((sum, material) => 
-    sum + (material.currentStock * material.unitCost), 0
-  );
-  
-  const lowStockCount = materials.filter(m => m.status === 'low-stock' || m.status === 'out-of-stock').length;
-  
-  const monthlySpend = costEntries
-    .filter(entry => entry.type === 'used')
-    .reduce((sum, entry) => sum + entry.totalCost, 0);
+  const lowStockItems = materials.filter(m => m.quantityInStock <= m.reorderPoint);
+  const outOfStockItems = materials.filter(m => m.quantityInStock === 0);
+  const totalValue = materials.reduce((sum, m) => sum + (m.quantityInStock * m.cost), 0);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Material Cost Tracking & Inventory</h2>
-        <div className="flex gap-2">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Material
-          </Button>
-          <Button variant="outline">
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Purchase Order
-          </Button>
-        </div>
+        <h2 className="text-2xl font-bold">Material Inventory</h2>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Material
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Add New Material</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name *</Label>
+                <Input
+                  id="name"
+                  value={newMaterial.name}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Material name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sku">SKU *</Label>
+                <Input
+                  id="sku"
+                  value={newMaterial.sku}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, sku: e.target.value }))}
+                  placeholder="Stock keeping unit"
+                />
+              </div>
+
+              <div className="space-y-2 col-span-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={newMaterial.description}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Material description"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Category *</Label>
+                <Select value={newMaterial.category} onValueChange={(value) => setNewMaterial(prev => ({ ...prev, category: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map(cat => (
+                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="supplier">Supplier</Label>
+                <Input
+                  id="supplier"
+                  value={newMaterial.supplier}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, supplier: e.target.value }))}
+                  placeholder="Supplier name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cost">Cost</Label>
+                <Input
+                  id="cost"
+                  type="number"
+                  step="0.01"
+                  value={newMaterial.cost}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, cost: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sellingPrice">Selling Price</Label>
+                <Input
+                  id="sellingPrice"
+                  type="number"
+                  step="0.01"
+                  value={newMaterial.sellingPrice}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, sellingPrice: parseFloat(e.target.value) || 0 }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Initial Stock</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  value={newMaterial.quantityInStock}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, quantityInStock: parseInt(e.target.value) || 0 }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reorderPoint">Reorder Point</Label>
+                <Input
+                  id="reorderPoint"
+                  type="number"
+                  value={newMaterial.reorderPoint}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, reorderPoint: parseInt(e.target.value) || 0 }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="unit">Unit</Label>
+                <Input
+                  id="unit"
+                  value={newMaterial.unit}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, unit: e.target.value }))}
+                  placeholder="e.g., pieces, feet, lbs"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={newMaterial.location}
+                  onChange={(e) => setNewMaterial(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Storage location"
+                />
+              </div>
+
+              <div className="col-span-2 flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateMaterial}>
+                  Add Material
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Overview Stats */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Package className="h-8 w-8 text-blue-600" />
-              <div>
-                <p className="text-2xl font-bold">{materials.length}</p>
-                <p className="text-sm text-muted-foreground">Total Materials</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Items</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{materials.length}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <DollarSign className="h-8 w-8 text-green-600" />
-              <div>
-                <p className="text-2xl font-bold">${totalInventoryValue.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Inventory Value</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Low Stock Alerts</CardTitle>
+            <TrendingDown className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">{lowStockItems.length}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <AlertTriangle className="h-8 w-8 text-orange-600" />
-              <div>
-                <p className="text-2xl font-bold">{lowStockCount}</p>
-                <p className="text-sm text-muted-foreground">Low Stock Alerts</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Out of Stock</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{outOfStockItems.length}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-purple-600" />
-              <div>
-                <p className="text-2xl font-bold">${monthlySpend.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Monthly Spend</p>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <TrendingUp className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">${totalValue.toFixed(2)}</div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="inventory" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          <TabsTrigger value="costs">Cost Tracking</TabsTrigger>
-          <TabsTrigger value="orders">Purchase Orders</TabsTrigger>
-        </TabsList>
+      {/* Filters */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center space-x-2">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search materials..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64"
+              />
+            </div>
 
-        <TabsContent value="inventory" className="space-y-4">
-          {/* Low Stock Alerts */}
-          {lowStockCount > 0 && (
-            <Card className="border-orange-200 bg-orange-50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-orange-800">
-                  <AlertTriangle className="h-5 w-5" />
-                  Low Stock Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {materials
-                    .filter(material => material.status === 'low-stock' || material.status === 'out-of-stock')
-                    .map((material) => (
-                      <div key={material.id} className="flex items-center justify-between p-2 bg-white rounded border">
-                        <span className="font-medium">{material.name}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getStatusColor(material.status)}>
-                            {material.currentStock} {material.unit}
-                          </Badge>
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleReorderMaterial(material.id)}
-                          >
-                            Reorder
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Materials List */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {materials.map((material) => (
-              <Card key={material.id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold">{material.name}</h3>
-                      <p className="text-sm text-muted-foreground">{material.category}</p>
-                    </div>
-                    <Badge className={getStatusColor(material.status)}>
-                      {material.status}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Current Stock</p>
-                      <p className="font-medium">{material.currentStock} {material.unit}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Unit Cost</p>
-                      <p className="font-medium">${material.unitCost}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Location</p>
-                      <p className="font-medium">{material.location}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground">Supplier</p>
-                      <p className="font-medium">{material.supplier}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleAdjustStock(material.id, -1)}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleAdjustStock(material.id, 1)}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleReorderMaterial(material.id)}
-                    >
-                      <ShoppingCart className="h-3 w-3 mr-1" />
-                      Reorder
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="costs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Material Usage & Costs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {costEntries.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <h3 className="font-semibold">{entry.materialName}</h3>
-                      <p className="text-sm text-muted-foreground">{entry.jobName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {entry.quantity} units × ${entry.unitCost} = ${entry.totalCost}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <Badge className={getTypeColor(entry.type)}>
-                        {entry.type}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">{entry.date}</span>
-                    </div>
-                  </div>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
-          {/* Cost Summary */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Cost Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-blue-600">
-                    ${costEntries.filter(e => e.type === 'used').reduce((sum, e) => sum + e.totalCost, 0).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Materials Used</p>
-                </div>
-                <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-red-600">
-                    ${costEntries.filter(e => e.type === 'wasted').reduce((sum, e) => sum + e.totalCost, 0).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Materials Wasted</p>
-                </div>
-                <div className="text-center p-4 border rounded">
-                  <p className="text-2xl font-bold text-green-600">
-                    ${costEntries.filter(e => e.type === 'returned').reduce((sum, e) => sum + e.totalCost, 0).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Materials Returned</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="orders" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Purchase Orders</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {materials
-                  .filter(material => material.status === 'on-order')
-                  .map((material) => (
-                    <div key={material.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
+      {/* Materials List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Materials ({filteredMaterials.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {filteredMaterials.map((material) => {
+              const stockInfo = getStockStatus(material);
+              const StockIcon = stockInfo.icon;
+              
+              return (
+                <div key={material.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold">{material.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Supplier: {material.supplier}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Order quantity: {material.maxStock - material.currentStock} {material.unit}
-                        </p>
+                        <Badge className={stockInfo.color}>
+                          <StockIcon className="h-3 w-3 mr-1" />
+                          {stockInfo.status.replace('-', ' ')}
+                        </Badge>
+                        <Badge variant="outline">{material.category}</Badge>
                       </div>
                       
-                      <div className="text-right">
-                        <Badge className={getStatusColor(material.status)}>
-                          On Order
-                        </Badge>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Est. ${((material.maxStock - material.currentStock) * material.unitCost).toFixed(2)}
-                        </p>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                        <div>
+                          <span className="font-medium">SKU:</span> {material.sku}
+                        </div>
+                        <div>
+                          <span className="font-medium">Supplier:</span> {material.supplier}
+                        </div>
+                        <div>
+                          <span className="font-medium">Location:</span> {material.location}
+                        </div>
+                        <div>
+                          <span className="font-medium">Unit:</span> {material.unit}
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm mt-2">
+                        <div>
+                          <span className="font-medium">Current Stock:</span>
+                          <span className={`ml-1 font-bold ${material.quantityInStock <= material.reorderPoint ? 'text-red-600' : 'text-green-600'}`}>
+                            {material.quantityInStock} {material.unit}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium">Reorder Point:</span> {material.reorderPoint} {material.unit}
+                        </div>
+                        <div>
+                          <span className="font-medium">Cost:</span> ${material.cost.toFixed(2)}
+                        </div>
+                        <div>
+                          <span className="font-medium">Selling Price:</span> ${material.sellingPrice.toFixed(2)}
+                        </div>
+                      </div>
+                      
+                      {material.description && (
+                        <p className="text-sm text-muted-foreground mt-2">{material.description}</p>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-2 ml-4">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          className="w-20"
+                          defaultValue={material.quantityInStock}
+                          onBlur={(e) => {
+                            const newQuantity = parseInt(e.target.value) || 0;
+                            if (newQuantity !== material.quantityInStock) {
+                              handleStockUpdate(material.id, newQuantity);
+                            }
+                          }}
+                        />
+                        <span className="text-sm text-muted-foreground">{material.unit}</span>
                       </div>
                     </div>
-                  ))}
-                
-                {materials.filter(m => m.status === 'on-order').length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">No pending purchase orders</p>
-                )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredMaterials.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                No materials found matching your criteria.
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
