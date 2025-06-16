@@ -151,7 +151,7 @@ export const EditableDashboard = () => {
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div key={index} className="p-4 rounded-lg bg-gradient-to-br from-white/10 to-white/5 border border-white/10">
+                <div key={index} className="p-4 rounded-lg bg-gradient-to-br from-white/20 to-white/10 border border-white/20 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
@@ -169,15 +169,15 @@ export const EditableDashboard = () => {
       case 'actions':
         return (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0">
               <Users className="h-6 w-6" />
               <span>Add Customer</span>
             </Button>
-            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-0">
               <Wrench className="h-6 w-6" />
               <span>New Job</span>
             </Button>
-            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+            <Button className="h-20 flex flex-col gap-2 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 border-0">
               <DollarSign className="h-6 w-6" />
               <span>Create Invoice</span>
             </Button>
@@ -190,7 +190,7 @@ export const EditableDashboard = () => {
             {recentActivities.map((activity) => {
               const Icon = activity.icon;
               return (
-                <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/50 to-muted/30">
+                <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/60 to-muted/40 backdrop-blur-sm border border-white/10">
                   <Icon className={`h-4 w-4 mt-1 ${activity.color}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">{activity.title}</p>
@@ -208,7 +208,7 @@ export const EditableDashboard = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Recent Jobs</h3>
-              <Badge variant="secondary">Today</Badge>
+              <Badge variant="secondary" className="bg-gradient-to-r from-primary/20 to-primary/10">Today</Badge>
             </div>
             <div className="grid gap-3">
               {[
@@ -216,14 +216,14 @@ export const EditableDashboard = () => {
                 { name: 'Bathroom Repair', customer: 'ABC Construction', status: 'Scheduled', time: 'Tomorrow 9:00 AM' },
                 { name: 'Deck Installation', customer: 'Sarah Johnson', status: 'Completed', time: 'Yesterday' }
               ].map((job, index) => (
-                <div key={index} className="p-3 rounded-lg bg-gradient-to-r from-card/50 to-card/30 border border-border/20">
+                <div key={index} className="p-3 rounded-lg bg-gradient-to-r from-card/60 to-card/40 border border-border/30 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{job.name}</p>
                       <p className="text-sm text-muted-foreground">{job.customer}</p>
                     </div>
                     <div className="text-right">
-                      <Badge variant={job.status === 'Completed' ? 'default' : 'outline'}>
+                      <Badge variant={job.status === 'Completed' ? 'default' : 'outline'} className={job.status === 'Completed' ? 'bg-gradient-to-r from-green-500 to-green-600' : ''}>
                         {job.status}
                       </Badge>
                       <p className="text-xs text-muted-foreground mt-1">{job.time}</p>
@@ -243,7 +243,7 @@ export const EditableDashboard = () => {
   const enabledWidgets = widgets.filter(w => w.enabled).sort((a, b) => a.order - b.order);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header with Time and Controls */}
       <div className="flex items-center justify-between">
         <div>
@@ -257,6 +257,7 @@ export const EditableDashboard = () => {
           <Button 
             variant="outline" 
             onClick={() => setShowCustomization(!showCustomization)}
+            className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 hover:from-primary/20 hover:to-primary/10"
           >
             <Settings className="h-4 w-4 mr-2" />
             Customize
@@ -266,9 +267,9 @@ export const EditableDashboard = () => {
 
       {/* Widget Customization Panel */}
       {showCustomization && (
-        <Card className="border-border/40 bg-card/50 backdrop-blur">
+        <Card className="border-border/40 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm border-primary/10">
           <CardHeader>
-            <CardTitle>Dashboard Customization</CardTitle>
+            <CardTitle className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">Dashboard Customization</CardTitle>
           </CardHeader>
           <CardContent>
             <WidgetCustomization 

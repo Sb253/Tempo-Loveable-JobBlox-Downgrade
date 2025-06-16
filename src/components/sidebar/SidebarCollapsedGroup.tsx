@@ -50,10 +50,14 @@ export const SidebarCollapsedGroup = ({
       
       {/* Hover Menu */}
       <div className={cn(
-        "absolute left-full top-0 ml-2 z-50 transition-all duration-200",
-        isHovered ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-2"
+        "absolute left-full top-0 ml-2 z-[9999] transition-all duration-200 pointer-events-none",
+        isHovered ? "opacity-100 visible translate-x-0 pointer-events-auto" : "opacity-0 invisible -translate-x-2"
       )}>
-        <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-xl py-2 min-w-48">
+        <div 
+          className="bg-slate-800 border border-slate-600 rounded-lg shadow-2xl py-2 min-w-48"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <div className="px-3 py-1 text-xs font-medium text-slate-300 border-b border-slate-600 mb-1">
             {group.label}
           </div>
@@ -65,14 +69,18 @@ export const SidebarCollapsedGroup = ({
               <button
                 key={section.id}
                 className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2 text-sm text-left text-slate-300 hover:text-white hover:bg-slate-700 transition-colors",
-                  isActive && "bg-blue-600 text-white"
+                  "w-full flex items-center gap-3 px-3 py-2 text-sm text-left text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer",
+                  isActive && "bg-blue-600 text-white hover:bg-blue-700"
                 )}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   console.log('SidebarCollapsedGroup: Section clicked:', section.id);
                   onSectionChange(section.id);
+                  setIsHovered(false);
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
                 }}
               >
                 <Icon className="h-4 w-4 flex-shrink-0" />

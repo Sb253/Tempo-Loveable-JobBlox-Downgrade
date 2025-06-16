@@ -49,17 +49,17 @@ export const DraggableWidget = ({
   };
 
   const getStyleClasses = () => {
-    const baseClasses = "border-border/40 backdrop-blur supports-[backdrop-filter]:bg-card/50";
+    const baseClasses = "border-border/40 backdrop-blur-sm supports-[backdrop-filter]:bg-card/50";
     
     switch (style) {
       case 'gradient':
-        return `${baseClasses} bg-gradient-to-br from-card to-card/50 border-2 border-primary/10`;
+        return `${baseClasses} bg-gradient-to-br from-card/80 to-card/60 border-2 border-primary/20 shadow-lg`;
       case 'minimal':
-        return `${baseClasses} bg-card/30 border border-border/20`;
+        return `${baseClasses} bg-card/40 border border-border/30`;
       case 'bordered':
-        return `${baseClasses} bg-card border-2 border-primary/20`;
+        return `${baseClasses} bg-card/70 border-2 border-primary/30`;
       default:
-        return `${baseClasses} bg-card/50`;
+        return `${baseClasses} bg-card/60 border border-border/20`;
     }
   };
 
@@ -79,30 +79,42 @@ export const DraggableWidget = ({
         >
           <Card className={cn(
             getStyleClasses(),
-            "transition-all duration-300 hover:shadow-lg",
-            snapshot.isDragging ? 'shadow-2xl' : ''
+            "transition-all duration-300 hover:shadow-xl hover:border-primary/30",
+            snapshot.isDragging ? 'shadow-2xl ring-2 ring-primary/50' : ''
           )}>
-            <CardHeader className="relative">
+            <CardHeader className="relative pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <div
                     {...provided.dragHandleProps}
-                    className="cursor-grab hover:text-primary transition-colors"
+                    className="cursor-grab hover:text-primary transition-colors active:cursor-grabbing"
                   >
                     <GripVertical className="h-4 w-4" />
                   </div>
-                  {title}
+                  <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                    {title}
+                  </span>
                 </CardTitle>
                 
-                {isHovered && (
-                  <div className="flex items-center gap-1">
+                {(isHovered || snapshot.isDragging) && (
+                  <div className="flex items-center gap-1 opacity-100 transition-opacity">
                     {onEdit && (
-                      <Button variant="ghost" size="sm" onClick={onEdit}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={onEdit}
+                        className="h-8 w-8 p-0 hover:bg-primary/20"
+                      >
                         <Settings className="h-3 w-3" />
                       </Button>
                     )}
                     {onRemove && (
-                      <Button variant="ghost" size="sm" onClick={onRemove}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={onRemove}
+                        className="h-8 w-8 p-0 hover:bg-destructive/20 hover:text-destructive"
+                      >
                         <X className="h-3 w-3" />
                       </Button>
                     )}
@@ -110,7 +122,7 @@ export const DraggableWidget = ({
                 )}
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-0">
               {children}
             </CardContent>
           </Card>
