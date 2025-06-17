@@ -46,7 +46,7 @@ export const createMenuGroups = (sections: SidebarSection[]): MenuGroup[] => [
     label: 'Team & Resources',
     icon: Package,
     sections: sections.filter(s => 
-      ['team-management', 'hr-features', 'subcontractor-management', 'materials-services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
+      ['team-management', 'hr-features', 'subcontractor-management', 'materials-services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment', 'location-management'].includes(s.id)
     )
   },
   {

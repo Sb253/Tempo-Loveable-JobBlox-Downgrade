@@ -5,7 +5,9 @@ import { demoDataService, DemoJob } from "../../services/demoDataService";
 // Lazy load components for better performance
 const Dashboard = React.lazy(() => import("../Dashboard").then(m => ({ default: m.Dashboard })));
 const CustomerList = React.lazy(() => import("../CustomerList").then(m => ({ default: m.CustomerList })));
+const CustomerForm = React.lazy(() => import("../CustomerForm").then(m => ({ default: m.CustomerForm })));
 const JobList = React.lazy(() => import("../JobList").then(m => ({ default: m.JobList })));
+const JobForm = React.lazy(() => import("../JobForm").then(m => ({ default: m.JobForm })));
 const EstimateList = React.lazy(() => import("../EstimateList").then(m => ({ default: m.EstimateList })));
 const InvoiceList = React.lazy(() => import("../InvoiceList").then(m => ({ default: m.InvoiceList })));
 const ScheduleView = React.lazy(() => import("../ScheduleView").then(m => ({ default: m.ScheduleView })));
@@ -17,6 +19,9 @@ const EquipmentTracking = React.lazy(() => import("../EquipmentTracking").then(m
 const PhotoDocumentation = React.lazy(() => import("../PhotoDocumentation").then(m => ({ default: m.PhotoDocumentation })));
 const ReviewManagement = React.lazy(() => import("../ReviewManagement").then(m => ({ default: m.ReviewManagement })));
 const SafetyManagement = React.lazy(() => import("../SafetyManagement").then(m => ({ default: m.SafetyManagement })));
+const QualityControl = React.lazy(() => import("../QualityControl").then(m => ({ default: m.QualityControl })));
+const VehicleManagement = React.lazy(() => import("../VehicleManagement").then(m => ({ default: m.VehicleManagement })));
+const LocationManagement = React.lazy(() => import("../LocationManagement").then(m => ({ default: m.LocationManagement })));
 const ReportsView = React.lazy(() => import("../ReportsView").then(m => ({ default: m.ReportsView })));
 const TaxAndFinancialSection = React.lazy(() => import("../TaxAndFinancialSection").then(m => ({ default: m.TaxAndFinancialSection })));
 const NotificationCenter = React.lazy(() => import("../NotificationCenter").then(m => ({ default: m.NotificationCenter })));
@@ -79,6 +84,7 @@ export const createSectionRegistry = () => {
     
     // Customer Management
     'customers': <CustomerList />,
+    'customer-form': <CustomerForm onClose={() => console.log('Customer form closed')} />,
     'pipeline': <Pipeline />,
     'client-appointment': <ClientAppointment />,
     'communication': <RealTimeChat />,
@@ -86,11 +92,12 @@ export const createSectionRegistry = () => {
     
     // Job Management
     'jobs': <JobList />,
+    'job-form': <JobForm onClose={() => console.log('Job form closed')} />,
     'schedule': <ScheduleView />,
     'time-tracking': <TimeTracking />,
     'photos': <PhotoDocumentation />,
     'safety': <SafetyManagement />,
-    'quality': <UnderDevelopmentSection sectionName="Quality Control" />,
+    'quality': <QualityControl />,
     
     // Financial Management
     'estimates': <EstimateList />,
@@ -109,10 +116,11 @@ export const createSectionRegistry = () => {
     'materials-services': <MaterialsAndServices />,
     'inventory': <MaterialInventory />,
     'equipment': <EquipmentTracking />,
-    'vehicles': <UnderDevelopmentSection sectionName="Vehicle Management" />,
+    'vehicles': <VehicleManagement />,
     'advanced-inventory': <AdvancedInventorySystem />,
     'employee-locations': <EmployeeLocationManager />,
     'radius-assignment': <RadiusAssignment />,
+    'location-management': <LocationManagement />,
     
     // AI & Automation
     'ai-chat': <EnhancedAIChatAssistant />,
