@@ -8,22 +8,22 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 98%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 262 83% 58%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
+    --secondary: 210 40% 92%;
     --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
+    --muted: 210 40% 94%;
+    --muted-foreground: 215.4 16.3% 35%;
+    --accent: 210 40% 90%;
     --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 85%;
+    --input: 214.3 31.8% 85%;
     --ring: 262 83% 58%;
     --radius: 0.5rem;
     --chart-1: 12 76% 61%;
@@ -99,6 +99,17 @@
   opacity: 0.3;
 }
 
+.colorful-button {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899, #3B82F6, #10B981);
+  border: none;
+  color: white;
+}
+
+.colorful-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 .dark .colorful-text {
   background: linear-gradient(135deg, #A78BFA, #F472B6, #60A5FA, #34D399);
   -webkit-background-clip: text;
@@ -129,14 +140,15 @@
   }
 }
 
-/* Light mode improvements - removing yellow/amber */
+/* Enhanced light mode improvements */
 .light {
   --primary: 262 83% 58%;
-  --secondary: 210 40% 96%;
-  --accent: 210 40% 96%;
-  --muted: 210 40% 96%;
-  --card: 0 0% 100%;
-  --border: 214.3 31.8% 91.4%;
+  --secondary: 210 40% 92%;
+  --accent: 210 40% 90%;
+  --muted: 210 40% 94%;
+  --card: 0 0% 98%;
+  --border: 214.3 31.8% 85%;
+  --muted-foreground: 215.4 16.3% 35%;
 }
 
 /* Enhanced light mode color palette */
@@ -153,6 +165,60 @@
   --vibrant-teal: #0D9488;
 }
 
+/* Improved button contrast in light mode */
+.light .btn-outline {
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.light .btn-outline:hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+/* Enhanced form elements in light mode */
+.light input,
+.light textarea,
+.light select {
+  border-color: hsl(var(--border));
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.light input:focus,
+.light textarea:focus,
+.light select:focus {
+  border-color: hsl(var(--ring));
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+}
+
+/* Improved card contrast in light mode */
+.light .card {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Better secondary elements visibility */
+.light .text-muted-foreground {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Improved table and list contrasts */
+.light table {
+  border-color: hsl(var(--border));
+}
+
+.light th,
+.light td {
+  border-color: hsl(var(--border));
+}
+
+.light tr:hover {
+  background-color: hsl(var(--muted));
+}
+
 /* Remove all yellow/amber references and replace with better colors */
 .bg-yellow-500, .bg-amber-500 {
   background-color: var(--vibrant-orange) !important;
@@ -164,4 +230,26 @@
 
 .border-yellow-500, .border-amber-500 {
   border-color: var(--vibrant-orange) !important;
+}
+
+/* Enhanced accessibility for light mode */
+.light a {
+  color: hsl(var(--primary));
+}
+
+.light a:hover {
+  color: hsl(var(--primary) / 0.8);
+}
+
+/* Better badge contrast */
+.light .badge {
+  border: 1px solid hsl(var(--border));
+}
+
+/* Improved dropdown visibility */
+.light [role="menu"],
+.light [role="listbox"] {
+  background-color: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
