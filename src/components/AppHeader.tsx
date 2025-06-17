@@ -50,7 +50,7 @@ export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <Building2 className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-bold">JobBlox</h1>
+            <h1 className="text-xl font-bold colorful-text">JobBlox</h1>
             {isDemoMode && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />

@@ -39,7 +39,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
           ) : (
             <Building2 className="h-8 w-8 text-primary flex-shrink-0" />
           )}
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
+          <h1 className="text-lg font-bold colorful-text truncate">
             {displayName}
           </h1>
         </div>
