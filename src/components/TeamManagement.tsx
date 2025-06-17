@@ -8,10 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, MapPin, Clock, Plus, Search, Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import { Users, MapPin, Clock, Plus, Search, Mail, Lock, Eye, EyeOff, Shield, Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { InvitationManager } from './auth/InvitationManager';
 import { EmployeeProfile } from '../types/auth';
+import { EditMemberDialog } from './team/EditMemberDialog';
+import { BulkActionsToolbar } from './team/BulkActionsToolbar';
+import { DeleteConfirmDialog } from './team/DeleteConfirmDialog';
 
 const mockTeamMembers: EmployeeProfile[] = [
   {
@@ -72,8 +75,13 @@ export const TeamManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddMember, setShowAddMember] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedMember, setSelectedMember] = useState<EmployeeProfile | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+  const [membersToDelete, setMembersToDelete] = useState<EmployeeProfile[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  
   const [passwordData, setPasswordData] = useState({
     password: '',
     confirmPassword: '',
@@ -124,6 +132,88 @@ export const TeamManagement = () => {
     }
   };
 
+  const handleSelectAll = () => {
+    if (selectedMembers.size === filteredMembers.length) {
+      setSelectedMembers(new Set());
+    } else {
+      setSelectedMembers(new Set(filteredMembers.map(m => m.id)));
+    }
+  };
+
+  const handleSelectMember = (memberId: string) => {
+    const newSelection = new Set(selectedMembers);
+    if (newSelection.has(memberId)) {
+      newSelection.delete(memberId);
+    } else {
+      newSelection.add(memberId);
+    }
+    setSelectedMembers(newSelection);
+  };
+
+  const handleEditMember = (member: EmployeeProfile) => {
+    setSelectedMember(member);
+    setShowEditDialog(true);
+  };
+
+  const handleSaveEditedMember = (updatedMember: EmployeeProfile) => {
+    setTeamMembers(prev => prev.map(member => 
+      member.id === updatedMember.id ? updatedMember : member
+    ));
+    setShowEditDialog(false);
+    setSelectedMember(null);
+  };
+
+  const handleDeleteMember = (member: EmployeeProfile) => {
+    setMembersToDelete([member]);
+    setShowDeleteDialog(true);
+  };
+
+  const handleBulkDelete = () => {
+    const membersToDeleteList = teamMembers.filter(m => selectedMembers.has(m.id));
+    setMembersToDelete(membersToDeleteList);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = () => {
+    const idsToDelete = new Set(membersToDelete.map(m => m.id));
+    setTeamMembers(prev => prev.filter(member => !idsToDelete.has(member.id)));
+    setSelectedMembers(new Set());
+    setShowDeleteDialog(false);
+    setMembersToDelete([]);
+    
+    toast({
+      title: "Members Deleted",
+      description: `${membersToDelete.length} member${membersToDelete.length > 1 ? 's' : ''} deleted successfully.`,
+    });
+  };
+
+  const handleBulkRoleChange = (role: 'admin' | 'manager' | 'employee') => {
+    setTeamMembers(prev => prev.map(member => 
+      selectedMembers.has(member.id) ? { ...member, role } : member
+    ));
+    
+    toast({
+      title: "Bulk Role Update",
+      description: `Updated role to ${role} for ${selectedMembers.size} member${selectedMembers.size > 1 ? 's' : ''}.`,
+    });
+    
+    setSelectedMembers(new Set());
+  };
+
+  const handleBulkStatusChange = (status: 'activate' | 'deactivate') => {
+    const availability = status === 'activate' ? 'available' : 'offline';
+    setTeamMembers(prev => prev.map(member => 
+      selectedMembers.has(member.id) ? { ...member, availability } : member
+    ));
+    
+    toast({
+      title: "Bulk Status Update",
+      description: `${status === 'activate' ? 'Activated' : 'Deactivated'} ${selectedMembers.size} member${selectedMembers.size > 1 ? 's' : ''}.`,
+    });
+    
+    setSelectedMembers(new Set());
+  };
+
   const handlePasswordManagement = (member: EmployeeProfile) => {
     setSelectedMember(member);
     setPasswordData({
@@ -156,14 +246,12 @@ export const TeamManagement = () => {
       return;
     }
 
-    // Update member password settings
     setTeamMembers(prev => prev.map(member => 
       member.id === selectedMember.id 
         ? { 
             ...member, 
             hasPassword: true, 
-            canChangePassword: passwordData.canChangePassword,
-            password: passwordData.password // In real app, this would be hashed
+            canChangePassword: passwordData.canChangePassword
           }
         : member
     ));
@@ -312,6 +400,15 @@ export const TeamManagement = () => {
             </CardHeader>
           </Card>
 
+          {/* Bulk Actions Toolbar */}
+          <BulkActionsToolbar
+            selectedCount={selectedMembers.size}
+            onBulkDelete={handleBulkDelete}
+            onBulkRoleChange={handleBulkRoleChange}
+            onBulkStatusChange={handleBulkStatusChange}
+            onClearSelection={() => setSelectedMembers(new Set())}
+          />
+
           {/* Team Members Table */}
           <Card>
             <CardHeader>
@@ -321,6 +418,14 @@ export const TeamManagement = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-12">
+                      <input
+                        type="checkbox"
+                        checked={filteredMembers.length > 0 && selectedMembers.size === filteredMembers.length}
+                        onChange={handleSelectAll}
+                        className="rounded"
+                      />
+                    </TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Status</TableHead>
@@ -333,6 +438,14 @@ export const TeamManagement = () => {
                 <TableBody>
                   {filteredMembers.map((member) => (
                     <TableRow key={member.id}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedMembers.has(member.id)}
+                          onChange={() => handleSelectMember(member.id)}
+                          className="rounded"
+                        />
+                      </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">{member.name}</div>
@@ -387,8 +500,21 @@ export const TeamManagement = () => {
                             <Lock className="h-3 w-3 mr-1" />
                             Password
                           </Button>
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEditMember(member)}
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
                             Edit
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => handleDeleteMember(member)}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Delete
                           </Button>
                         </div>
                       </TableCell>
@@ -614,6 +740,29 @@ export const TeamManagement = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Edit Member Dialog */}
+      <EditMemberDialog
+        member={selectedMember}
+        isOpen={showEditDialog}
+        onClose={() => {
+          setShowEditDialog(false);
+          setSelectedMember(null);
+        }}
+        onSave={handleSaveEditedMember}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false);
+          setMembersToDelete([]);
+        }}
+        onConfirm={confirmDelete}
+        memberNames={membersToDelete.map(m => m.name)}
+        isBulk={membersToDelete.length > 1}
+      />
     </div>
   );
 };
