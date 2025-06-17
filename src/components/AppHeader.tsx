@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +49,7 @@ export const AppHeader = ({ onSectionChange }: AppHeaderProps) => {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <Building2 className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-bold colorful-text">JobBlox</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">JobBlox</h1>
             {isDemoMode && (
               <Badge variant="secondary" className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />
