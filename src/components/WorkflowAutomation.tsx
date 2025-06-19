@@ -1,6 +1,7 @@
 
-import { iPaaSManager } from './iPaas/iPaaSManager';
+import React from 'react';
+import { IPaaSManager } from './iPaas/iPaaSManager';
 
 export const WorkflowAutomation = () => {
-  return <iPaaSManager />;
+  return <IPaaSManager />;
 };
