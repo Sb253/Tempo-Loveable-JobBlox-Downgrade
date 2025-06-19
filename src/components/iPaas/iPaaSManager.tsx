@@ -9,7 +9,7 @@ import { IntegrationMonitoring } from './IntegrationMonitoring';
 import { IntegrationTemplates } from './IntegrationTemplates';
 import { APIGateway } from './APIGateway';
 import { DataTransformation } from './DataTransformation';
-import { Workflow, Zap, Monitor, Template, Gateway, Database } from "lucide-react";
+import { Workflow, Zap, Monitor, FileTemplate, Globe, Database } from "lucide-react";
 
 export const iPaaSManager = () => {
   const [activeIntegrations, setActiveIntegrations] = useState(12);

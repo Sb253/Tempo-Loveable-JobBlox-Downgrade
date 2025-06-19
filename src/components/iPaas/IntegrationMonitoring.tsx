@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +48,6 @@ export const IntegrationMonitoring = () => {
       id: '4',
       name: 'Document Management',
       status: 'error',
-      lastSync: '2 hours ago',
       lastSync: '2 hours ago',
       recordsProcessed: 0,
       errorCount: 12,
