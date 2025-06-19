@@ -70,7 +70,7 @@ export const UnifiedSidebar = ({
   return (
     <div 
       className={cn(
-        "fixed left-0 top-0 h-full bg-card border-r border-border/40 z-40 transition-all duration-300 ease-in-out",
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] bg-card border-r border-border/40 z-20 transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

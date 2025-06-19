@@ -22,7 +22,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useAuth } from '../contexts/AuthContext';
 
 interface AppHeaderProps {
   onSectionChange: (section: string) => void;
@@ -31,11 +30,10 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = false }: AppHeaderProps) => {
-  const { user, logout, isDemoMode, disableDemoMode } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
-    logout();
+    console.log('Logout clicked');
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -46,7 +44,7 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-background border-b border-border/40 z-50 px-4 md:px-6">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40 z-30 px-4 md:px-6">
       <div className="flex items-center justify-between h-full">
         {/* Left side - Mobile Menu + Logo and Search */}
         <div className="flex items-center gap-4">
@@ -67,14 +65,12 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
             <h1 className={`font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent ${
               isMobile ? 'text-lg' : 'text-xl'
             }`}>
-              JobBlox
+              JobBlox SaaS
             </h1>
-            {isDemoMode && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Zap className="h-3 w-3" />
-                Demo Mode
-              </Badge>
-            )}
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <Zap className="h-3 w-3" />
+              Multi-Tenant
+            </Badge>
           </div>
           
           {/* Desktop Search */}
@@ -84,7 +80,7 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search customers, jobs..."
+                  placeholder="Search tenants, clients..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9 w-64"
@@ -122,7 +118,7 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => onSectionChange('company-settings')}
+              onClick={() => onSectionChange('settings')}
               className="h-8 w-8"
             >
               <Settings className="h-4 w-4" />
@@ -139,10 +135,10 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
                   </div>
                   {!isMobile && (
                     <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium">{user?.name}</p>
+                      <p className="text-sm font-medium">Admin User</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <ShieldCheck className="h-3 w-3" />
-                        {user?.role}
+                        Administrator
                       </p>
                     </div>
                   )}
@@ -153,25 +149,15 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               
-              <DropdownMenuItem onClick={() => onSectionChange('team-management')}>
+              <DropdownMenuItem onClick={() => onSectionChange('profile')}>
                 <User className="mr-2 h-4 w-4" />
                 Profile Settings
               </DropdownMenuItem>
               
-              <DropdownMenuItem onClick={() => onSectionChange('company-settings')}>
+              <DropdownMenuItem onClick={() => onSectionChange('settings')}>
                 <Settings className="mr-2 h-4 w-4" />
-                Company Settings
+                System Settings
               </DropdownMenuItem>
-              
-              {isDemoMode && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={disableDemoMode}>
-                    <Zap className="mr-2 h-4 w-4" />
-                    Exit Demo Mode
-                  </DropdownMenuItem>
-                </>
-              )}
               
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
