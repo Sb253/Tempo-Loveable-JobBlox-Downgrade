@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,10 +17,10 @@ interface Client {
 }
 
 interface ClientManagementProps {
-  tenantId: string;
+  tenantId?: string;
 }
 
-export const ClientManagement = ({ tenantId }: ClientManagementProps) => {
+export const ClientManagement = ({ tenantId = 'default-tenant' }: ClientManagementProps) => {
   const [clients] = useState<Client[]>([
     {
       id: '1',

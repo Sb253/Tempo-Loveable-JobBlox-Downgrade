@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,8 @@ import MembersArea from "./pages/MembersArea";
 import NotFound from "./pages/NotFound";
 import { LandingPage } from "./components/layout/LandingPage";
 import { DeveloperLoginPage } from "./components/layout/DeveloperLoginPage";
+import { MultiTenantAuth } from "./components/auth/MultiTenantAuth";
+import { MultiTenantLayout } from "./components/layout/MultiTenantLayout";
 import React, { useState } from 'react';
 
 const queryClient = new QueryClient();

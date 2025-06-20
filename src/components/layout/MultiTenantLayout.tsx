@@ -50,7 +50,7 @@ export const MultiTenantLayout = () => {
       case 'dashboard':
         return <TenantDashboard tenant={mockTenant} />;
       case 'clients':
-        return <ClientManagement />;
+        return <ClientManagement tenantId={mockTenant.id} />;
       case 'subscription':
         return <SubscriptionManager tenant={mockTenant} />;
       case 'automation':
