@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import { 
   Building2, 
   Code, 
@@ -14,12 +15,15 @@ import {
   Play
 } from "lucide-react";
 
-interface DeveloperLoginPageProps {
-  onLogin: (userType: 'admin' | 'tenant' | 'trial') => void;
-  onNavigate: (path: string) => void;
-}
+export const DeveloperLoginPage = () => {
+  const navigate = useNavigate();
 
-export const DeveloperLoginPage = ({ onLogin, onNavigate }: DeveloperLoginPageProps) => {
+  const handleLogin = (userType: 'admin' | 'tenant' | 'trial') => {
+    // Store the user type for the SaaS app
+    sessionStorage.setItem('devUserType', userType);
+    navigate('/saas');
+  };
+
   const quickAccess = [
     {
       type: 'admin' as const,
@@ -76,7 +80,7 @@ export const DeveloperLoginPage = ({ onLogin, onNavigate }: DeveloperLoginPagePr
               <Button 
                 variant="outline"
                 className="border-slate-600 text-slate-300 hover:bg-slate-800"
-                onClick={() => onNavigate('/')}
+                onClick={() => navigate('/')}
               >
                 ← Back to Landing
               </Button>
@@ -84,9 +88,17 @@ export const DeveloperLoginPage = ({ onLogin, onNavigate }: DeveloperLoginPagePr
               <Button 
                 variant="outline"
                 className="border-blue-600 text-blue-400 hover:bg-blue-900/20"
-                onClick={() => onNavigate('/auth')}
+                onClick={() => navigate('/auth')}
               >
                 Production Login
+              </Button>
+
+              <Button 
+                variant="outline"
+                className="border-purple-600 text-purple-400 hover:bg-purple-900/20"
+                onClick={() => navigate('/legacy')}
+              >
+                Legacy System
               </Button>
             </div>
           </div>
@@ -118,7 +130,7 @@ export const DeveloperLoginPage = ({ onLogin, onNavigate }: DeveloperLoginPagePr
                   
                   <Button 
                     className={`w-full bg-gradient-to-r ${access.color} hover:opacity-90 text-white`}
-                    onClick={() => onLogin(access.type)}
+                    onClick={() => handleLogin(access.type)}
                   >
                     <Play className="h-4 w-4 mr-2" />
                     Launch {access.title}

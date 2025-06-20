@@ -6,13 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 import { Building2, Mail, Lock, User, Clock, CreditCard } from "lucide-react";
 
-interface AuthProps {
-  onLogin: (userType: 'admin' | 'tenant' | 'trial') => void;
-}
-
-export const MultiTenantAuth = ({ onLogin }: AuthProps) => {
+export const MultiTenantAuth = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,32 +22,46 @@ export const MultiTenantAuth = ({ onLogin }: AuthProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleLogin = (userType: 'admin' | 'tenant' | 'trial') => {
+    // Store the user type and navigate to SaaS app
+    sessionStorage.setItem('userType', userType);
+    navigate('/saas');
+  };
+
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Admin login:', formData);
-    onLogin('admin');
+    handleLogin('admin');
   };
 
   const handleTenantLogin = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Tenant login:', formData);
-    onLogin('tenant');
+    handleLogin('tenant');
   };
 
   const handleTrialSignup = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Trial signup:', formData);
-    onLogin('trial');
+    handleLogin('trial');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
+        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/')}
+              className="absolute top-4 left-4"
+            >
+              ← Back to Home
+            </Button>
             <Building2 className="h-12 w-12 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Multi-Tenant SaaS Platform</h1>
+          <h1 className="text-3xl font-bold mb-2 dark:text-white">Multi-Tenant SaaS Platform</h1>
           <p className="text-muted-foreground">Choose your access type to continue</p>
         </div>
 
@@ -209,9 +221,9 @@ export const MultiTenantAuth = ({ onLogin }: AuthProps) => {
                 </form>
                 
                 <div className="mt-4 text-center">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h4 className="font-medium text-green-800 mb-2">What's included:</h4>
-                    <ul className="text-sm text-green-700 space-y-1">
+                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                    <h4 className="font-medium text-green-800 dark:text-green-300 mb-2">What's included:</h4>
+                    <ul className="text-sm text-green-700 dark:text-green-400 space-y-1">
                       <li>✓ Up to 10 clients</li>
                       <li>✓ All premium features</li>
                       <li>✓ 24/7 support chat</li>

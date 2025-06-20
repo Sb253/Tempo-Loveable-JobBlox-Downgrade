@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -30,10 +31,14 @@ interface AppHeaderProps {
 }
 
 export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = false }: AppHeaderProps) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
-    console.log('Logout clicked');
+    // Clear session storage and redirect to landing page
+    sessionStorage.removeItem('userType');
+    sessionStorage.removeItem('devUserType');
+    navigate('/');
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -135,10 +140,10 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
                   </div>
                   {!isMobile && (
                     <div className="hidden sm:block text-left">
-                      <p className="text-sm font-medium">Admin User</p>
+                      <p className="text-sm font-medium">Demo User</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <ShieldCheck className="h-3 w-3" />
-                        Administrator
+                        {sessionStorage.getItem('userType') || 'User'}
                       </p>
                     </div>
                   )}
