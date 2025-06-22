@@ -54,7 +54,7 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
         {/* Left side - Mobile Menu + Logo and Search */}
         <div className="flex items-center gap-4">
           {/* Mobile Menu Button */}
-          {isMobile && (
+          {isMobile && onMobileSidebarToggle && (
             <Button
               variant="ghost"
               size="icon"
@@ -143,7 +143,7 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
                       <p className="text-sm font-medium">Demo User</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <ShieldCheck className="h-3 w-3" />
-                        {sessionStorage.getItem('userType') || 'User'}
+                        {sessionStorage.getItem('userType') || sessionStorage.getItem('devUserType') || 'User'}
                       </p>
                     </div>
                   )}

@@ -26,6 +26,7 @@ export const MultiTenantLayout = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [userType, setUserType] = useState<'admin' | 'tenant' | 'trial' | null>(null);
 
   // Mock tenant data
@@ -38,6 +39,17 @@ export const MultiTenantLayout = () => {
     subscriptionEnd: '2024-08-15',
     trialEnd: undefined
   };
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // Get user type from session storage or redirect to auth
@@ -98,6 +110,7 @@ export const MultiTenantLayout = () => {
       <AppHeader 
         onSectionChange={setActiveSection}
         onMobileSidebarToggle={() => setSidebarVisible(!sidebarVisible)}
+        isMobile={isMobile}
       />
       
       <div className="flex pt-16">
@@ -105,10 +118,14 @@ export const MultiTenantLayout = () => {
           activeSection={activeSection}
           onSectionChange={setActiveSection}
           sections={sections}
-          isVisible={sidebarVisible}
+          isVisible={isMobile ? sidebarVisible : true}
         />
         
-        <main className={`flex-1 transition-all duration-300 ${sidebarVisible ? 'ml-64' : 'ml-16'} p-6`}>
+        <main className={`flex-1 transition-all duration-300 ${
+          isMobile 
+            ? (sidebarVisible ? 'ml-0' : 'ml-0') 
+            : (sidebarVisible ? 'ml-64' : 'ml-16')
+        } p-6`}>
           {renderSection()}
         </main>
       </div>
@@ -116,7 +133,7 @@ export const MultiTenantLayout = () => {
   );
 };
 
-// Placeholder components for missing sections
+// Enhanced placeholder components for missing sections
 const IntegrationsSection = () => (
   <div className="space-y-6">
     <div className="flex items-center gap-3">
@@ -127,10 +144,26 @@ const IntegrationsSection = () => (
       </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {['Slack', 'Microsoft Teams', 'Zapier', 'QuickBooks', 'Salesforce', 'HubSpot'].map((integration) => (
-        <div key={integration} className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer">
-          <h3 className="font-medium">{integration}</h3>
-          <p className="text-sm text-muted-foreground">Connect your {integration} account</p>
+      {[
+        { name: 'Slack', description: 'Team communication', status: 'available' },
+        { name: 'Microsoft Teams', description: 'Video conferencing', status: 'available' },
+        { name: 'Zapier', description: 'Workflow automation', status: 'connected' },
+        { name: 'QuickBooks', description: 'Accounting software', status: 'available' },
+        { name: 'Salesforce', description: 'CRM platform', status: 'available' },
+        { name: 'HubSpot', description: 'Marketing automation', status: 'connected' }
+      ].map((integration) => (
+        <div key={integration.name} className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-medium">{integration.name}</h3>
+            <span className={`text-xs px-2 py-1 rounded ${
+              integration.status === 'connected' 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-gray-100 text-gray-600'
+            }`}>
+              {integration.status}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">{integration.description}</p>
         </div>
       ))}
     </div>
@@ -148,13 +181,24 @@ const NotificationsSection = () => (
     </div>
     <div className="space-y-4">
       {[
-        { title: 'New client signed up', time: '2 minutes ago', type: 'success' },
-        { title: 'Subscription payment received', time: '1 hour ago', type: 'info' },
-        { title: 'System maintenance scheduled', time: '3 hours ago', type: 'warning' },
+        { title: 'New client signed up', time: '2 minutes ago', type: 'success', read: false },
+        { title: 'Subscription payment received', time: '1 hour ago', type: 'info', read: false },
+        { title: 'System maintenance scheduled', time: '3 hours ago', type: 'warning', read: true },
+        { title: 'Weekly report generated', time: '1 day ago', type: 'info', read: true },
+        { title: 'Client feedback received', time: '2 days ago', type: 'success', read: true },
       ].map((notification, index) => (
-        <div key={index} className="p-4 border rounded-lg">
-          <h3 className="font-medium">{notification.title}</h3>
-          <p className="text-sm text-muted-foreground">{notification.time}</p>
+        <div key={index} className={`p-4 border rounded-lg transition-colors ${
+          !notification.read ? 'bg-blue-50 border-blue-200' : 'hover:bg-gray-50'
+        }`}>
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h3 className="font-medium">{notification.title}</h3>
+              <p className="text-sm text-muted-foreground">{notification.time}</p>
+            </div>
+            {!notification.read && (
+              <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
+            )}
+          </div>
         </div>
       ))}
     </div>
@@ -172,13 +216,31 @@ const ProfileSection = ({ userType }: { userType: string | null }) => (
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-4">
-        <div>
-          <label className="text-sm font-medium">User Type</label>
-          <p className="text-lg capitalize">{userType || 'Unknown'}</p>
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">User Type</label>
+          <p className="text-lg font-medium capitalize">{userType || 'Unknown'}</p>
         </div>
-        <div>
-          <label className="text-sm font-medium">Email</label>
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">Email</label>
           <p className="text-lg">demo@example.com</p>
+        </div>
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">Company</label>
+          <p className="text-lg">Acme Construction Co.</p>
+        </div>
+      </div>
+      <div className="space-y-4">
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">Last Login</label>
+          <p className="text-lg">Today at 2:30 PM</p>
+        </div>
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">Account Status</label>
+          <p className="text-lg text-green-600 font-medium">Active</p>
+        </div>
+        <div className="p-4 border rounded-lg">
+          <label className="text-sm font-medium text-muted-foreground">Plan</label>
+          <p className="text-lg">Professional</p>
         </div>
       </div>
     </div>
@@ -194,14 +256,22 @@ const SettingsSection = () => (
         <p className="text-sm text-muted-foreground">Configure platform settings</p>
       </div>
     </div>
-    <div className="space-y-4">
-      <div className="p-4 border rounded-lg">
-        <h3 className="font-medium">General Settings</h3>
-        <p className="text-sm text-muted-foreground">Basic platform configuration</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">General Settings</h3>
+        <p className="text-sm text-muted-foreground">Basic platform configuration and preferences</p>
       </div>
-      <div className="p-4 border rounded-lg">
-        <h3 className="font-medium">Billing Settings</h3>
-        <p className="text-sm text-muted-foreground">Manage subscription and payments</p>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">Billing Settings</h3>
+        <p className="text-sm text-muted-foreground">Manage subscription and payment methods</p>
+      </div>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">Team Management</h3>
+        <p className="text-sm text-muted-foreground">Add and manage team members</p>
+      </div>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">API Configuration</h3>
+        <p className="text-sm text-muted-foreground">Manage API keys and webhooks</p>
       </div>
     </div>
   </div>
@@ -216,14 +286,24 @@ const SecuritySection = () => (
         <p className="text-sm text-muted-foreground">Manage security and access controls</p>
       </div>
     </div>
-    <div className="space-y-4">
-      <div className="p-4 border rounded-lg">
-        <h3 className="font-medium">Two-Factor Authentication</h3>
-        <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">Two-Factor Authentication</h3>
+        <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+        <span className="text-xs px-2 py-1 bg-red-100 text-red-800 rounded mt-2 inline-block">Not Enabled</span>
       </div>
-      <div className="p-4 border rounded-lg">
-        <h3 className="font-medium">API Keys</h3>
-        <p className="text-sm text-muted-foreground">Manage API access tokens</p>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">API Keys</h3>
+        <p className="text-sm text-muted-foreground">Manage API access tokens and permissions</p>
+        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded mt-2 inline-block">2 Active Keys</span>
+      </div>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">Login History</h3>
+        <p className="text-sm text-muted-foreground">View recent login activity and sessions</p>
+      </div>
+      <div className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors">
+        <h3 className="font-medium mb-2">Data Export</h3>
+        <p className="text-sm text-muted-foreground">Download your account data and settings</p>
       </div>
     </div>
   </div>
