@@ -1,42 +1,21 @@
 
-import React, { useState, useEffect, memo, useMemo, useCallback } from "react";
+import React, { useEffect, memo, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { LucideIcon, Users, Wrench, DollarSign, Package, Brain, Database, BarChart3, MessageSquare, Settings } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { SidebarHeader } from "../sidebar/SidebarHeader";
 import { SidebarSearch } from "../sidebar/SidebarSearch";
 import { SidebarDashboard } from "../sidebar/SidebarDashboard";
 import { SidebarMenuGroup } from "../sidebar/SidebarMenuGroup";
 import { usePerformanceMonitor } from "../../utils/performanceUtils";
-
-interface SidebarSection {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-}
-
-interface MenuGroup {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  sections: SidebarSection[];
-  badge?: string;
-  defaultOpen?: boolean;
-}
+import { createOptimizedMenuGroups, SidebarSection } from "./OptimizedSidebarConfig";
+import { useOptimizedSidebarState } from "./OptimizedSidebarState";
 
 interface OptimizedUnifiedSidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
   sections: SidebarSection[];
   isVisible?: boolean;
-}
-
-interface CompanyData {
-  name: string;
-  logo: string | null;
-  displayInHeader: boolean;
-  useCustomHeaderName: boolean;
-  headerCompanyName: string;
 }
 
 export const OptimizedUnifiedSidebar = memo(({ 
@@ -47,93 +26,19 @@ export const OptimizedUnifiedSidebar = memo(({
 }: OptimizedUnifiedSidebarProps) => {
   usePerformanceMonitor('OptimizedUnifiedSidebar');
   
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [openGroups, setOpenGroups] = useState<string[]>(['customers']);
-  const [companyData, setCompanyData] = useState<CompanyData>({
-    name: 'JobBlox',
-    logo: null,
-    displayInHeader: true,
-    useCustomHeaderName: false,
-    headerCompanyName: 'JobBlox'
-  });
+  const {
+    isCollapsed,
+    searchTerm,
+    openGroups,
+    companyData,
+    toggleCollapse,
+    toggleGroup,
+    handleSearchChange,
+    setOpenGroups
+  } = useOptimizedSidebarState();
 
   // Memoize menu groups to prevent recalculation on every render
-  const menuGroups = useMemo((): MenuGroup[] => [
-    {
-      id: 'customers',
-      label: 'Customer Management',
-      icon: Users,
-      sections: sections.filter(s => 
-        ['customers', 'customer-form', 'pipeline', 'client-appointment', 'communication', 'reviews'].includes(s.id)
-      )
-    },
-    {
-      id: 'jobs',
-      label: 'Job Operations',
-      icon: Wrench,
-      sections: sections.filter(s => 
-        ['jobs', 'job-form', 'schedule', 'time-tracking', 'photos', 'safety', 'quality'].includes(s.id)
-      )
-    },
-    {
-      id: 'financial',
-      label: 'Financial Management',
-      icon: DollarSign,
-      sections: sections.filter(s => 
-        ['estimates', 'invoices', 'expenses', 'goals', 'tax-financial', 'financial-analytics', 'payment-integration', 'profit-analysis'].includes(s.id)
-      )
-    },
-    {
-      id: 'resources',
-      label: 'Team & Resources',
-      icon: Package,
-      sections: sections.filter(s => 
-        ['team-management', 'hr-features', 'subcontractor-management', 'materials-services', 'inventory', 'equipment', 'vehicles', 'advanced-inventory', 'employee-locations', 'radius-assignment'].includes(s.id)
-      )
-    },
-    {
-      id: 'ai',
-      label: 'AI & Automation',
-      icon: Brain,
-      badge: 'New',
-      sections: sections.filter(s => 
-        ['ai-chat', 'smart-document-generator', 'predictive-analytics', 'ai-settings'].includes(s.id)
-      )
-    },
-    {
-      id: 'integrations',
-      label: 'Integrations',
-      icon: Database,
-      sections: sections.filter(s => 
-        ['quickbooks-integration', 'accounting-integration'].includes(s.id)
-      )
-    },
-    {
-      id: 'reports',
-      label: 'Reports & Analytics',
-      icon: BarChart3,
-      sections: sections.filter(s => 
-        ['reports', 'analytics', 'map-view', 'predictive-analytics', 'advanced-reporting'].includes(s.id)
-      )
-    },
-    {
-      id: 'communication',
-      label: 'Communication',
-      icon: MessageSquare,
-      sections: sections.filter(s => 
-        ['team-chat', 'notifications'].includes(s.id)
-      )
-    },
-    {
-      id: 'settings',
-      label: 'Settings & Admin',
-      icon: Settings,
-      sections: sections.filter(s => 
-        ['company-settings', 'back-office', 'mobile-settings', 'branch-management'].includes(s.id)
-      )
-    }
-  ], [sections]);
+  const menuGroups = useMemo(() => createOptimizedMenuGroups(sections), [sections]);
 
   // Memoize filtered groups for search performance
   const filteredGroups = useMemo(() => 
@@ -147,69 +52,10 @@ export const OptimizedUnifiedSidebar = memo(({
   );
 
   // Use useCallback for event handlers to prevent child re-renders
-  const toggleCollapse = useCallback(() => {
-    setIsCollapsed(prev => !prev);
-  }, []);
-
-  const toggleGroup = useCallback((groupId: string) => {
-    setOpenGroups(prev => 
-      prev.includes(groupId) 
-        ? prev.filter(id => id !== groupId)
-        : [...prev, groupId]
-    );
-  }, []);
-
   const handleSectionClick = useCallback((sectionId: string) => {
     console.log('OptimizedUnifiedSidebar: Section clicked:', sectionId);
     onSectionChange(sectionId);
   }, [onSectionChange]);
-
-  const handleSearchChange = useCallback((term: string) => {
-    setSearchTerm(term);
-  }, []);
-
-  // Load company data and sidebar state
-  useEffect(() => {
-    const savedCompanyData = localStorage.getItem('companySettings');
-    if (savedCompanyData) {
-      try {
-        const data = JSON.parse(savedCompanyData);
-        setCompanyData({
-          name: data.name || data.companyName || 'JobBlox',
-          logo: data.logo || null,
-          displayInHeader: data.displayInHeader ?? true,
-          useCustomHeaderName: data.useCustomHeaderName ?? false,
-          headerCompanyName: data.headerCompanyName || 'JobBlox'
-        });
-      } catch (error) {
-        console.error('Error parsing company settings:', error);
-      }
-    }
-
-    const savedCollapsedState = localStorage.getItem('sidebarCollapsed');
-    if (savedCollapsedState) {
-      setIsCollapsed(JSON.parse(savedCollapsedState));
-    }
-
-    const savedOpenGroups = localStorage.getItem('sidebarOpenGroups');
-    if (savedOpenGroups) {
-      try {
-        setOpenGroups(JSON.parse(savedOpenGroups));
-      } catch (error) {
-        console.error('Error parsing open groups:', error);
-      }
-    }
-  }, []);
-
-  // Save sidebar state changes and dispatch custom event
-  useEffect(() => {
-    localStorage.setItem('sidebarCollapsed', JSON.stringify(isCollapsed));
-    window.dispatchEvent(new CustomEvent('sidebarToggle'));
-  }, [isCollapsed]);
-
-  useEffect(() => {
-    localStorage.setItem('sidebarOpenGroups', JSON.stringify(openGroups));
-  }, [openGroups]);
 
   // Auto-expand group containing active section
   useEffect(() => {
@@ -219,7 +65,7 @@ export const OptimizedUnifiedSidebar = memo(({
     if (activeGroup && !openGroups.includes(activeGroup.id)) {
       setOpenGroups(prev => [...prev, activeGroup.id]);
     }
-  }, [activeSection, menuGroups, openGroups]);
+  }, [activeSection, menuGroups, openGroups, setOpenGroups]);
 
   if (!isVisible) {
     return null;
