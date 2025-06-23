@@ -12,7 +12,8 @@ import {
   Search,
   Zap,
   ShieldCheck,
-  Menu
+  Menu,
+  Calendar
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -107,6 +108,17 @@ export const AppHeader = ({ onSectionChange, onMobileSidebarToggle, isMobile = f
               <Search className="h-4 w-4" />
             </Button>
           )}
+
+          {/* Internal Meetings */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => onSectionChange('internal-meetings')}
+            className="h-8 w-8"
+            title="Internal Meetings"
+          >
+            <Calendar className="h-4 w-4" />
+          </Button>
 
           {/* Notifications */}
           <Button 
