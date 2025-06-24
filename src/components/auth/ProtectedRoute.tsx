@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children, requiredPermissions = [] }: Protected
   }
 
   if (!isAuthenticated || !user) {
-    return <LoginPage />;
+    return <LoginPage onLoginSuccess={() => {}} />;
   }
 
   // Check permissions if required

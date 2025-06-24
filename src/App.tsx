@@ -5,12 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AuthProvider } from "./contexts/AuthContext";
-import { BusinessLayout } from "./components/layout/BusinessLayout";
-import { LoginPage } from "./components/auth/LoginPage";
 import Index from "./pages/Index";
 import MembersArea from "./pages/MembersArea";
 import NotFound from "./pages/NotFound";
+import { LandingPage } from "./components/layout/LandingPage";
+import { DeveloperLoginPage } from "./components/layout/DeveloperLoginPage";
+import { MultiTenantAuth } from "./components/auth/MultiTenantAuth";
+import { MultiTenantLayout } from "./components/layout/MultiTenantLayout";
 import React from 'react';
 
 const queryClient = new QueryClient();
@@ -18,21 +19,21 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="business-app-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="saas-platform-theme">
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/app/*" element={<BusinessLayout />} />
-                <Route path="/" element={<Index />} />
-                <Route path="/members" element={<MembersArea />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/developer" element={<DeveloperLoginPage />} />
+              <Route path="/auth" element={<MultiTenantAuth />} />
+              <Route path="/saas/*" element={<MultiTenantLayout />} />
+              <Route path="/legacy" element={<Index />} />
+              <Route path="/members" element={<MembersArea />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
