@@ -30,7 +30,7 @@ import {
 
 export const BusinessLayout = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -80,7 +80,7 @@ export const BusinessLayout = () => {
       case 'notifications':
         return <NotificationsSection />;
       case 'profile':
-        return <ProfileSection />;
+        return <ProfileSection userType={user?.role || 'user'} />;
       case 'settings':
         return <SettingsSection />;
       case 'security':
