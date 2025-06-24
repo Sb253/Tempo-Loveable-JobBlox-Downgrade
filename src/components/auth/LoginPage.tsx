@@ -1,151 +1,131 @@
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, Eye, EyeOff, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../contexts/AuthContext';
-import { LoginCredentials } from '../../types/auth';
+import { Building2, Mail, Lock } from "lucide-react";
 
-interface LoginPageProps {
-  onLoginSuccess: () => void;
-}
-
-export const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
-  const { login, isLoading, isDemoMode, enableDemoMode } = useAuth();
-  const [credentials, setCredentials] = useState<LoginCredentials>({
+export const LoginPage = () => {
+  const navigate = useNavigate();
+  const { login, isAuthenticated, isLoading } = useAuth();
+  const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Partial<LoginCredentials>>({});
+  const [loginLoading, setLoginLoading] = useState(false);
 
-  const validateForm = () => {
-    const newErrors: Partial<LoginCredentials> = {};
-    
-    if (!credentials.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(credentials.email)) {
-      newErrors.email = 'Please enter a valid email';
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/app');
     }
-    
-    if (!credentials.password) {
-      newErrors.password = 'Password is required';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  }, [isAuthenticated, navigate]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginLoading(true);
     
-    if (!validateForm()) return;
-    
-    const success = await login(credentials);
-    if (success) {
-      onLoginSuccess();
+    try {
+      const success = await login(formData);
+      if (success) {
+        navigate('/app');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
+      setLoginLoading(false);
     }
   };
 
-  const handleDemoLogin = () => {
-    if (!isDemoMode) {
-      enableDemoMode();
-    }
-    onLoginSuccess();
-  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Building2 className="h-12 w-12 text-primary" />
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/')}
+              className="absolute top-4 left-4"
+            >
+              ← Back to Home
+            </Button>
+            <Building2 className="h-12 w-12 text-blue-600" />
           </div>
-          <CardTitle className="text-2xl font-bold">JobBlox Login</CardTitle>
+          <h1 className="text-3xl font-bold mb-2 dark:text-white">JobBlox</h1>
           <p className="text-muted-foreground">Sign in to your account</p>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={credentials.email}
-                onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="your.email@company.com"
-                className={errors.email ? 'border-red-500' : ''}
-              />
-              {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={credentials.password}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Enter your password"
-                  className={errors.password ? 'border-red-500' : ''}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
+        </div>
+
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle>Welcome Back</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
-              {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-            </div>
-            
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-            >
-              {isLoading ? 'Signing In...' : 'Sign In'}
-            </Button>
-          </form>
-          
-          <div className="mt-6 space-y-4">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or
-                </span>
-              </div>
-            </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={loginLoading}
+              >
+                {loginLoading ? 'Signing In...' : 'Sign In'}
+              </Button>
+            </form>
             
-            <Button 
-              type="button"
-              variant="outline" 
-              className="w-full flex items-center gap-2"
-              onClick={handleDemoLogin}
-            >
-              <Zap className="h-4 w-4" />
-              Demo Access (No Login Required)
-            </Button>
-          </div>
-          
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Need an account? Contact your administrator for an invitation.</p>
-            {isDemoMode && (
-              <p className="mt-2 text-blue-600 font-medium">Demo Mode Active</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            <div className="mt-4 text-center text-sm text-muted-foreground">
+              <p>Demo credentials: any email/password combination</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
