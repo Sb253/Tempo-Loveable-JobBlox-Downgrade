@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Building2, Menu, X } from "lucide-react";
 
@@ -20,35 +19,27 @@ interface SidebarHeaderProps {
 export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
   companyData,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
 }) => {
-  const displayName = companyData.useCustomHeaderName 
-    ? companyData.headerCompanyName 
+  const displayName = companyData.useCustomHeaderName
+    ? companyData.headerCompanyName
     : companyData.name;
+
+  const handleToggleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleCollapse();
+  };
 
   return (
     <div className="flex items-center justify-between p-4 border-b border-border/40">
-      {!isCollapsed && (
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {companyData.logo ? (
-            <img 
-              src={companyData.logo} 
-              alt="Company Logo" 
-              className="h-8 w-8 object-contain flex-shrink-0"
-            />
-          ) : (
-            <Building2 className="h-8 w-8 text-primary flex-shrink-0" />
-          )}
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
-            {displayName}
-          </h1>
-        </div>
-      )}
+      {!isCollapsed && <></>}
       <Button
         variant="ghost"
         size="icon"
-        onClick={onToggleCollapse}
+        onClick={handleToggleClick}
         className="h-8 w-8 flex-shrink-0"
+        type="button"
       >
         {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
       </Button>
