@@ -1,18 +1,17 @@
-
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
-  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
   hasError: boolean;
   error?: Error;
+  errorInfo?: ErrorInfo;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -26,12 +25,12 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    this.props.onError?.(error, errorInfo);
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    this.setState({ error, errorInfo });
   }
 
-  handleReset = () => {
-    this.setState({ hasError: false, error: undefined });
+  handleRetry = () => {
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
   };
 
   render() {
@@ -44,22 +43,38 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="flex items-center justify-center min-h-96 p-4">
           <Card className="w-full max-w-md">
             <CardHeader className="text-center">
-              <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-              <CardTitle>Something went wrong</CardTitle>
+              <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <CardTitle className="text-red-600">
+                Something went wrong
+              </CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-muted-foreground">
-                We encountered an unexpected error. Please try refreshing the page.
+                An unexpected error occurred. Please try refreshing the page or
+                contact support if the problem persists.
               </p>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="text-left bg-muted p-2 rounded text-sm">
-                  <strong>Error:</strong> {this.state.error.message}
-                </div>
+
+              {process.env.NODE_ENV === "development" && this.state.error && (
+                <details className="text-left bg-gray-100 p-3 rounded text-sm">
+                  <summary className="cursor-pointer font-medium mb-2">
+                    Error Details
+                  </summary>
+                  <pre className="whitespace-pre-wrap text-xs">
+                    {this.state.error.toString()}
+                    {this.state.errorInfo?.componentStack}
+                  </pre>
+                </details>
               )}
-              <Button onClick={this.handleReset} className="w-full">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Try Again
-              </Button>
+
+              <div className="flex gap-2 justify-center">
+                <Button onClick={this.handleRetry} variant="outline">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Try Again
+                </Button>
+                <Button onClick={() => window.location.reload()}>
+                  Refresh Page
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

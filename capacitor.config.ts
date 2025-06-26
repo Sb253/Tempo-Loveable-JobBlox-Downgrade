@@ -1,19 +1,51 @@
-
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.b31c467f9da1476babf3c32da12859e6',
-  appName: 'job-flow-pro',
-  webDir: 'dist',
+  appId: "com.jobblox.construction",
+  appName: "JobBlox",
+  webDir: "dist",
   server: {
-    url: 'https://b31c467f-9da1-476b-abf3-c32da12859e6.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+    url: "https://upbeat-faraday6-kmmee.view-3.tempo-dev.app",
+    cleartext: true,
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0
-    }
-  }
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: "#1e293b",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: true,
+    },
+    StatusBar: {
+      style: "DARK",
+      backgroundColor: "#1e293b",
+    },
+    Keyboard: {
+      resize: "body",
+      style: "DARK",
+      resizeOnFullScreen: true,
+    },
+    App: {
+      launchUrl: "https://upbeat-faraday6-kmmee.view-3.tempo-dev.app",
+    },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+  },
+  ios: {
+    scheme: "JobBlox",
+    contentInset: "automatic",
+  },
+  android: {
+    buildOptions: {
+      keystorePath: undefined,
+      keystoreAlias: undefined,
+    },
+    allowMixedContent: true,
+  },
 };
 
 export default config;

@@ -1,170 +1,123 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, CheckCircle, Eye, EyeOff } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Building2,
+  UserPlus,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Lock,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { InvitationData } from '../../types/auth';
 
 interface InvitationAcceptanceProps {
   token: string;
   onAcceptanceComplete: () => void;
 }
 
-export const InvitationAcceptance = ({ token, onAcceptanceComplete }: InvitationAcceptanceProps) => {
+export const InvitationAcceptance: React.FC<InvitationAcceptanceProps> = ({
+  token,
+  onAcceptanceComplete,
+}) => {
   const { toast } = useToast();
-  const [invitation, setInvitation] = useState<InvitationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [accepting, setAccepting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [errors, setErrors] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    // Load invitation data from localStorage
-    const invitations = JSON.parse(localStorage.getItem('invitations') || '[]');
-    const foundInvitation = invitations.find((inv: InvitationData) => inv.token === token);
-    
-    if (foundInvitation) {
-      if (new Date(foundInvitation.expiresAt) < new Date()) {
-        toast({
-          title: "Invitation Expired",
-          description: "This invitation has expired. Please contact your administrator.",
-          variant: "destructive"
-        });
-      } else if (foundInvitation.status === 'accepted') {
-        toast({
-          title: "Already Accepted",
-          description: "This invitation has already been accepted.",
-          variant: "destructive"
-        });
-      } else {
-        setInvitation(foundInvitation);
-      }
-    } else {
-      toast({
-        title: "Invalid Invitation",
-        description: "This invitation link is invalid or has been removed.",
-        variant: "destructive"
-      });
-    }
-    
-    setLoading(false);
-  }, [token]);
-
-  const validateForm = () => {
-    const newErrors: any = {};
-    
-    if (!formData.name) {
-      newErrors.name = 'Full name is required';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  // Mock invitation data - in production, this would be fetched using the token
+  const invitationData = {
+    email: "newuser@company.com",
+    role: "Employee",
+    companyName: "Demo Construction Co.",
+    invitedBy: "John Manager",
+    expiresAt: "2024-02-15",
   };
 
-  const handleAcceptInvitation = async () => {
-    if (!invitation || !validateForm()) return;
-    
-    setAccepting(true);
-    
-    try {
-      // Create employee record
-      const newEmployee = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: invitation.email,
-        phone: '',
-        address: '',
-        coordinates: [0, 0],
-        skills: [],
-        availability: 'offline',
-        workload: 0,
-        role: invitation.role,
-        permissions: invitation.permissions,
-        hasPassword: true,
-        canChangePassword: true,
-        password: formData.password, // In real app, this would be hashed
-        invitationStatus: 'accepted',
-        createdAt: new Date().toISOString()
-      };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-      // Save employee to localStorage
-      const employees = JSON.parse(localStorage.getItem('employees') || '[]');
-      employees.push(newEmployee);
-      localStorage.setItem('employees', JSON.stringify(employees));
-
-      // Update invitation status
-      const invitations = JSON.parse(localStorage.getItem('invitations') || '[]');
-      const updatedInvitations = invitations.map((inv: InvitationData) =>
-        inv.token === token
-          ? { ...inv, status: 'accepted', acceptedAt: new Date().toISOString() }
-          : inv
-      );
-      localStorage.setItem('invitations', JSON.stringify(updatedInvitations));
-
+    if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Welcome to JobBlox!",
-        description: "Your account has been created successfully. You can now log in.",
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 8 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter your full name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Mock API call - in production, this would accept the invitation
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      setIsAccepted(true);
+      toast({
+        title: "Welcome to the Team!",
+        description: "Your account has been created successfully.",
       });
 
-      onAcceptanceComplete();
+      // Redirect after a short delay
+      setTimeout(() => {
+        onAcceptanceComplete();
+      }, 2000);
     } catch (error) {
-      console.error('Error accepting invitation:', error);
       toast({
-        title: "Error",
-        description: "An error occurred while setting up your account.",
-        variant: "destructive"
+        title: "Acceptance Failed",
+        description: "Failed to accept invitation. Please try again.",
+        variant: "destructive",
       });
     } finally {
-      setAccepting(false);
+      setIsLoading(false);
     }
   };
 
-  if (loading) {
+  if (isAccepted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading invitation...</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!invitation) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-slate-800/80 border-slate-700">
           <CardHeader className="text-center">
-            <Building2 className="h-12 w-12 text-destructive mx-auto mb-4" />
-            <CardTitle className="text-xl">Invalid Invitation</CardTitle>
+            <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
+            <CardTitle className="text-2xl text-white">
+              Welcome Aboard!
+            </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-muted-foreground mb-4">
-              This invitation link is invalid, expired, or has already been used.
+            <p className="text-slate-300 mb-4">
+              Your account has been created successfully. You'll be redirected
+              to the login page shortly.
             </p>
-            <Button onClick={() => window.location.href = '/'}>
-              Return to Login
-            </Button>
+            <div className="animate-pulse">
+              <div className="h-2 bg-green-400 rounded-full"></div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -172,87 +125,148 @@ export const InvitationAcceptance = ({ token, onAcceptanceComplete }: Invitation
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-slate-800/80 border-slate-700">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <CheckCircle className="h-12 w-12 text-green-500" />
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Building2 className="h-8 w-8 text-primary" />
+            <UserPlus className="h-8 w-8 text-green-400" />
           </div>
-          <CardTitle className="text-2xl font-bold">Complete Your Registration</CardTitle>
-          <p className="text-muted-foreground">
-            You've been invited to join JobBlox as a {invitation.role}
+          <CardTitle className="text-2xl text-white">Join the Team</CardTitle>
+          <p className="text-slate-300 mt-2">
+            You've been invited to join {invitationData.companyName}
           </p>
         </CardHeader>
-        
         <CardContent>
-          <div className="space-y-4">
-            <div className="p-3 bg-blue-50 rounded-lg border">
-              <p className="text-sm">
-                <strong>Email:</strong> {invitation.email}
-              </p>
-              <p className="text-sm">
-                <strong>Role:</strong> {invitation.role}
-              </p>
+          {/* Invitation Details */}
+          <div className="bg-slate-700/50 rounded-lg p-4 mb-6">
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Email:</span>
+                <span className="text-white">{invitationData.email}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Role:</span>
+                <Badge variant="outline" className="text-xs">
+                  {invitationData.role}
+                </Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Invited by:</span>
+                <span className="text-white">{invitationData.invitedBy}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Expires:</span>
+                <span className="text-white">{invitationData.expiresAt}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Acceptance Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-slate-300">
+                Full Name
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
+                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                required
+              />
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); handleAcceptInvitation(); }} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-slate-300">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                 <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter your full name"
-                  className={errors.name ? 'border-red-500' : ''}
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                  className="pl-10 pr-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  required
                 />
-                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-white"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Create Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    placeholder="Create a strong password"
-                    className={errors.password ? 'border-red-500' : ''}
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
-                </div>
-                {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-slate-300">
+                Confirm Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
                 <Input
                   id="confirmPassword"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
-                  className={errors.confirmPassword ? 'border-red-500' : ''}
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
+                  className="pl-10 pr-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  required
                 />
-                {errors.confirmPassword && <p className="text-sm text-red-500">{errors.confirmPassword}</p>}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-white"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={accepting}
-              >
-                {accepting ? 'Setting up account...' : 'Complete Registration'}
-              </Button>
-            </form>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating Account..." : "Accept Invitation"}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-400">
+              By accepting this invitation, you agree to the terms of service
+              and privacy policy.
+            </p>
           </div>
         </CardContent>
       </Card>

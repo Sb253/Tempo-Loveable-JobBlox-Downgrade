@@ -1,41 +1,64 @@
-
-import React from 'react';
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Building2, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Building2, Zap } from "lucide-react";
 
 export const LandingHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <header className="relative z-50 border-b border-slate-800/50 bg-slate-900/80 backdrop-blur-sm">
+    <header className="relative z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between py-6">
           <div className="flex items-center gap-3">
-            <Building2 className="h-8 w-8 text-blue-400" />
-            <h1 className="text-xl font-bold text-white">JobBlox SaaS</h1>
-            <Badge className="bg-blue-600/20 text-blue-400 border-blue-600/30">
-              <Zap className="h-3 w-3 mr-1" />
-              Multi-Tenant
-            </Badge>
+            <Building2 className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-bold text-white">JobBlox</h1>
           </div>
-          
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              className="text-slate-300 hover:text-white"
-              onClick={() => navigate('/developer')}
+
+          <nav className="hidden md:flex items-center gap-8">
+            <a
+              href="#features"
+              className="text-slate-300 hover:text-white transition-colors"
             >
-              Developer Access
-            </Button>
-            <Button 
-              onClick={() => navigate('/auth')}
-              className="bg-blue-600 hover:bg-blue-700"
+              Features
+            </a>
+            <a
+              href="#pricing"
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Pricing
+            </a>
+            <a
+              href="#contact"
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Contact
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              className="text-slate-300 hover:text-white hidden sm:inline-flex"
+              onClick={() => navigate("/auth")}
             >
               Sign In
             </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-sm sm:text-base px-4 sm:px-6"
+              onClick={() => navigate("/")}
+            >
+              Get Started
+            </Button>
           </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="md:hidden text-slate-300"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </header>
