@@ -14,10 +14,13 @@ const initializeCapacitor = async () => {
       return;
     }
 
-    // Try to import Capacitor core with better error handling
+    // Use Function constructor to avoid Vite pre-transform resolution
+    const dynamicImport = new Function("specifier", "return import(specifier)");
+
+    // Try to import Capacitor core
     let Capacitor;
     try {
-      const capacitorModule = await import("@capacitor/core");
+      const capacitorModule = await dynamicImport("@capacitor/core");
       Capacitor = capacitorModule.Capacitor;
     } catch (error) {
       console.log("Capacitor core not available, running in web mode");
@@ -31,7 +34,7 @@ const initializeCapacitor = async () => {
 
       // StatusBar plugin
       try {
-        const statusBarModule = await import("@capacitor/status-bar");
+        const statusBarModule = await dynamicImport("@capacitor/status-bar");
         const { StatusBar, Style } = statusBarModule;
         await StatusBar.setStyle({ style: Style.Dark }).catch(console.warn);
         await StatusBar.setBackgroundColor({ color: "#1e293b" }).catch(
@@ -43,7 +46,9 @@ const initializeCapacitor = async () => {
 
       // SplashScreen plugin
       try {
-        const splashScreenModule = await import("@capacitor/splash-screen");
+        const splashScreenModule = await dynamicImport(
+          "@capacitor/splash-screen",
+        );
         const { SplashScreen } = splashScreenModule;
         await SplashScreen.hide().catch(console.warn);
       } catch (error) {
@@ -52,7 +57,7 @@ const initializeCapacitor = async () => {
 
       // App plugin
       try {
-        const appModule = await import("@capacitor/app");
+        const appModule = await dynamicImport("@capacitor/app");
         const { App } = appModule;
         App.addListener("appStateChange", ({ isActive }) => {
           console.log("App state changed. Is active?", isActive);
